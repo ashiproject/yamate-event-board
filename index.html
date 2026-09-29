@@ -2342,20 +2342,20 @@ function toggleEventDetail(id){ var el = document.getElementById('event-detail-'
 function renderEvents(){
   var el = document.getElementById('event-upcoming-list'); if(!el) return;
   var filtered = EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered = filtered.filter(function(e){ return eventMatchesOpenCat(e); });
-  var html = '';
+  var html = '<div class="mb-3 text-xs text-slate-500">タイトルをクリックすると詳細が開きます（各カテゴリ2件ずつ模擬データ入り）</div>';
   filtered.forEach(ev => {
-    html += '<div class="border rounded-2xl p-4 mb-3 bg-white hover:shadow-sm transition-shadow">'
-    + '<div class="flex justify-between gap-2 cursor-pointer" onclick="toggleEventDetail(\''+ev.id+'\')"><div class="font-black text-sm">📅 '+esc(ev.title)+' <span class="text-[10px] bg-slate-100 border px-2 py-0.5 rounded-full">▼ 詳細表示</span></div><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">'+esc(ev.status)+'</span></div>'
-    + '<div class="text-xs text-slate-500 mt-1">📍 '+esc(ev.date)+' | '+esc(ev.place)+' | '+esc(ev.category)+'</div>'
-    + '<div id="event-detail-'+ev.id+'" class="hidden mt-3 space-y-3"><div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border">'+esc(ev.detail)+'</div>'
+    html += '<div class="border-2 border-slate-200 rounded-2xl mb-3 bg-white hover:shadow-sm transition-shadow overflow-hidden">'
+    + '<div class="flex justify-between gap-2 cursor-pointer p-4" onclick="toggleEventDetail(\''+ev.id+'\')"><div class="font-black text-[15px] leading-snug">📅 '+esc(ev.title)+' <span class="ml-2 text-[10px] bg-slate-900 text-white px-2.5 py-1 rounded-full">▼ 詳細</span></div><span class="shrink-0 text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full h-fit">'+esc(ev.status)+'</span></div>'
+    + '<div class="px-4 pb-1 text-[11px] text-slate-500">📍 '+esc(ev.date)+' '+esc(ev.time)+' | '+esc(ev.place)+' | '+esc(ev.category)+'</div>'
+    + '<div id="event-detail-'+ev.id+'" class="hidden border-t bg-slate-50/80 p-4 space-y-3"><div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">'+esc(ev.detail)+'</div>'
     + '<div class="flex gap-1.5 flex-wrap">'
     + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+'">🙋 やりたい '+(getJoinCount(ev.id,'want')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+'">🤝 手伝える '+(getJoinCount(ev.id,'help')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+'">📋 仕切り '+(getJoinCount(ev.id,'lead')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+'">📍 場所提供 '+(getJoinCount(ev.id,'place')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+'">👀 興味あり '+(getJoinCount(ev.id,'interest')||'')+'</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+'">🤝 手伝える</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+'">📋 仕切り</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+'">📍 場所提供</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+'">👀 興味あり</button>'
     + '</div>'
-    + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold rounded-xl text-xs shadow-sm hover:from-amber-600">🎨 このイベントでチラシ作成 →</button>'
+    + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold rounded-xl text-xs shadow-sm">🎨 このイベントでチラシ作成 →</button>'
     + '</div></div>';
   });
   el.innerHTML = html;
@@ -2364,14 +2364,23 @@ function renderEvents(){
 function renderEventIdeas(){
   var el=document.getElementById('event-ideas-list'); if(!el) return;
   var filtered=EVENT_IDEAS.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
-  var html='<div class="idea-board"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h2 class="text-xl font-black">💡 Lv2: アイデアボード — やりたいを集める</h2><p class="text-xs text-slate-500 mt-1">Flow3可視化：やりたい → 手伝える → 仕切り → 場所提供 → 実施。ゲージで進捗を確認。</p></div><button type="button" onclick="showEventTab(\'hatsuan\')" class="px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black">＋ アイデアを提案</button></div><div class="grid md:grid-cols-2 gap-4 mt-5">';
+  var html='<div class="idea-board"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h2 class="text-xl font-black">💡 Lv2: アイデアボード — やりたいを集める</h2><p class="text-xs text-slate-500 mt-1">タイトルをクリックすると内容が開きます。Flow3可視化：やりたい → 手伝える → 仕切り → 場所提供 → 実施。</p></div><button type="button" onclick="showEventTab(\'hatsuan\')" class="px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black">＋ アイデアを提案</button></div><div class="grid md:grid-cols-1 gap-3 mt-5">';
   filtered.forEach(function(ev){
     var w=getJoinCount(ev.id,'want'),h=getJoinCount(ev.id,'help'),l=getJoinCount(ev.id,'lead'),pl=getJoinCount(ev.id,'place');
     var total=Math.max(1,w+h+l+pl); var a=Math.min(100,Math.round(w/Math.max(10,total)*100)), b=Math.min(100,Math.round(h/Math.max(5,total)*100)), c=Math.min(100,Math.round(l/Math.max(2,total)*100));
-    html+='<article class="idea-card"><div class="flex justify-between gap-3"><div><h3 class="font-black">'+esc(ev.title)+'</h3><p class="text-xs text-slate-500 mt-2">'+esc(ev.detail||'')+'</p></div><span class="text-lg">'+(ev.category&&/子ども/.test(ev.category)?'👨‍👩‍👧':'📚')+'</span></div>'
-      +'<div class="text-[11px] text-slate-600 mt-3">やりたい '+w+' / 手伝える '+h+' / 仕切り '+l+' / 場所 '+pl+'</div><div class="idea-progress"><span style="width:'+a+'%"></span><span style="width:'+b+'%"></span><span style="width:'+c+'%"></span></div>'
-      +'<div class="flex gap-2"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="flex-1 py-2 rounded-full bg-slate-900 text-white text-xs font-black">🙋 やりたい</button><button type="button" onclick="toggleEventDetail(\''+ev.id+'\')" class="px-4 py-2 rounded-full bg-white border text-xs font-black">詳細</button></div>'
-      +'<div id="event-detail-'+ev.id+'" class="hidden mt-3 text-xs text-slate-700 bg-white border rounded-xl p-3">'+esc(ev.detail||'')+'</div></article>';
+    var catIcon = ev.category&&/子ども/.test(ev.category)?'👨‍👩‍👧':ev.category&&/ペット/.test(ev.category)?'🐾':ev.category&&/食べる/.test(ev.category)?'☕':ev.category&&/季節/.test(ev.category)?'🌸':ev.category&&/趣味/.test(ev.category)?'📚':'🏛️';
+    html+='<article class="idea-card border-2 border-slate-200 rounded-2xl bg-white overflow-hidden hover:shadow-md transition-shadow">'
+      +'<div class="p-4 cursor-pointer flex justify-between items-center gap-3" onclick="toggleEventDetail(\''+ev.id+'\')">'
+        +'<div class="flex items-center gap-3"><span class="text-xl">'+catIcon+'</span><div><h3 class="font-black text-[15px] leading-snug">'+esc(ev.title)+'</h3><div class="text-[11px] text-slate-500 mt-1">'+esc(ev.category)+' | '+esc(ev.date)+' '+esc(ev.time)+' | '+esc(ev.place)+'</div></div></div>'
+        +'<span class="shrink-0 text-[11px] bg-slate-900 text-white px-3 py-1.5 rounded-full font-bold">▼ 詳細</span>'
+      +'</div>'
+      +'<div id="event-detail-'+ev.id+'" class="hidden border-t bg-slate-50/80">'
+        +'<div class="p-4 text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">'+esc(ev.detail||'')+'</div>'
+        +'<div class="px-4 pb-3 flex flex-wrap gap-1.5">'+(ev.skillsNeeded||[]).map(function(sk){return '<span class="text-[11px] bg-white border px-2.5 py-1 rounded-full">'+esc(sk)+'</span>';}).join('')+'</div>'
+        +'<div class="px-4 pb-3 text-[11px] text-slate-600">やりたい '+w+' / 手伝える '+h+' / 仕切り '+l+' / 場所 '+pl+'</div>'
+        +'<div class="px-4 pb-4 flex gap-2"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="flex-1 py-2.5 rounded-full bg-slate-900 text-white text-xs font-black">🙋 やりたい '+ (w||'') +'</button><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="flex-1 py-2.5 rounded-full bg-teal-700 text-white text-xs font-black">🤝 手伝える</button><button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="px-4 py-2.5 rounded-full bg-white border text-xs font-black">🎨 チラシ</button></div>'
+      +'</div>'
+      +'</article>';
   });
   html+='</div></div>'; el.innerHTML=html;
 }
