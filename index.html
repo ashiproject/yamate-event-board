@@ -806,12 +806,26 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxk5uFEP5Y4iQyvaP3JVqg9
 
 /* v14 NETWORK FIX: GAS JSONP + hidden form POST */
 (function(){
-  window.yamateJsonp=function(url,timeoutMs){timeoutMs=timeoutMs||25000;return new Promise(function(resolve,reject){
-    var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),script=document.createElement('script'),done=false;
-    var timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました（25秒）'));},timeoutMs);
-    function cleanup(){if(done)return;done=true;clearTimeout(timer);try{delete window[cb];}catch(e){window[cb]=undefined;}if(script.parentNode)script.parentNode.removeChild(script);}
-    window[cb]=function(data){cleanup();resolve(data);};script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました'));};
-    script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();document.head.appendChild(script);
+  window.yamateJsonp=function(url,timeoutMs){timeoutMs=timeoutMs||30000;return new Promise(function(resolve,reject){
+    var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),
+        script=document.createElement('script'),
+        done=false,timer=null;
+    function cleanup(){
+      if(done)return; done=true;
+      if(timer) clearTimeout(timer);
+      try{delete window[cb];}catch(e){window[cb]=undefined;}
+      if(script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[cb]=function(data){
+      cleanup();
+      if(data && data.error && !data.result){
+        reject(new Error(data.error + (data.last_error ? ' / '+data.last_error : '')));
+      } else resolve(data);
+    };
+    timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました（30秒）'));},timeoutMs);
+    script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました。GASのWebアプリURLが応答していません。'));};
+    script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
+    document.head.appendChild(script);
   });};
   window.yamatePost=function(payload,timeoutMs){timeoutMs=timeoutMs||10000;return new Promise(function(resolve,reject){
     var iframe=document.createElement('iframe');iframe.name='yamate_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);iframe.style.display='none';document.body.appendChild(iframe);
@@ -2562,8 +2576,10 @@ document.addEventListener('DOMContentLoaded', function(){
   renderKentou();
   renderHiroba();
   
-  document.getElementById('upcomingCount').textContent = EVENT_DATA.length + '件';
-  document.getElementById('ideasCount').textContent = EVENT_IDEAS.length + '件';
+  var upcomingCountEl = document.getElementById('upcomingCount');
+  if (upcomingCountEl) upcomingCountEl.textContent = EVENT_DATA.length + '件';
+  var ideasCountEl = document.getElementById('ideasCount');
+  if (ideasCountEl) ideasCountEl.textContent = EVENT_IDEAS.length + '件';
 
   // Attach Input Listeners for Real-time Flyer Updating
   const flyerInputIds = ["flyerF_title","flyerF_content","flyerF_target","flyerF_date","flyerF_time","flyerF_place","flyerF_meet","flyerF_feel","flyerF_rain","flyerF_fee","flyerF_apply","flyerF_emergency","flyerF_category"];
