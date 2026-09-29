@@ -524,8 +524,8 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
         <p class="text-xs text-slate-500 mt-2">分類は選びません。入力内容をGAS経由のAIが自動分析し、6カテゴリ・坂・必要スキルなどを判定します。</p>
     <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-4 mt-5">
       <div>
-        <div class="flex gap-2"><input id="evTitle" placeholder="例）坂道ベンチマップを作りたい" class="w-full p-4 border rounded-2xl text-base"><button type="button" class="w-14 rounded-2xl border text-xl">🎤</button></div>
-        <div class="flex gap-2 mt-3"><textarea id="evDetail" rows="4" placeholder="詳細：誰と何をやりたい？坂の配慮は？必要な手伝いは？" class="w-full p-4 border rounded-2xl text-base"></textarea><button type="button" class="w-14 h-14 rounded-2xl border text-xl">🎤</button></div>
+        <div class="flex gap-2"><input id="evTitle" placeholder="例）坂道ベンチマップを作りたい" class="w-full p-4 border rounded-2xl text-base"><button type="button" id="btnVoiceEventTitle" class="w-14 rounded-2xl border text-xl" title="タイトルを音声入力">🎤</button></div>
+        <div class="flex gap-2 mt-3"><textarea id="evDetail" rows="4" placeholder="詳細：誰と何をやりたい？坂の配慮は？必要な手伝いは？" class="w-full p-4 border rounded-2xl text-base"></textarea><button type="button" id="btnVoiceEventDetail" class="w-14 h-14 rounded-2xl border text-xl" title="詳細を音声入力">🎤</button></div>
         <div class="flex gap-2 mt-4"><button type="button" id="btnSubmitEvent" class="bg-teal-700 text-white px-6 py-3 rounded-full font-black">🤖 AIで分析</button><button type="button" onclick="createFlyerFromHatsuan()" class="bg-white border px-6 py-3 rounded-full font-black">🎨 チラシ</button></div>
         <div id="evSlip" class="mt-3 text-xs text-slate-500">AI分析結果がここに表示されます。</div>
       </div>
@@ -804,46 +804,26 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 ------------------------------------------------------------- */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxk5uFEP5Y4iQyvaP3JVqg9dT4eAS8CQCUayAWBR7pGqLDJAyg8Uyr6jhWRQGAYJ4IISA/exec";
 
-/* v13 NETWORK FIX: GASへfetchしない。GET=JSONP、保存=hidden iframe/form POST */
+/* v14 NETWORK FIX: GAS JSONP + hidden form POST */
 (function(){
-  window.yamateJsonp = function(url, timeoutMs){
-    timeoutMs = timeoutMs || 20000;
-    return new Promise(function(resolve,reject){
-      var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000);
-      var script=document.createElement('script'), done=false;
-      var timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました'));},timeoutMs);
-      function cleanup(){
-        if(done)return; done=true; clearTimeout(timer);
-        try{delete window[cb];}catch(e){window[cb]=undefined;}
-        if(script.parentNode)script.parentNode.removeChild(script);
-      }
-      window[cb]=function(data){cleanup();resolve(data);};
-      script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました'));};
-      script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
-      document.head.appendChild(script);
-    });
-  };
-  window.yamatePost = function(payload){
-    return new Promise(function(resolve,reject){
-      var iframe=document.createElement('iframe');
-      iframe.name='yamate_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);
-      iframe.style.display='none';
-      document.body.appendChild(iframe);
-      var form=document.createElement('form');
-      form.method='POST'; form.action=GAS_URL; form.target=iframe.name; form.style.display='none';
-      var input=document.createElement('input');
-      input.type='hidden'; input.name='payload'; input.value=JSON.stringify(payload);
-      form.appendChild(input); document.body.appendChild(form);
-      var done=false;
-      function cleanup(){try{form.remove();}catch(e){} try{iframe.remove();}catch(e){}}
-      var timer=setTimeout(function(){if(done)return;done=true;cleanup();resolve({status:'submitted'});},1500);
-      iframe.onload=function(){if(done)return;done=true;clearTimeout(timer);cleanup();resolve({status:'submitted'});};
-      iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('GASへの送信に失敗しました'));};
-      form.submit();
-    });
-  };
+  window.yamateJsonp=function(url,timeoutMs){timeoutMs=timeoutMs||25000;return new Promise(function(resolve,reject){
+    var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),script=document.createElement('script'),done=false;
+    var timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました（25秒）'));},timeoutMs);
+    function cleanup(){if(done)return;done=true;clearTimeout(timer);try{delete window[cb];}catch(e){window[cb]=undefined;}if(script.parentNode)script.parentNode.removeChild(script);}
+    window[cb]=function(data){cleanup();resolve(data);};script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました'));};
+    script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();document.head.appendChild(script);
+  });};
+  window.yamatePost=function(payload,timeoutMs){timeoutMs=timeoutMs||10000;return new Promise(function(resolve,reject){
+    var iframe=document.createElement('iframe');iframe.name='yamate_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);iframe.style.display='none';document.body.appendChild(iframe);
+    var form=document.createElement('form');form.method='POST';form.action=GAS_URL;form.target=iframe.name;form.style.display='none';
+    var input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);
+    var done=false;function cleanup(){try{form.remove();}catch(e){}try{iframe.remove();}catch(e){}}
+    var timer=setTimeout(function(){if(done)return;done=true;cleanup();resolve({status:'submitted'});},timeoutMs);
+    iframe.onload=function(){if(done)return;done=true;clearTimeout(timer);cleanup();resolve({status:'submitted'});};
+    iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('GASへの送信に失敗しました'));};
+    try{form.submit();}catch(e){clearTimeout(timer);cleanup();reject(e);}
+  });};
 })();
-
 const BASE_CATEGORIES = [
 {key:"BIG-1",label:"防災・防犯",icon:"🛡",defaultDesc:"山手町は急坂と石垣が多い急斜面地に位置し、災害時の迅速な対応が不可欠です。班長・民生委員・LINEによる三重連絡網とブロック別安否確認マップを整備し、発災後30分以内の全戸確認を目指します。また、坂道を避けた避難訓練や電動アシスト台車による分散備蓄を推進。オリジナル腕章での防犯パトロールや防災ラジオの配布により、安全で静穏な邸宅街を次世代へ継承します。"},
 {key:"BIG-2",label:"インフラ・環境",icon:"🌿",defaultDesc:"北部の急斜面では高齢者の歩行負担が大きいため、景観に調和した天然木ベンチや手すり、滑り止め舗装による回遊路を整備します。また、幅員の狭い道路や詰まりやすい側溝を蓋付きへ更新し、定期清掃や電柱地中化も検討します。コンビニ不在の課題に対しては移動販売やスマート受取拠点を活用し、石垣や生垣の美観を損なわない持続可能なインフラと環境保全を両立させます。"},
@@ -2034,6 +2014,8 @@ function initVoiceRecognition(){
   }catch(e){ console.log('voice init error',e); }
 }
 
+try{ initVoiceRecognition(); }catch(e){ console.warn('voice init:',e); }
+
 function closeHowto(){ document.getElementById('howtoModal').classList.remove('open'); }
 
 /* -------------------------------------------------------------
@@ -2596,19 +2578,6 @@ document.addEventListener('DOMContentLoaded', function(){
   // Modal Triggers
   var _btnShowHowTo=document.getElementById('btnShowHowTo'); if(_btnShowHowTo){ _btnShowHowTo.addEventListener('click', function(){ var m=document.getElementById('howtoModal'); if(m) m.classList.add('open'); }); }
   
-  // Voice Recognition
-  var recognition = null;
-  document.getElementById('btnVoice').addEventListener('click', function(){
-    if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){ alert('Chromeブラウザ等の音声認識に対応した環境をご利用ください'); return; }
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SR(); recognition.lang = 'ja-JP';
-    recognition.onstart = function(){ document.getElementById('voiceStatus').classList.remove('hidden'); document.getElementById('btnVoice').classList.add('hidden'); document.getElementById('btnVoiceStop').classList.remove('hidden'); };
-    recognition.onend = function(){ document.getElementById('voiceStatus').classList.add('hidden'); document.getElementById('btnVoice').classList.remove('hidden'); document.getElementById('btnVoiceStop').classList.add('hidden'); recognition = null; };
-    recognition.onresult = function(e){ document.getElementById('userInput').value += e.results[0][0].transcript; };
-    recognition.start();
-  });
-  document.getElementById('btnVoiceStop').addEventListener('click', function(){ if(recognition) recognition.stop(); });
-
   // Post Voice Opinion
   document.getElementById('btnPost').addEventListener('click', function(){
     var input = document.getElementById('userInput').value.trim();
@@ -2668,19 +2637,19 @@ document.addEventListener('DOMContentLoaded', function(){
         .then(function(data){
           console.log('analyze JSONP response:', data);
           if(!data) throw new Error('GASから応答がありません');
-          if(data && data.status==='success' && data.result){
+          if(data && data.result){
             var r = data.result;
             var analysis = {
-              big: r['大分類'] || 'コミュニティ',
+              big: r['big'] || r['大分類'] || r.category || 'コミュニティ',
               mid: r['中分類'] || 'その他',
-              title: r['推奨タイトル'] || input.slice(0,18),
-              summary200: String(r['要約200'] || '').slice(0,200),
-              p1: r['視点1_本文'] || r['核心'] || '',
-              p2: r['視点2_本文'] || r['変化'] || '',
-              p3: r['視点3_本文'] || r['成功事例'] || '',
-              p4: r['視点4_本文'] || r['懸念点'] || '',
-              p5: r['視点5_本文'] || r['問い'] || '',
-              catLabel: r['大分類'] || 'コミュニティ'
+              title: r['推奨タイトル'] || r.title || input.slice(0,18),
+              summary200: String(r['要約200'] || r.summary200 || r.summary || '').slice(0,200),
+              p1: r['視点1_本文'] || r.p1 || r['核心'] || '',
+              p2: r['視点2_本文'] || r.p2 || r['変化'] || '',
+              p3: r['視点3_本文'] || r.p3 || r['成功事例'] || '',
+              p4: r['視点4_本文'] || r.p4 || r['懸念点'] || '',
+              p5: r['視点5_本文'] || r.p5 || r['問い'] || '',
+              catLabel: r['大分類'] || r.category || 'コミュニティ'
             };
             var cat = BASE_CATEGORIES.find(function(c){ return c.label===analysis.catLabel; });
             if(cat) analysis.big = cat.key;
@@ -2722,31 +2691,17 @@ document.addEventListener('DOMContentLoaded', function(){
   
   // Event voice recognition
   (function(){
-    var recEv = null;
-    var btnVE = document.getElementById('btnVoiceEvent');
-    if(btnVE){
-      btnVE.addEventListener('click', function(){
-        if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
-          alert('Chrome等の音声認識対応ブラウザをご利用ください'); return;
-        }
-        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        recEv = new SR();
-        recEv.lang = 'ja-JP';
-        recEv.onstart = function(){ btnVE.textContent = '🎙 聞き取り中…'; };
-        recEv.onend = function(){ btnVE.textContent = '🎙 音声で入力'; };
-        recEv.onresult = function(e){
-          var t = e.results[0][0].transcript;
-          var titleEl = document.getElementById('evTitle');
-          var detailEl = document.getElementById('evDetail');
-          if(detailEl){
-            detailEl.value = (detailEl.value ? detailEl.value + ' ' : '') + t;
-          } else if(titleEl){
-            titleEl.value = (titleEl.value ? titleEl.value + ' ' : '') + t;
-          }
-        };
-        recEv.start();
+    function bindVoice(buttonId,inputId){
+      var btn=document.getElementById(buttonId),input=document.getElementById(inputId);if(!btn||!input)return;
+      btn.addEventListener('click',function(){
+        var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Chrome等の音声認識対応ブラウザをご利用ください');return;}
+        var rec=new SR();rec.lang='ja-JP';rec.interimResults=false;rec.maxAlternatives=1;btn.textContent='🎙';btn.disabled=true;
+        rec.onresult=function(e){var t=e.results&&e.results[0]&&e.results[0][0]?e.results[0][0].transcript:'';if(t)input.value=(input.value?input.value+' ':'')+t;};
+        rec.onerror=function(e){console.warn('event voice:',e.error);alert('音声認識エラー: '+e.error);};
+        rec.onend=function(){btn.textContent='🎤';btn.disabled=false;};try{rec.start();}catch(x){btn.textContent='🎤';btn.disabled=false;alert('音声認識を開始できませんでした');}
       });
     }
+    bindVoice('btnVoiceEventTitle','evTitle');bindVoice('btnVoiceEventDetail','evDetail');
   })();
 
   document.getElementById('btnSubmitEvent').addEventListener('click', function(){
