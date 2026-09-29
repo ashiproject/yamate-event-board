@@ -804,7 +804,7 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 ------------------------------------------------------------- */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxk5uFEP5Y4iQyvaP3JVqg9dT4eAS8CQCUayAWBR7pGqLDJAyg8Uyr6jhWRQGAYJ4IISA/exec";
 
-/* v14 NETWORK FIX: GAS JSONP + hidden form POST */
+/* v15 FIXED: GAS JSONP + hidden form POST + 詳細エラー診断 */
 (function(){
   window.yamateJsonp=function(url,timeoutMs){timeoutMs=timeoutMs||30000;return new Promise(function(resolve,reject){
     var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),
@@ -818,25 +818,36 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbxk5uFEP5Y4iQyvaP3JVqg9
     }
     window[cb]=function(data){
       cleanup();
-      if(data && data.error && !data.result){
-        reject(new Error(data.error + (data.last_error ? ' / '+data.last_error : '')));
+      console.log('GAS response:', data);
+      if(data && data.error && !data.result && !Array.isArray(data)){
+        reject(new Error(data.error + (data.last_error ? ' / '+data.last_error : '') + (data.detail ? ' / '+data.detail : '')));
       } else resolve(data);
     };
-    timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました（30秒）'));},timeoutMs);
-    script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました。GASのWebアプリURLが応答していません。'));};
+    timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました（30秒）。GAS側が重いか、SPREADSHEET_ID未設定/スクリプトエラーで応答していません。GASエディタの実行ログを確認してください。'));},timeoutMs);
+    script.onerror=function(ev){
+      cleanup();
+      var msg='GASへの接続に失敗しました。\n\n【チェックリスト】\n1. GASのデプロイ > アクセス権が「全員（Anyone）」になっているか？「全員（Googleアカウント）」ではJSONPが失敗します。\n2. デプロイが最新バージョンになっているか？ 新しいデプロイIDが発行されたらHTMLのGAS_URLも更新必要。\n3. GAS_URLが正しいか？ 現在: '+GAS_URL+'\n4. ブラウザでこのURLを直接開いて JSON が表示されるか確認: '+url.split('?')[0]+'?action=ping';
+      console.error('JSONP script.onerror', ev, url);
+      reject(new Error(msg));
+    };
     script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
     document.head.appendChild(script);
   });};
-  window.yamatePost=function(payload,timeoutMs){timeoutMs=timeoutMs||10000;return new Promise(function(resolve,reject){
+  window.yamatePost=function(payload,timeoutMs){timeoutMs=timeoutMs||15000;return new Promise(function(resolve,reject){
     var iframe=document.createElement('iframe');iframe.name='yamate_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);iframe.style.display='none';document.body.appendChild(iframe);
     var form=document.createElement('form');form.method='POST';form.action=GAS_URL;form.target=iframe.name;form.style.display='none';
     var input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);
     var done=false;function cleanup(){try{form.remove();}catch(e){}try{iframe.remove();}catch(e){}}
-    var timer=setTimeout(function(){if(done)return;done=true;cleanup();resolve({status:'submitted'});},timeoutMs);
+    var timer=setTimeout(function(){if(done)return;done=true;cleanup();console.log('yamatePost timeout but assumed submitted', payload);resolve({status:'submitted'});},timeoutMs);
     iframe.onload=function(){if(done)return;done=true;clearTimeout(timer);cleanup();resolve({status:'submitted'});};
-    iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('GASへの送信に失敗しました'));};
+    iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('GASへの送信に失敗しました。GAS_URLとデプロイ設定を確認してください。'));};
     try{form.submit();}catch(e){clearTimeout(timer);cleanup();reject(e);}
   });};
+  // GAS疎通テスト用
+  window.testGASConnection = function(){
+    console.log('Testing GAS:', GAS_URL);
+    yamateJsonp(GAS_URL+'?action=ping').then(function(d){console.log('GAS ping OK', d); alert('GAS接続OK: '+JSON.stringify(d));}).catch(function(e){console.error(e); alert('GAS接続NG: '+e.message);});
+  };
 })();
 const BASE_CATEGORIES = [
 {key:"BIG-1",label:"防災・防犯",icon:"🛡",defaultDesc:"山手町は急坂と石垣が多い急斜面地に位置し、災害時の迅速な対応が不可欠です。班長・民生委員・LINEによる三重連絡網とブロック別安否確認マップを整備し、発災後30分以内の全戸確認を目指します。また、坂道を避けた避難訓練や電動アシスト台車による分散備蓄を推進。オリジナル腕章での防犯パトロールや防災ラジオの配布により、安全で静穏な邸宅街を次世代へ継承します。"},
@@ -1216,8 +1227,10 @@ function verifySpreadsheetStorage(){
 
 
 function loadFromSheet(){
-  if(!GAS_URL || GAS_URL.indexOf('XXXX')!==-1) return;
+  if(!GAS_URL || GAS_URL.indexOf('XXXX')!==-1){ console.warn('GAS_URL未設定'); return; }
   console.log("スプレッドシートから実データ取得開始:", GAS_URL);
+  // まず疎通確認
+  yamateJsonp(GAS_URL+'?action=ping').then(function(d){ console.log('GAS ping:', d); }).catch(function(e){ console.warn('GAS ping failed:', e.message); });
 
   // 意見（声のボード）
   yamateJsonp(GAS_URL+"?action=getIdeas")
