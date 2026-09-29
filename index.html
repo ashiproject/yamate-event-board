@@ -1074,27 +1074,31 @@ const INITIAL_HIROBA = [
 
 
 
+
 let MOCK_EVENTS_V32 = [
-  {id:"mock-001", date:"2026-10-12", time:"10:00-12:00", title:"山手町春の花見茶会", place:"山手公園", category:"季節の行事", status:"予定", detail:"桜の季節に合わせ、山手公園の広場で花見茶会を開催します。第一種低層住居専用地域の静穏を守りつつ、持ち寄りのお茶菓子と共に歓談します。旧家と新住民が顔を合わせ、子どもから高齢者までが自然に挨拶できる場を設計。ゴミは持ち帰り、騒音に配慮した品格ある花見を目指します。", summary:"桜の季節に花見茶会を開催。静穏を守りつつ多世代が交流。", slope:"平坦", skillsNeeded:["受付","軽食"]},
-  {id:"mock-002", date:"2026-12-05", time:"17:00-19:00", title:"山手町の静穏イルミ散歩", place:"山手町内", category:"季節の行事", status:"企画中", detail:"冬の夜道の安全確保と景観維持を両立させる足元イルミを企画。光害に配慮し、眩しくないLEDを側溝沿いに設置します。防犯と景観を両立させる新しい試みです。", summary:"冬の夜道の安全確保と景観維持を両立させる足元イルミ。", slope:"やや坂", skillsNeeded:["設営"]},
-  {id:"mock-003", date:"2026-09-20", time:"15:00-18:00", title:"山手町こども縁日復活祭", place:"山手集会所", category:"子ども・親子", status:"アイデア募集中", detail:"かつて行われていた夏の縁日を小規模で復活。ヨーヨー釣り、スーパーボールすくい、駄菓子屋さんを設置します。子どもたちが自分たちで運営するコーナーも作り、自主性を育てます。", summary:"かつて行われていた夏の縁日を小規模で復活。", slope:"平坦", skillsNeeded:["子ども見守り"]},
-  {id:"mock-004", date:"2026-07-15", time:"06:30-08:00", title:"親子で楽しむラジオ体操と朝ごはん", place:"山手公園", category:"子ども・親子", status:"予定", detail:"夏休み期間中、毎朝山手公園でラジオ体操と朝ごはんを提供。高齢者が見守り役となり多世代交流を実現。朝食は地元のパン屋さんから提供いただきます。", summary:"夏休み期間中、毎朝ラジオ体操と朝ごはんを提供。", slope:"平坦", skillsNeeded:["子ども見守り"]},
-  {id:"mock-005", date:"2026-10-26", time:"10:00-15:00", title:"山手町秋の収穫マルシェ", place:"佐藤邸駐車場", category:"食べる・集まる", status:"参加者募集中", detail:"住民の庭で採れた柿やみかん、手作りジャムを並べる小さなマルシェ。キッチンカーも呼びます。収益の一部は集会所の修繕費に充てます。", summary:"住民の庭で採れた柿やみかんを並べる小さなマルシェ。", slope:"平坦", skillsNeeded:["受付","軽食"]},
-  {id:"mock-006", date:"2026-11-09", time:"13:00-15:00", title:"集会所コーヒーと焼き芋の会", place:"山手集会所", category:"食べる・集まる", status:"予定", detail:"集会所ホールでコーヒーと焼き芋を囲む会。高齢者の居場所作りと新住民歓迎を兼ねます。焼き芋は地元の農家さんから仕入れます。", summary:"集会所ホールでコーヒーと焼き芋を囲む会。", slope:"平坦", skillsNeeded:["軽食"]},
-  {id:"mock-007", date:"2026-09-14", time:"10:00-12:00", title:"坂道ベンチマップ作りWS", place:"山手集会所", category:"趣味・学び", status:"企画中", detail:"急坂が多い山手町の休憩ベンチ最適配置を考えるワークショップ。住民の声を地図にプロットします。実際に歩いて危険箇所を確認します。", summary:"急坂が多い山手町の休憩ベンチ最適配置を考えるWS。", slope:"急坂", skillsNeeded:["司会"]},
-  {id:"mock-008", date:"2026-10-04", time:"14:00-16:00", title:"無電柱化を学ぶまち歩き", place:"山手町内", category:"趣味・学び", status:"アイデア募集中", detail:"無電柱化の可能性を学ぶまち歩きツアー。専門家を招き景観保全と防災の観点から学びます。芦屋市役所の担当者も招きます。", summary:"無電柱化の可能性を学ぶまち歩きツアー。", slope:"やや坂", skillsNeeded:["司会","写真"]},
-  {id:"mock-009", date:"2026-08-23", time:"09:00-11:00", title:"山手公園ドッグマナー教室", place:"山手公園", category:"ペットと一緒に", status:"参加者募集中", detail:"プロのドッグトレーナーを招いてマナー教室。吠え癖、引っ張り癖の矯正を学びます。終了後は公園で交流会を開催します。", summary:"プロのドッグトレーナーを招いてマナー教室。", slope:"平坦", skillsNeeded:["受付"]},
-  {id:"mock-010", date:"2026-09-06", time:"10:00-12:00", title:"ペットと一緒に防災訓練", place:"山手公園", category:"ペットと一緒に", status:"企画中", detail:"災害時のペット同行避難を想定した防災訓練。ケージへの入れ方や備蓄を学びます。獣医師も招いて健康相談も行います。", summary:"災害時のペット同行避難を想定した防災訓練。", slope:"平坦", skillsNeeded:["設営"]},
-  {id:"mock-011", date:"2026-11-16", time:"13:30-16:00", title:"横浜山手連携集会", place:"山手集会所 / 山手公園", category:"一般", status:"アイデア募集中", detail:"本イベントは、芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化することを目的としています。開催場所は両市の公園を併用し、平坦な歩道と広場を活用することで、子どもから高齢者まで幅広い層が安全に参加できます。イベント内容は、両市の自治会代表による挨拶、簡単な自己紹介タイム、写真撮影コーナー、軽食の提供、子ども向けゲームや工作コーナーを設置し、親子で楽しめる構成にします。設営は自治会メンバーと協力して行い、設営後は安全確認を徹底します。軽食は地元の飲食店からテイクアウトを手配し、食事の安全と品質を確保します。写真撮影はイベント記録として、後日自治会のニュースレターやSNSで共有し、イベントの成果を広く報告します。参加者には事前にオンラインで参加表明を受け付け、人数を把握して会場の収容人数を確保します。会場内での安全対策として、応急処置セットの設置と、緊急時の連絡手段を確保します。さらに、天候が悪化した場合の代替日程を設定し、参加者に事前に連絡します。総合的に、地域のつながりを深めると同時に、自治会の活動として実践的なイベント運営経験を積む機会とします。", summary:"芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化。", slope:"平坦", skillsNeeded:["受付","司会","写真"]},
-  {id:"mock-012", date:"2026-10-19", time:"09:00-11:30", title:"側溝清掃と美化デー", place:"山手町内全域", category:"一般", status:"予定", detail:"町内全域の側溝清掃と美化活動。用具は共同管理し当番制を見える化して負担分散。清掃後はお茶とおにぎりを振る舞います。子どもも参加できる短時間枠もあります。", summary:"町内全域の側溝清掃と美化活動。", slope:"急坂", skillsNeeded:["設営"]},
-  {id:"mock-013", date:"2026-11-02", time:"10:00-14:00", title:"街並みガーデンショー", place:"山手町内各所", category:"一般", status:"アイデア募集中", detail:"街並みを彩るガーデンショーで、住民が自家製花壇を展示し交流を深めるイベントです。各家庭の庭やベランダで育てた花や野菜を持ち寄り、山手公園に展示します。審査員を招いて優秀作品を表彰し、ガーデニングのコツを学ぶワークショップも開催。第一種低層住居専用地域の緑豊かな景観を活かし、住民同士の交流を促進します。", summary:"街並みを彩るガーデンショーで、住民が自家製花壇を展示し交流を深めるイベントです。", slope:"平坦", skillsNeeded:["受付","写真","軽食"]}
+  {id:"evt-001", date:"2026-10-12", time:"10:00-12:00", title:"山手町春の花見茶会", place:"山手公園", category:"季節の行事", status:"予定", detail:"桜の季節に合わせ、山手公園の広場で花見茶会を開催します。第一種低層住居専用地域の静穏を守りつつ、持ち寄りのお茶菓子と共に歓談します。", summary:"桜の季節に花見茶会を開催。", slope:"平坦", skillsNeeded:["受付","軽食"]},
+  {id:"evt-002", date:"2026-12-05", time:"17:00-19:00", title:"山手町の静穏イルミ散歩", place:"山手町内", category:"季節の行事", status:"企画中", detail:"冬の夜道の安全確保と景観維持を両立させる足元イルミを企画。光害に配慮し、眩しくないLEDを側溝沿いに設置します。", summary:"冬の夜道の安全確保と景観維持を両立させる足元イルミ。", slope:"やや坂", skillsNeeded:["設営"]},
+  {id:"evt-003", date:"2026-09-20", time:"15:00-18:00", title:"山手町こども縁日復活祭", place:"山手集会所", category:"子ども・親子", status:"アイデア募集中", detail:"かつて行われていた夏の縁日を小規模で復活。ヨーヨー釣り、スーパーボールすくい、駄菓子屋さんを設置します。", summary:"かつて行われていた夏の縁日を小規模で復活。", slope:"平坦", skillsNeeded:["子ども見守り"]},
+  {id:"evt-004", date:"2026-07-15", time:"06:30-08:00", title:"親子で楽しむラジオ体操と朝ごはん", place:"山手公園", category:"子ども・親子", status:"予定", detail:"夏休み期間中、毎朝山手公園でラジオ体操と朝ごはんを提供。高齢者が見守り役となり多世代交流を実現。", summary:"夏休み期間中、毎朝ラジオ体操と朝ごはんを提供。", slope:"平坦", skillsNeeded:["子ども見守り"]},
+  {id:"evt-005", date:"2026-10-26", time:"10:00-15:00", title:"山手町秋の収穫マルシェ", place:"佐藤邸駐車場", category:"食べる・集まる", status:"参加者募集中", detail:"住民の庭で採れた柿やみかん、手作りジャムを並べる小さなマルシェ。", summary:"住民の庭で採れた柿やみかんを並べる小さなマルシェ。", slope:"平坦", skillsNeeded:["受付","軽食"]},
+  {id:"evt-006", date:"2026-11-09", time:"13:00-15:00", title:"集会所コーヒーと焼き芋の会", place:"山手集会所", category:"食べる・集まる", status:"予定", detail:"集会所ホールでコーヒーと焼き芋を囲む会。高齢者の居場所作りと新住民歓迎を兼ねます。", summary:"集会所ホールでコーヒーと焼き芋を囲む会。", slope:"平坦", skillsNeeded:["軽食"]},
+  {id:"evt-007", date:"2026-09-14", time:"10:00-12:00", title:"坂道ベンチマップ作りWS", place:"山手集会所", category:"趣味・学び", status:"企画中", detail:"急坂が多い山手町の休憩ベンチ最適配置を考えるワークショップ。", summary:"急坂が多い山手町の休憩ベンチ最適配置を考えるWS。", slope:"急坂", skillsNeeded:["司会"]},
+  {id:"evt-008", date:"2026-10-04", time:"14:00-16:00", title:"無電柱化を学ぶまち歩き", place:"山手町内", category:"趣味・学び", status:"アイデア募集中", detail:"無電柱化の可能性を学ぶまち歩きツアー。専門家を招き景観保全と防災の観点から学びます。", summary:"無電柱化の可能性を学ぶまち歩きツアー。", slope:"やや坂", skillsNeeded:["司会","写真"]},
+  {id:"evt-009", date:"2026-08-23", time:"09:00-11:00", title:"山手公園ドッグマナー教室", place:"山手公園", category:"ペットと一緒に", status:"参加者募集中", detail:"プロのドッグトレーナーを招いてマナー教室。", summary:"プロのドッグトレーナーを招いてマナー教室。", slope:"平坦", skillsNeeded:["受付"]},
+  {id:"evt-010", date:"2026-09-06", time:"10:00-12:00", title:"ペットと一緒に防災訓練", place:"山手公園", category:"ペットと一緒に", status:"企画中", detail:"災害時のペット同行避難を想定した防災訓練。", summary:"災害時のペット同行避難を想定した防災訓練。", slope:"平坦", skillsNeeded:["設営"]},
+  {id:"evt-011", date:"2026-11-16", time:"13:30-16:00", title:"横浜山手連携集会", place:"山手集会所", category:"一般", status:"アイデア募集中", detail:"芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化することを目的としています。", summary:"芦屋市山手町と横浜市山手町の住民が互いに交流。", slope:"平坦", skillsNeeded:["受付","司会","写真"]},
+  {id:"evt-012", date:"2026-10-19", time:"09:00-11:30", title:"側溝清掃と美化デー", place:"山手町内全域", category:"一般", status:"予定", detail:"町内全域の側溝清掃と美化活動。用具は共同管理し当番制を見える化して負担分散。", summary:"町内全域の側溝清掃と美化活動。", slope:"急坂", skillsNeeded:["設営"]}
 ];
-
+let MOCK_IDEAS_V32 = [
+  {id:"idea-101", date:"2026-11-02", time:"10:00-14:00", title:"街並みガーデンショー", place:"山手町内各所", category:"一般", status:"アイデア募集中", detail:"街並みを彩るガーデンショーで、住民が自家製花壇を展示し交流を深めるイベントです。各家庭の庭やベランダで育てた花や野菜を持ち寄り、山手公園に展示します。審査員を招いて優秀作品を表彰し、ガーデニングのコツを学ぶワークショップも開催。", summary:"街並みを彩るガーデンショーで、住民が自家製花壇を展示。", slope:"平坦", skillsNeeded:["受付","写真","軽食"]},
+  {id:"idea-102", date:"2026-12-12", time:"10:00-12:00", title:"山手町クリスマスリース作り", place:"山手集会所", category:"季節の行事", status:"アイデア募集中", detail:"住民の庭のツルや木の実を使ってクリスマスリースを作るワークショップ。子どもも参加できます。", summary:"住民の庭のツルや木の実を使ってリース作り。", slope:"平坦", skillsNeeded:["司会","軽食"]},
+  {id:"idea-103", date:"2026-08-30", time:"10:00-12:00", title:"夏休み子ども自由研究ラボ", place:"山手集会所", category:"子ども・親子", status:"アイデア募集中", detail:"夏休みの自由研究をみんなでやる会。顕微鏡や図鑑を用意します。", summary:"夏休みの自由研究をみんなでやる会。", slope:"平坦", skillsNeeded:["子ども見守り","司会"]},
+  {id:"idea-104", date:"2026-09-28", time:"11:00-13:00", title:"山手町お月見だんご会", place:"山手公園", category:"食べる・集まる", status:"アイデア募集中", detail:"中秋の名月にお月見だんごをみんなで作って食べる会。", summary:"中秋の名月にお月見だんごをみんなで作る会。", slope:"平坦", skillsNeeded:["軽食","受付"]},
+  {id:"idea-105", date:"2026-10-11", time:"10:00-12:00", title:"山手町歴史探訪ツアー", place:"山手町内", category:"趣味・学び", status:"アイデア募集中", detail:"山手町の旧邸宅や石垣の歴史を学ぶまち歩きツアー。", summary:"山手町の旧邸宅や石垣の歴史を学ぶまち歩き。", slope:"やや坂", skillsNeeded:["司会","写真"]},
+  {id:"idea-106", date:"2026-11-23", time:"10:00-12:00", title:"ペット写真展と譲渡会", place:"山手集会所", category:"ペットと一緒に", status:"アイデア募集中", detail:"住民のペット写真を展示し、保護猫の譲渡会も同時開催。", summary:"住民のペット写真を展示し、保護猫の譲渡会も同時開催。", slope:"平坦", skillsNeeded:["写真","受付"]}
+];
 let EVENT_DATA = MOCK_EVENTS_V32;
-let EVENT_IDEAS = MOCK_EVENTS_V32.map(e=> ({...e, id:'idea-'+e.id, detail: e.detail}));
-
-
-
+let EVENT_IDEAS = MOCK_IDEAS_V32;
 function ensureEventSkills(){
   var all=(EVENT_DATA||[]).concat(EVENT_IDEAS||[]);
   all.forEach(function(e){
@@ -2353,7 +2357,8 @@ function renderEventCategoryGrid(){
   var uc=document.getElementById('upcomingCount'), ic=document.getElementById('ideasCount'); if(uc) uc.textContent=EVENT_DATA.length+'件'; if(ic) ic.textContent=EVENT_IDEAS.length+'件';
   var preview=document.getElementById('event-filter-result-preview');
   if(preview){
-    preview.innerHTML=filtered.map(eventCardHtml).join('') || '<div class="p-8 text-center text-sm text-slate-500 bg-white border rounded-2xl">条件に一致するイベントはありません。</div>';
+    // 修正: プレビューは絞り込み件数表示のみにし、リスト本体と重複させない
+    preview.innerHTML = '<div class="text-xs text-slate-500 p-2">'+filtered.length+'件が見つかりました。下のリストをご覧ください。</div>';
   }
 }
 function setEventInterestFilter(v){ openEventInterest=v||'すべて'; renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
