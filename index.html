@@ -283,6 +283,28 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 /* 通知ボタンはシンプルに */
 .notification-btn { font-size: 13px !important; }
 </style>
+
+<style>
+/* スマホで上部リンクを削除 - 下にもあるため */
+@media (max-width: 768px){
+  header nav { display:none !important; }
+  #mnav { display:none !important; }
+  .home-v5 { padding: 12px !important; }
+  .home-main-card h1 { font-size: 20px !important; line-height:1.3 !important; }
+  .home-main-card p { font-size: 12px !important; }
+  .home-cta-row { grid-template-columns: 1fr 1fr 1fr !important; gap:6px !important; }
+  .home-cta .title { font-size:12px !important; }
+  .home-cta .sub { font-size:9px !important; }
+  /* イベントカードをスマホ最適化 - 縦の細いボードをやめて横幅いっぱいに */
+  .event-result-card, .idea-card, article.event-result-card { width:100% !important; max-width:100% !important; }
+  #event-upcoming-list, #event-ideas-list { grid-template-columns: 1fr !important; }
+  .grid.md\:grid-cols-2 { grid-template-columns: 1fr !important; }
+  /* 通知を1行に */
+  .notice-board { flex-wrap:nowrap !important; }
+}
+/* 今後のイベントの帯は完全非表示 */
+#upcomingCount, #btn-upcoming, #btn-ideas, #btn-hatsuan { display:none !important; }
+</style>
 </head>
 <body>
 
@@ -348,32 +370,38 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <main class="pt-6">
 
 <!-- PAGE 1: HOME -->
+
 <section id="home" class="page active">
-<div class="home-v5 rounded-[30px] p-5 md:p-7">
-  <div class="notice-board mb-5">
-    <div class="notice-icon">!</div><div class="notice-content"><div class="title">🔔 通知があります（2件未読）</div><div class="font-black mt-1">【重要】夏祭り2026 復活開催のお知らせ</div><div class="body">3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答できます。</div></div><button class="notice-link" onclick="showPage('notifications')">通知センターへ</button>
-  </div>
-  <div class="home-hero-grid">
-    <div class="home-main-card">
-      <div class="eyebrow">ASHIYA YAMATECHO / FUTURE NOTEBOOK</div>
-      <h1>山手町の「やりたい」を、<br>みんなで形にする。</h1>
-      <p>イベントを見つける。できることから参加する。思いついたアイデアを提案する。山手町の活動を、もっと身近に。</p>
-      <div class="flex flex-wrap gap-2 mt-6"><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">🔎 見つける</span><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">🤝 関わる</span><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">💡 つくる</span></div>
+<div class="home-v5 rounded-[20px] p-4 md:p-6">
+  <div class="notice-board mb-3 flex items-center justify-between gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200"><div class="flex items-center gap-2"><span>🔔</span><span class="font-black text-sm">通知があります。</span></div><button type="button" onclick="showPage('notifications')" class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-black">通知をみる</button></div>
+  
+  <div class="bg-white rounded-[16px] border p-4">
+    <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-full bg-teal-700 text-white flex items-center justify-center font-black text-sm">山</div><div><div class="font-black text-sm">山手町の「やりたい」を、みんなで形にする。</div><div class="text-[11px] text-slate-500">イベントを見つける・関わる・つくる・振り返る</div></div></div>
+    
+    <div class="grid grid-cols-2 gap-2">
+      <button type="button" onclick="openEventSection('upcoming')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
+        <span class="text-lg">🔎</span><div><div class="font-black text-[11px]">興味から探す</div><div class="text-[9px] text-slate-500">6分類から</div></div>
+      </button>
+      <button type="button" onclick="openEventSection('upcoming')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
+        <span class="text-lg">🤝</span><div><div class="font-black text-[11px]">出来ることから参加</div><div class="text-[9px] text-slate-500">得意を活かす</div></div>
+      </button>
+      <button type="button" onclick="openEventSection('hatsuan')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
+        <span class="text-lg">💡</span><div><div class="font-black text-[11px]">アイデアを出す</div><div class="text-[9px] text-slate-500">AIが整理</div></div>
+      </button>
+      <button type="button" onclick="showPage('eventReport')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
+        <span class="text-lg">📷</span><div><div class="font-black text-[11px]">活動の様子をみる</div><div class="text-[9px] text-slate-500">写真で振り返り</div></div>
+      </button>
     </div>
-    <div class="home-mini-grid">
-      <div class="home-mini"><div class="ic">🔎</div><h3>興味から探す</h3><p>季節・子ども・食・趣味・ペットなどから、自分に合うイベントを見つけます。</p></div>
-      <div class="home-mini"><div class="ic">🤝</div><h3>できることから参加</h3><p>受付・設営・写真・見守りなど、あなたの得意を活かせます。</p></div>
-      <div class="home-mini"><div class="ic">💡</div><h3>アイデアを出す</h3><p>思いつきを入力すると、AIが企画として整理します。</p></div>
-      <div class="home-mini"><div class="ic">📷</div><h3>活動の様子を見る</h3><p>終わったイベントを写真と言葉で振り返れます。</p></div>
+
+    <div class="grid grid-cols-3 gap-2 mt-3">
+      <button type="button" onclick="openEventSection('upcoming')" class="py-2.5 rounded-full bg-teal-700 text-white text-[11px] font-black">📅 今後のイベント</button>
+      <button type="button" onclick="return yamateOpenIdeasNow(event)" class="py-2.5 rounded-full bg-white border text-[11px] font-black">💡 アイデア</button>
+      <button type="button" onclick="return yamateOpenProposalNow(event)" class="py-2.5 rounded-full bg-white border text-[11px] font-black">➕ 提案</button>
     </div>
-  </div>
-  <div class="home-cta-row">
-    <button type="button" onclick="openEventSection('upcoming')" class="home-cta primary"><div class="text-2xl">📅</div><div class="title mt-2">今後のイベントを見る</div><div class="sub">開催予定・参加者募集中を一覧</div></button>
-    <button type="button" onclick="return yamateOpenIdeasNow(event)" class="home-cta"><div class="text-2xl">💡</div><div class="title mt-2">アイデアを見る</div><div class="sub">住民提案・AI要約付き</div></button>
-    <button type="button" onclick="return yamateOpenProposalNow(event)" class="home-cta"><div class="text-2xl">➕</div><div class="title mt-2">イベントを提案</div><div class="sub">アイデア投稿・運営登録</div></button>
   </div>
 </div>
 </section>
+
 
 <!-- PAGE 2: OPINION POST -->
 <section id="assist" class="page" style="display:none !important;">
@@ -448,18 +476,15 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <!-- PAGE 5: EVENT -->
 <section id="event" class="page">
 <div class="text-sm text-slate-500 mb-2"><button type="button" onclick="showPage('home')">← ホーム</button></div>
-<h1 class="text-3xl font-black">イベントを探す — アコーディオン3段階</h1>
-<p class="text-sm text-slate-500 mt-2">最初の表示は3ボタンのみ。押すと下の階層が開きます。絞り込みは3段階アコーディオンで整理します。</p>
-<div class="top-three mt-5">
-<button type="button" onclick="openEventSection('upcoming')" class="hero-btn active"><div class="text-2xl">📅</div><div class="text-lg md:text-xl font-black mt-2 whitespace-nowrap">今後のイベントを見る</div><div class="text-sm opacity-75 mt-1">開催予定・参加募集中を一覧</div><span class="inline-block mt-3 px-3 py-1 rounded-full bg-white text-slate-900 text-xs font-black">▼ 開いています</span></button>
-<button type="button" onclick="return yamateOpenIdeasNow(event)" class="hero-btn"><div class="text-2xl">💡</div><div class="text-lg md:text-xl font-black mt-2 whitespace-nowrap">アイデアを見る</div><div class="text-sm text-slate-500 mt-1">住民提案・AI要約付き</div><span class="inline-block mt-3 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-black">▶ Lv2を開く</span></button>
-<button type="button" onclick="return yamateOpenProposalNow(event)" class="hero-btn"><div class="text-2xl">➕</div><div class="text-lg md:text-xl font-black mt-2 whitespace-nowrap">イベントを提案</div><div class="text-sm text-slate-500 mt-1">アイデア投稿 or 運営登録</div><span class="inline-block mt-3 px-3 py-1 rounded-full bg-slate-900 text-white text-xs font-black">▶ Lv2を開く</span></button>
+<h1 class="text-xl font-black">イベント</h1>
+<div class="flex gap-2 mt-3">
+<button type="button" onclick="openEventSection('upcoming')" class="flex-1 py-2.5 rounded-full bg-teal-700 text-white text-xs font-black">📅 今後</button>
+<button type="button" onclick="openEventSection('ideas')" class="flex-1 py-2.5 rounded-full bg-white border text-xs font-black">💡 アイデア</button>
+<button type="button" onclick="openEventSection('hatsuan')" class="flex-1 py-2.5 rounded-full bg-white border text-xs font-black">➕ 提案</button>
 </div>
 
 <div class="mt-4">
-<button type="button" id="btnToggleFlow3Event" class="w-full sm:w-auto py-2 px-4 rounded-full bg-white border border-teal-200 text-teal-700 text-xs font-bold hover:bg-teal-50">
-  ▼ 使い方の流れを見る
-</button>
+<button type="button" id="btnToggleFlow3Event" class="text-[11px] text-slate-500 underline mt-2">▼ 使い方の流れを見る</button>
 <div id="flow3WrapEvent" class="hidden mt-3 max-w-2xl">
   <div class="flow3">
     <div class="flow-step"><div class="num">STEP 01</div><div class="ic">💡</div><h4>思いつきを書く</h4><p>企画タイトルと内容を入力するだけでOK</p></div>
@@ -469,7 +494,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div>
 </div>
 
-<div class="bg-white border rounded-2xl p-6 mt-6">
+<div class="mt-6">
 <div class="flex items-center justify-between gap-3 mb-4 flex-wrap hidden" style="display:none !important;">
   <div class="font-black text-base">📅 今後のイベント <span id="upcomingCount" class="ml-1 px-2.5 py-1 rounded-full bg-teal-700 text-white text-xs">6件</span></div>
   <button type="button" onclick="openEventSection('upcoming')" id="btn-upcoming" class="hidden">今後のイベント</button>
@@ -993,23 +1018,25 @@ const INITIAL_HIROBA = [
 ];
 
 
-let MOCK_EVENTS_V31 = [
-  {id:"mock-001", date:"2026-10-12", time:"10:00-12:00", title:"山手町春の花見茶会", place:"山手公園", category:"季節の行事", status:"予定", detail:"桜の季節に合わせ、山手公園の広場で花見茶会を開催します。第一種低層住居専用地域の静穏を守りつつ、持ち寄りのお茶菓子と共に歓談します。", slope:"平坦", skillsNeeded:["受付","軽食"]},
-  {id:"mock-002", date:"2026-12-05", time:"17:00-19:00", title:"山手町の静穏イルミ散歩", place:"山手町内", category:"季節の行事", status:"企画中", detail:"冬の夜道の安全確保と景観維持を両立させる足元イルミを企画。", slope:"やや坂", skillsNeeded:["設営"]},
-  {id:"mock-003", date:"2026-09-20", time:"15:00-18:00", title:"山手町こども縁日復活祭", place:"山手集会所", category:"子ども・親子", status:"アイデア募集中", detail:"かつて行われていた夏の縁日を小規模で復活。ヨーヨー釣り、スーパーボールすくい。", slope:"平坦", skillsNeeded:["子ども見守り"]},
-  {id:"mock-004", date:"2026-07-15", time:"06:30-08:00", title:"親子で楽しむラジオ体操と朝ごはん", place:"山手公園", category:"子ども・親子", status:"予定", detail:"夏休み期間中、毎朝山手公園でラジオ体操と朝ごはんを提供。", slope:"平坦", skillsNeeded:["子ども見守り"]},
-  {id:"mock-005", date:"2026-10-26", time:"10:00-15:00", title:"山手町秋の収穫マルシェ", place:"佐藤邸駐車場", category:"食べる・集まる", status:"参加者募集中", detail:"住民の庭で採れた柿やみかん、手作りジャムを並べる小さなマルシェ。", slope:"平坦", skillsNeeded:["受付","軽食"]},
-  {id:"mock-006", date:"2026-11-09", time:"13:00-15:00", title:"集会所コーヒーと焼き芋の会", place:"山手集会所", category:"食べる・集まる", status:"予定", detail:"集会所ホールでコーヒーと焼き芋を囲む会。", slope:"平坦", skillsNeeded:["軽食"]},
-  {id:"mock-007", date:"2026-09-14", time:"10:00-12:00", title:"坂道ベンチマップ作りWS", place:"山手集会所", category:"趣味・学び", status:"企画中", detail:"急坂が多い山手町の休憩ベンチ最適配置を考えるワークショップ。", slope:"急坂", skillsNeeded:["司会"]},
-  {id:"mock-008", date:"2026-10-04", time:"14:00-16:00", title:"無電柱化を学ぶまち歩き", place:"山手町内", category:"趣味・学び", status:"アイデア募集中", detail:"無電柱化の可能性を学ぶまち歩きツアー。", slope:"やや坂", skillsNeeded:["司会","写真"]},
-  {id:"mock-009", date:"2026-08-23", time:"09:00-11:00", title:"山手公園ドッグマナー教室", place:"山手公園", category:"ペットと一緒に", status:"参加者募集中", detail:"プロのドッグトレーナーを招いてマナー教室。", slope:"平坦", skillsNeeded:["受付"]},
-  {id:"mock-010", date:"2026-09-06", time:"10:00-12:00", title:"ペットと一緒に防災訓練", place:"山手公園", category:"ペットと一緒に", status:"企画中", detail:"災害時のペット同行避難を想定した防災訓練。", slope:"平坦", skillsNeeded:["設営"]},
-  {id:"mock-011", date:"2026-11-16", time:"13:30-16:00", title:"横浜山手連携集会", place:"山手集会所 / 山手公園", category:"一般", status:"アイデア募集中", detail:"芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化することを目的としています。", slope:"平坦", skillsNeeded:["受付","司会","写真"]},
-  {id:"mock-012", date:"2026-10-19", time:"09:00-11:30", title:"側溝清掃と美化デー", place:"山手町内全域", category:"一般", status:"予定", detail:"町内全域の側溝清掃と美化活動。", slope:"急坂", skillsNeeded:["設営"]}
+
+let MOCK_EVENTS_V32 = [
+  {id:"mock-001", date:"2026-10-12", time:"10:00-12:00", title:"山手町春の花見茶会", place:"山手公園", category:"季節の行事", status:"予定", detail:"桜の季節に合わせ、山手公園の広場で花見茶会を開催します。第一種低層住居専用地域の静穏を守りつつ、持ち寄りのお茶菓子と共に歓談します。旧家と新住民が顔を合わせ、子どもから高齢者までが自然に挨拶できる場を設計。ゴミは持ち帰り、騒音に配慮した品格ある花見を目指します。", summary:"桜の季節に花見茶会を開催。静穏を守りつつ多世代が交流。", slope:"平坦", skillsNeeded:["受付","軽食"]},
+  {id:"mock-002", date:"2026-12-05", time:"17:00-19:00", title:"山手町の静穏イルミ散歩", place:"山手町内", category:"季節の行事", status:"企画中", detail:"冬の夜道の安全確保と景観維持を両立させる足元イルミを企画。光害に配慮し、眩しくないLEDを側溝沿いに設置します。防犯と景観を両立させる新しい試みです。", summary:"冬の夜道の安全確保と景観維持を両立させる足元イルミ。", slope:"やや坂", skillsNeeded:["設営"]},
+  {id:"mock-003", date:"2026-09-20", time:"15:00-18:00", title:"山手町こども縁日復活祭", place:"山手集会所", category:"子ども・親子", status:"アイデア募集中", detail:"かつて行われていた夏の縁日を小規模で復活。ヨーヨー釣り、スーパーボールすくい、駄菓子屋さんを設置します。子どもたちが自分たちで運営するコーナーも作り、自主性を育てます。", summary:"かつて行われていた夏の縁日を小規模で復活。", slope:"平坦", skillsNeeded:["子ども見守り"]},
+  {id:"mock-004", date:"2026-07-15", time:"06:30-08:00", title:"親子で楽しむラジオ体操と朝ごはん", place:"山手公園", category:"子ども・親子", status:"予定", detail:"夏休み期間中、毎朝山手公園でラジオ体操と朝ごはんを提供。高齢者が見守り役となり多世代交流を実現。朝食は地元のパン屋さんから提供いただきます。", summary:"夏休み期間中、毎朝ラジオ体操と朝ごはんを提供。", slope:"平坦", skillsNeeded:["子ども見守り"]},
+  {id:"mock-005", date:"2026-10-26", time:"10:00-15:00", title:"山手町秋の収穫マルシェ", place:"佐藤邸駐車場", category:"食べる・集まる", status:"参加者募集中", detail:"住民の庭で採れた柿やみかん、手作りジャムを並べる小さなマルシェ。キッチンカーも呼びます。収益の一部は集会所の修繕費に充てます。", summary:"住民の庭で採れた柿やみかんを並べる小さなマルシェ。", slope:"平坦", skillsNeeded:["受付","軽食"]},
+  {id:"mock-006", date:"2026-11-09", time:"13:00-15:00", title:"集会所コーヒーと焼き芋の会", place:"山手集会所", category:"食べる・集まる", status:"予定", detail:"集会所ホールでコーヒーと焼き芋を囲む会。高齢者の居場所作りと新住民歓迎を兼ねます。焼き芋は地元の農家さんから仕入れます。", summary:"集会所ホールでコーヒーと焼き芋を囲む会。", slope:"平坦", skillsNeeded:["軽食"]},
+  {id:"mock-007", date:"2026-09-14", time:"10:00-12:00", title:"坂道ベンチマップ作りWS", place:"山手集会所", category:"趣味・学び", status:"企画中", detail:"急坂が多い山手町の休憩ベンチ最適配置を考えるワークショップ。住民の声を地図にプロットします。実際に歩いて危険箇所を確認します。", summary:"急坂が多い山手町の休憩ベンチ最適配置を考えるWS。", slope:"急坂", skillsNeeded:["司会"]},
+  {id:"mock-008", date:"2026-10-04", time:"14:00-16:00", title:"無電柱化を学ぶまち歩き", place:"山手町内", category:"趣味・学び", status:"アイデア募集中", detail:"無電柱化の可能性を学ぶまち歩きツアー。専門家を招き景観保全と防災の観点から学びます。芦屋市役所の担当者も招きます。", summary:"無電柱化の可能性を学ぶまち歩きツアー。", slope:"やや坂", skillsNeeded:["司会","写真"]},
+  {id:"mock-009", date:"2026-08-23", time:"09:00-11:00", title:"山手公園ドッグマナー教室", place:"山手公園", category:"ペットと一緒に", status:"参加者募集中", detail:"プロのドッグトレーナーを招いてマナー教室。吠え癖、引っ張り癖の矯正を学びます。終了後は公園で交流会を開催します。", summary:"プロのドッグトレーナーを招いてマナー教室。", slope:"平坦", skillsNeeded:["受付"]},
+  {id:"mock-010", date:"2026-09-06", time:"10:00-12:00", title:"ペットと一緒に防災訓練", place:"山手公園", category:"ペットと一緒に", status:"企画中", detail:"災害時のペット同行避難を想定した防災訓練。ケージへの入れ方や備蓄を学びます。獣医師も招いて健康相談も行います。", summary:"災害時のペット同行避難を想定した防災訓練。", slope:"平坦", skillsNeeded:["設営"]},
+  {id:"mock-011", date:"2026-11-16", time:"13:30-16:00", title:"横浜山手連携集会", place:"山手集会所 / 山手公園", category:"一般", status:"アイデア募集中", detail:"本イベントは、芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化することを目的としています。開催場所は両市の公園を併用し、平坦な歩道と広場を活用することで、子どもから高齢者まで幅広い層が安全に参加できます。イベント内容は、両市の自治会代表による挨拶、簡単な自己紹介タイム、写真撮影コーナー、軽食の提供、子ども向けゲームや工作コーナーを設置し、親子で楽しめる構成にします。設営は自治会メンバーと協力して行い、設営後は安全確認を徹底します。軽食は地元の飲食店からテイクアウトを手配し、食事の安全と品質を確保します。写真撮影はイベント記録として、後日自治会のニュースレターやSNSで共有し、イベントの成果を広く報告します。参加者には事前にオンラインで参加表明を受け付け、人数を把握して会場の収容人数を確保します。会場内での安全対策として、応急処置セットの設置と、緊急時の連絡手段を確保します。さらに、天候が悪化した場合の代替日程を設定し、参加者に事前に連絡します。総合的に、地域のつながりを深めると同時に、自治会の活動として実践的なイベント運営経験を積む機会とします。", summary:"芦屋市山手町と横浜市山手町の住民が互いに交流し、地域間の結びつきを強化。", slope:"平坦", skillsNeeded:["受付","司会","写真"]},
+  {id:"mock-012", date:"2026-10-19", time:"09:00-11:30", title:"側溝清掃と美化デー", place:"山手町内全域", category:"一般", status:"予定", detail:"町内全域の側溝清掃と美化活動。用具は共同管理し当番制を見える化して負担分散。清掃後はお茶とおにぎりを振る舞います。子どもも参加できる短時間枠もあります。", summary:"町内全域の側溝清掃と美化活動。", slope:"急坂", skillsNeeded:["設営"]},
+  {id:"mock-013", date:"2026-11-02", time:"10:00-14:00", title:"街並みガーデンショー", place:"山手町内各所", category:"一般", status:"アイデア募集中", detail:"街並みを彩るガーデンショーで、住民が自家製花壇を展示し交流を深めるイベントです。各家庭の庭やベランダで育てた花や野菜を持ち寄り、山手公園に展示します。審査員を招いて優秀作品を表彰し、ガーデニングのコツを学ぶワークショップも開催。第一種低層住居専用地域の緑豊かな景観を活かし、住民同士の交流を促進します。", summary:"街並みを彩るガーデンショーで、住民が自家製花壇を展示し交流を深めるイベントです。", slope:"平坦", skillsNeeded:["受付","写真","軽食"]}
 ];
 
-let EVENT_DATA = MOCK_EVENTS_V31.filter((_,i)=> i%2===0);
-let EVENT_IDEAS = MOCK_EVENTS_V31.filter((_,i)=> i%2===1).map(e=> ({...e, id:'idea-'+e.id}));
+let EVENT_DATA = MOCK_EVENTS_V32;
+let EVENT_IDEAS = MOCK_EVENTS_V32.map(e=> ({...e, id:'idea-'+e.id, detail: e.detail}));
 
 
 
@@ -1369,7 +1396,11 @@ function loadFromSheet(){
   yamateJsonp(GAS_URL+"?action=getEvents")
     .then(function(data){
       console.log("getEvents:", data);
-      if(!data || !Array.isArray(data) || data.length===0) return;
+      if(!data || !Array.isArray(data) || data.length===0){
+        console.log("getEvents empty, keep mock");
+        try{ renderEvents(); renderEventIdeas(); renderEventCategoryGrid(); }catch(e){}
+        return;
+      }
 
       var upcoming = [];
       var ideas = [];
@@ -1392,8 +1423,11 @@ function loadFromSheet(){
         }
       });
 
-      EVENT_DATA = upcoming;
-      EVENT_IDEAS = ideas;
+      // 修正: sheetが空でもmockを残す（今後のイベントが見れない問題対策）
+      if(upcoming.length>0) EVENT_DATA = upcoming;
+      else { console.log("upcoming empty from sheet, keep mock", MOCK_EVENTS_V32.length); }
+      if(ideas.length>0) EVENT_IDEAS = ideas;
+      else { console.log("ideas empty from sheet, keep mock"); }
 
       try{
         renderEvents();
@@ -2356,10 +2390,10 @@ function renderEvents(){
   var filtered = EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered = filtered.filter(function(e){ return eventMatchesOpenCat(e); });
   var html = '';
   filtered.forEach(ev => {
-    html += '<div class="border rounded-2xl p-4 mb-3 bg-white hover:shadow-sm transition-shadow">'
+    html += '<div class="border rounded-2xl p-4 mb-3 bg-white w-full" hover:shadow-sm transition-shadow">'
     + '<div class="flex justify-between gap-2 cursor-pointer" onclick="toggleEventDetail(\''+ev.id+'\')"><div class="font-black text-sm">📅 '+esc(ev.title)+' <span class="text-[10px] bg-slate-100 border px-2 py-0.5 rounded-full">▼ 詳細表示</span></div><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">'+esc(ev.status)+'</span></div>'
     + '<div class="text-xs text-slate-500 mt-1">📍 '+esc(ev.date)+' | '+esc(ev.place)+' | '+esc(ev.category)+'</div>'
-    + '<div id="event-detail-'+ev.id+'" class="hidden mt-3 space-y-3"><div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border">'+esc(ev.detail)+'</div>'
+    + '<div id="event-detail-'+ev.id+'" class="hidden mt-3 space-y-3"><div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||'')+'</div>'
     + '<div class="flex gap-1.5 flex-wrap">'
     + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+'">🙋 やりたい '+(getJoinCount(ev.id,'want')||'')+'</button>'
     + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+'">🤝 手伝える '+(getJoinCount(ev.id,'help')||'')+'</button>'
@@ -2384,7 +2418,7 @@ function renderEventIdeas(){
     var gaugePct=Math.min(100, total*10);
     html+='<article class="border rounded-2xl bg-white p-4">'
       +'<h3 class="font-black text-[15px]">'+esc(ev.title)+'</h3>'
-      +'<p class="text-xs text-slate-600 mt-1">'+esc((ev.detail||'').slice(0,60))+'</p>'
+      +'<p class="text-xs text-slate-600 mt-1">'+esc(((ev.detail||ev.summary||'').slice(0,60)))+'</p>'
       +'<div class="text-[11px] text-slate-500 mt-2">やりたい '+counts.want+' / 手伝える '+counts.help+' / 仕切り '+counts.lead+' / 場所 '+counts.place+'</div>'
       +'<div class="w-full h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div class="h-full bg-amber-500" style="width:'+gaugePct+'%"></div></div>'
       +'<div class="flex gap-2 mt-3"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="flex-1 py-2.5 rounded-full bg-amber-500 text-slate-900 font-black text-xs">🙋 やりたい</button><button type="button" onclick="toggleEventDetail(\''+ev.id+'\')" class="px-4 py-2.5 rounded-full bg-white border text-xs font-bold">詳細</button></div>'
@@ -2395,7 +2429,7 @@ function renderEventIdeas(){
         +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+' text-[10px]">📍 場所提供 '+counts.place+'</button>'
         +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+' text-[10px]">👀 興味あり '+counts.interest+'</button>'
       +'</div>'
-      +'<div id="event-detail-'+ev.id+'" class="hidden mt-3 p-3 bg-slate-50 rounded-xl text-xs whitespace-pre-wrap border">'+esc(ev.detail||'')+'</div>'
+      +'<div id="event-detail-'+ev.id+'" class="hidden mt-3 p-3 bg-slate-50 rounded-xl text-xs whitespace-pre-wrap border leading-relaxed"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||ev.content||'')+'</div>'
       +'</article>';
   });
   html+='</div></div>'; el.innerHTML=html;
