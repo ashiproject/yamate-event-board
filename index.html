@@ -305,6 +305,14 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 /* 今後のイベントの帯は完全非表示 */
 #upcomingCount, #btn-upcoming, #btn-ideas, #btn-hatsuan { display:none !important; }
 </style>
+
+<style>
+.letter-bubble { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; color: #ffffff; font-weight: 900; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+.bubble-sm { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; color: #ffffff; font-weight: 700; font-size: 15px; border-radius: 9999px; }
+.marker-highlight { background: linear-gradient(transparent 55%, #FDE047 55%); padding: 0 4px; }
+.hand-border-yellow { border: 5px solid #F59E0B; border-radius: 36px 32px 38px 30px / 32px 38px 30px 36px; background: #FFFFFF; box-shadow: 0 12px 32px -8px rgba(245, 158, 11, 0.12), 0 4px 16px rgba(0,0,0,0.03); }
+.hand-oval { border: 3px solid #F59E0B; border-radius: 50% 50% 48% 52% / 55% 48% 52% 45%; padding: 2px 14px; display: inline-block; }
+</style>
 </head>
 <body>
 
@@ -371,36 +379,83 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 
 <!-- PAGE 1: HOME -->
 
-<section id="home" class="page active">
-<div class="home-v5 rounded-[20px] p-4 md:p-6">
-  <div class="notice-board mb-3 flex items-center justify-between gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200"><div class="flex items-center gap-2"><span>🔔</span><span class="font-black text-sm">通知があります。</span></div><button type="button" onclick="showPage('notifications')" class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-black">通知をみる</button></div>
-  
-  <div class="bg-white rounded-[16px] border p-4">
-    <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-full bg-teal-700 text-white flex items-center justify-center font-black text-sm">山</div><div><div class="font-black text-sm">山手町の「やりたい」を、みんなで形にする。</div><div class="text-[11px] text-slate-500">イベントを見つける・関わる・つくる・振り返る</div></div></div>
-    
-    <div class="grid grid-cols-2 gap-2">
-      <button type="button" onclick="openEventSection('upcoming')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
-        <span class="text-lg">🔎</span><div><div class="font-black text-[11px]">興味から探す</div><div class="text-[9px] text-slate-500">6分類から</div></div>
-      </button>
-      <button type="button" onclick="openEventSection('upcoming')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
-        <span class="text-lg">🤝</span><div><div class="font-black text-[11px]">出来ることから参加</div><div class="text-[9px] text-slate-500">得意を活かす</div></div>
-      </button>
-      <button type="button" onclick="openEventSection('hatsuan')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
-        <span class="text-lg">💡</span><div><div class="font-black text-[11px]">アイデアを出す</div><div class="text-[9px] text-slate-500">AIが整理</div></div>
-      </button>
-      <button type="button" onclick="showPage('eventReport')" class="flex items-center gap-2 p-3 rounded-xl bg-slate-50 border hover:bg-teal-50 text-left">
-        <span class="text-lg">📷</span><div><div class="font-black text-[11px]">活動の様子をみる</div><div class="text-[9px] text-slate-500">写真で振り返り</div></div>
-      </button>
-    </div>
 
-    <div class="grid grid-cols-3 gap-2 mt-3">
-      <button type="button" onclick="openEventSection('upcoming')" class="py-2.5 rounded-full bg-teal-700 text-white text-[11px] font-black">📅 今後のイベント</button>
-      <button type="button" onclick="return yamateOpenIdeasNow(event)" class="py-2.5 rounded-full bg-white border text-[11px] font-black">💡 アイデア</button>
-      <button type="button" onclick="return yamateOpenProposalNow(event)" class="py-2.5 rounded-full bg-white border text-[11px] font-black">➕ 提案</button>
+
+
+
+
+<section id="home" class="page active">
+<div class="home-v5 rounded-[20px] p-0 overflow-hidden">
+  <div class="notice-board flex items-center justify-between gap-2 p-3 m-3 rounded-xl bg-amber-50 border border-amber-200 max-w-sm mx-auto"><div class="flex items-center gap-2"><span>🔔</span><span class="font-black text-sm">通知があります。</span></div><button type="button" onclick="showPage('notifications')" class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-black">通知をみる</button></div>
+  
+  <div class="p-2 flex justify-center">
+    <div class="w-full max-w-sm mx-auto">
+<header class="w-full flex items-center justify-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full border-2 border-amber-500/80 bg-amber-50 flex items-center justify-center">
+<svg class="w-6 h-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="10" cy="7" r="4"></circle><path d="M20 8v6M23 11h-6"></path></svg>
+</div>
+<div class="text-left">
+<div class="text-[10px] tracking-widest text-emerald-800/80 font-bold uppercase" style="font-family: 'Plus Jakarta Sans', sans-serif;">Ashiya Yamatecho</div>
+<div class="text-sm font-extrabold text-neutral-800 leading-tight">芦屋山手町 <span class="text-xs text-neutral-500 font-normal">町内会</span></div>
+</div>
+</header>
+<main class="w-full hand-border-yellow p-6 sm:p-7 relative overflow-hidden bg-white">
+<div class="flex justify-center mb-5">
+<span class="inline-block bg-neutral-100 text-neutral-700 text-xs font-bold tracking-wider px-4 py-1 rounded-full border border-neutral-200/60">ASHIYA YAMATECHO ・ みんなでつくる</span>
+</div>
+<div class="flex items-center justify-center gap-1.5 sm:gap-2 mb-3">
+<span class="letter-bubble rounded-full bg-[#E11D48]">思</span>
+<span class="letter-bubble rounded-2xl bg-[#EA580C]">い</span>
+<span class="letter-bubble rounded-full bg-[#16A34A]">つ</span>
+<span class="letter-bubble rounded-2xl bg-[#7C3AED]">き</span>
+<span class="letter-bubble rounded-2xl bg-[#0284C7]">が</span>
+<span class="text-2xl font-black text-neutral-800 ml-0.5">、</span>
+</div>
+<div class="text-center mb-6">
+<h1 class="text-3xl font-black tracking-tight text-neutral-900 inline-block marker-highlight">町の行事になる。</h1>
+</div>
+<div class="flex items-center justify-center gap-1.5 text-xs font-bold text-neutral-600 mb-5 flex-wrap">
+<span class="bg-rose-100/90 text-rose-700 px-2.5 py-0.5 rounded-full border border-rose-200/60">花見</span>
+<span>も、</span>
+<span class="bg-emerald-100/90 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-200/60">縁日</span>
+<span>も、</span>
+<span class="bg-amber-100/90 text-amber-800 px-2.5 py-0.5 rounded-full border border-amber-200/60">マルシェ</span>
+<span>も。</span>
+</div>
+<p class="text-center text-sm font-bold text-neutral-700 leading-relaxed mb-6">最初は誰かの小さな<span class="hand-oval mx-1 text-neutral-900 font-extrabold">「やりたい」</span>から。</p>
+<div class="bg-amber-50/80 border border-amber-200/80 rounded-2xl py-3 px-4 flex items-center justify-center gap-2 text-sm font-extrabold text-neutral-800 shadow-sm">
+<span class="bubble-sm bg-[#16A34A]">ひ</span>
+<span>と声が、</span>
+<span class="bubble-sm bg-[#0284C7]">ま</span>
+<span>ちを</span>
+<span class="bubble-sm bg-[#2563EB]">動</span>
+<span class="bubble-sm bg-[#7C3AED]">か</span>
+<span>す。</span>
+</div>
+</main>
+<footer class="w-full mt-4 text-center">
+<div class="bg-neutral-100/80 rounded-2xl py-3 px-4 border border-neutral-200/60">
+<p class="text-[11px] text-neutral-500 font-medium">「静かな住宅街だからこそ、自然体でつながれる場所を」</p>
+<p class="text-[11px] text-neutral-600 font-bold mt-0.5">芦屋山手町・code for ashiya</p>
+</div>
+</footer>
+</div>
+  </div>
+
+  <div class="p-3 max-w-sm mx-auto">
+    <div class="grid grid-cols-3 gap-2">
+      <button type="button" onclick="openEventSection('upcoming')" class="py-3 rounded-full bg-teal-700 text-white text-xs font-black">📅 今後のイベント</button>
+      <button type="button" onclick="openEventSection('ideas')" class="py-3 rounded-full bg-white border text-xs font-black">💡 アイデア</button>
+      <button type="button" onclick="openEventSection('hatsuan')" class="py-3 rounded-full bg-white border text-xs font-black">➕ 提案</button>
     </div>
   </div>
 </div>
 </section>
+
+
+
+
+
 
 
 <!-- PAGE 2: OPINION POST -->
