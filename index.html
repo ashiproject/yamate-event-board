@@ -7,6 +7,7 @@
 <meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>芦屋市山手町の小さな気づきと未来のアイデア帳</title>
+<!-- v13 NETWORK FIX: GAS通信はJSONP + hidden form/iframe -->
 <link rel="icon" href="./icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.json">
@@ -802,6 +803,47 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
    1. CONFIG & DATA
 ------------------------------------------------------------- */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxk5uFEP5Y4iQyvaP3JVqg9dT4eAS8CQCUayAWBR7pGqLDJAyg8Uyr6jhWRQGAYJ4IISA/exec";
+
+/* v13 NETWORK FIX: GASへfetchしない。GET=JSONP、保存=hidden iframe/form POST */
+(function(){
+  window.yamateJsonp = function(url, timeoutMs){
+    timeoutMs = timeoutMs || 20000;
+    return new Promise(function(resolve,reject){
+      var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+      var script=document.createElement('script'), done=false;
+      var timer=setTimeout(function(){cleanup();reject(new Error('GAS通信がタイムアウトしました'));},timeoutMs);
+      function cleanup(){
+        if(done)return; done=true; clearTimeout(timer);
+        try{delete window[cb];}catch(e){window[cb]=undefined;}
+        if(script.parentNode)script.parentNode.removeChild(script);
+      }
+      window[cb]=function(data){cleanup();resolve(data);};
+      script.onerror=function(){cleanup();reject(new Error('GASへの接続に失敗しました'));};
+      script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
+      document.head.appendChild(script);
+    });
+  };
+  window.yamatePost = function(payload){
+    return new Promise(function(resolve,reject){
+      var iframe=document.createElement('iframe');
+      iframe.name='yamate_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+      iframe.style.display='none';
+      document.body.appendChild(iframe);
+      var form=document.createElement('form');
+      form.method='POST'; form.action=GAS_URL; form.target=iframe.name; form.style.display='none';
+      var input=document.createElement('input');
+      input.type='hidden'; input.name='payload'; input.value=JSON.stringify(payload);
+      form.appendChild(input); document.body.appendChild(form);
+      var done=false;
+      function cleanup(){try{form.remove();}catch(e){} try{iframe.remove();}catch(e){}}
+      var timer=setTimeout(function(){if(done)return;done=true;cleanup();resolve({status:'submitted'});},1500);
+      iframe.onload=function(){if(done)return;done=true;clearTimeout(timer);cleanup();resolve({status:'submitted'});};
+      iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('GASへの送信に失敗しました'));};
+      form.submit();
+    });
+  };
+})();
+
 const BASE_CATEGORIES = [
 {key:"BIG-1",label:"防災・防犯",icon:"🛡",defaultDesc:"山手町は急坂と石垣が多い急斜面地に位置し、災害時の迅速な対応が不可欠です。班長・民生委員・LINEによる三重連絡網とブロック別安否確認マップを整備し、発災後30分以内の全戸確認を目指します。また、坂道を避けた避難訓練や電動アシスト台車による分散備蓄を推進。オリジナル腕章での防犯パトロールや防災ラジオの配布により、安全で静穏な邸宅街を次世代へ継承します。"},
 {key:"BIG-2",label:"インフラ・環境",icon:"🌿",defaultDesc:"北部の急斜面では高齢者の歩行負担が大きいため、景観に調和した天然木ベンチや手すり、滑り止め舗装による回遊路を整備します。また、幅員の狭い道路や詰まりやすい側溝を蓋付きへ更新し、定期清掃や電柱地中化も検討します。コンビニ不在の課題に対しては移動販売やスマート受取拠点を活用し、石垣や生垣の美観を損なわない持続可能なインフラと環境保全を両立させます。"},
@@ -1147,46 +1189,17 @@ function showPage(id, eventTab){
 // こちらは mode を指定せず通常のCORS対応fetchにし、Content-Type: text/plain でプリフライトを回避する）
 function postToGASAndWait(payload){
   payload.timestamp = new Date().toISOString();
-  if(!(typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.indexOf('XXXX') === -1 && GAS_URL.indexOf('https') === 0)){
-    return Promise.resolve(null);
-  }
-  return fetch(GAS_URL, {
-    method: "POST",
-    headers: {"Content-Type": "text/plain;charset=utf-8"},
-    body: JSON.stringify(payload)
-  })
-  .then(function(r){ return r.text(); })
-  .then(function(txt){
-    try{ return JSON.parse(txt); }catch(e){ console.log('postToGASAndWait: JSON parse failed', txt.slice(0,200)); return null; }
-  })
-  .catch(function(e){ console.log('postToGASAndWait error', e); return null; });
+  if(!(typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.indexOf('XXXX') === -1)) return Promise.resolve(null);
+  return yamatePost(payload);
 }
-
 function postToGAS(payload){
   try{
     payload.timestamp = new Date().toISOString();
-    // 検証ログ：タイトルと200字要約が格納されているか
-    console.log('=== スプレッドシート送信検証 ===');
-    console.log('action:', payload.action);
-    console.log('title:', payload.title ? payload.title.slice(0,50) : 'なし');
-    console.log('summary200:', payload.summary200 ? payload.summary200.length + '字' : 'なし');
-    console.log('summary:', payload.summary ? payload.summary.length + '字' : 'なし');
-    console.log('category:', payload.category);
-    console.log('big/mid:', payload.big, payload.mid);
-    console.log('payload全体:', JSON.stringify(payload).slice(0,500));
-    
-    if(typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.indexOf('XXXX') === -1 && GAS_URL.indexOf('https') === 0){
-      console.log('GAS_URLへPOST:', GAS_URL);
-      fetch(GAS_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload)})
-        .then(function(r){ return r.text(); }).then(function(t){
-          console.log('GASレスポンス:', t.slice(0,200));
-          try{ setTimeout(function(){ /* 投稿直後の再取得は統合デフォルトを消さないよう ensure 付き */ loadFromSheet(); }, 2500); }catch(e){}
-        })
-        .catch(function(e){ console.log('GAS error - スプレッドシート連携失敗:', e); });
-    } else {
-      console.log('GAS_URLが未設定または不正:', typeof GAS_URL !== 'undefined' ? GAS_URL : 'undefined');
+    if(typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.indexOf('XXXX') === -1){
+      yamatePost(payload).then(function(){try{setTimeout(function(){loadFromSheet();},2500);}catch(e){}})
+      .catch(function(e){console.log('GAS form error',e);});
     }
-  }catch(e){ console.log('postToGAS error', e); }
+  }catch(e){console.log('postToGAS error',e);}
 }
 
 function verifySpreadsheetStorage(){
@@ -1213,8 +1226,8 @@ function loadFromSheet(){
   console.log("スプレッドシートから実データ取得開始:", GAS_URL);
 
   // 意見（声のボード）
-  fetch(GAS_URL+"?action=getIdeas")
-    .then(function(r){ return r.json(); })
+  yamateJsonp(GAS_URL+"?action=getIdeas")
+    .then(function(data){
     .then(function(data){
       console.log("getIdeas:", data);
       if(!data || !Array.isArray(data) || data.length===0){
@@ -1300,8 +1313,8 @@ function loadFromSheet(){
 
   // イベント
     // イベント：idea- 始まり＝企画、それ以外＝今後のイベント
-  fetch(GAS_URL+"?action=getEvents")
-    .then(function(r){ return r.json(); })
+  yamateJsonp(GAS_URL+"?action=getEvents")
+    .then(function(data){
     .then(function(data){
       console.log("getEvents:", data);
       if(!data || !Array.isArray(data) || data.length===0) return;
@@ -2652,16 +2665,11 @@ document.addEventListener('DOMContentLoaded', function(){
         triedCloud = true;
         // GETでanalyze（doPostはブラウザからCORSで読めないため）
         var analyzeUrl = GAS_URL + '?action=analyze&content=' + encodeURIComponent(input);
-        console.log('cloud analyze GET:', analyzeUrl.slice(0, 120)+'...');
-        fetch(analyzeUrl, { method: 'GET', redirect: 'follow' })
-        .then(function(r){
-          console.log('analyze HTTP status', r.status);
-          return r.text();
-        })
-        .then(function(txt){
-          console.log('analyze raw head:', String(txt).slice(0, 200));
-          var data = null;
-          try{ data = JSON.parse(txt); }catch(e){ throw new Error('JSON parse failed'); }
+        console.log('cloud analyze JSONP:', analyzeUrl.slice(0, 120)+'...');
+        yamateJsonp(analyzeUrl)
+        .then(function(data){
+          console.log('analyze JSONP response:', data);
+          if(!data) throw new Error('GASから応答がありません');
           if(data && data.status==='success' && data.result){
             var r = data.result;
             var analysis = {
@@ -3052,10 +3060,9 @@ function yamateOpenIdeasNow(ev){
       if(slip) slip.innerHTML='<div class="bg-white border-2 border-amber-400 rounded-2xl p-5 mt-3 shadow-sm"><div class="font-black text-amber-900">🤖 AI分析中…</div><div class="text-xs text-slate-600 mt-2">GASのAI分析を実行しています。数秒お待ちください。</div></div>';
       btn.disabled=true; btn.classList.add('opacity-60','cursor-wait');
       var url=GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
-      fetch(url,{method:'GET',redirect:'follow',cache:'no-store'})
-        .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
-        .then(function(txt){
-          var data; try{data=JSON.parse(txt);}catch(e){throw new Error('GASからJSONを受信できませんでした: '+String(txt).slice(0,120));}
+      yamateJsonp(url)
+        .then(function(data){
+          if(!data) throw new Error('GASから応答がありません');
           if(!data || !data.result){ throw new Error(data&&data.error ? data.error : (data&&data.last_error ? data.last_error : 'AI分析結果が返りませんでした')); }
           var r=data.result;
           var analysis={
@@ -3088,7 +3095,7 @@ function yamateOpenIdeasNow(ev){
               if(st) st.textContent='📤 スプレッドシートへ送信中…';
               var payload={action:'postEventIdea',id:'idea-'+Date.now(),title:a.title,content:detail,detail:a.details||detail,summary:a.summary,summary200:a.summary,category:a.category,slope:a.slope,skills:a.skillsNeeded,skillsNeeded:a.skillsNeeded,status:'アイデア募集中',place:a.place,name:'',phone:''};
               /* GASのdoPostはpostEventIdeaを受け取りEventsへ保存する。応答を読めない環境でも送信を実行する。 */
-              fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+              yamatePost(payload)
                 .then(function(){
                   if(st) st.innerHTML='<span class="text-teal-700 font-black">✅ GASへ送信しました。Eventsシートへの登録を確認してください。</span>';
                   reg.textContent='✅ 登録送信済み';
