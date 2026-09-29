@@ -805,140 +805,86 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ldl_JGkUYtyN9MAgSob94Lso2qg1B7-5vXTzs8VHx86W63wQ/exec";
 
-/* v20 FIX: analyze用60秒タイムアウト + ReferenceError対策 + POST優先 */
+/* v21 FIX: analyze POST優先 + 60秒 + ReferenceError対策 */
 (function(){
   async function fetchJson(url){
     var res = await fetch(url, {method:'GET', mode:'cors', cache:'no-store'});
-    if(!res.ok) throw new Error('GAS HTTP '+res.status+' '+res.statusText);
+    if(!res.ok) throw new Error('GAS HTTP '+res.status);
     var text = await res.text();
-    try{ return JSON.parse(text); }catch(e){ console.log('fetch raw:', text.slice(0,800)); throw new Error('GASがJSON以外を返しました: '+text.slice(0,300)); }
+    try{ return JSON.parse(text); }catch(e){ throw new Error('JSON parse failed: '+text.slice(0,300)); }
   }
   function jsonpJson(url, timeoutMs){
     timeoutMs=timeoutMs||30000;
     return new Promise(function(resolve,reject){
-      var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),
-          script=document.createElement('script'), done=false, timer=null;
-      function cleanup(){
-        if(done) return; done=true;
-        if(timer) clearTimeout(timer);
-        // ★重要: ReferenceError対策 - コールバックを即削除しないで無効化だけする
-        // スクリプトが遅れて到達しても is not defined にならないように
+      var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+      var script=document.createElement('script');
+      var done=false, timer=null;
+      function cleanupFinal(){
         setTimeout(function(){
           try{ delete window[cb]; }catch(e){ window[cb]=function(){}; }
           if(script.parentNode) script.parentNode.removeChild(script);
         }, 2000);
       }
-      window[cb]=function(data){
-        if(done) return;
-        cleanup();
-        resolve(data);
-      };
+      window[cb]=function(data){ if(done) return; done=true; if(timer) clearTimeout(timer); cleanupFinal(); resolve(data); };
       timer=setTimeout(function(){
-        if(done) return;
-        done=true;
-        // タイムアウト時もコールバックは残しておき、後から来たデータを捨てるだけにする
-        window[cb]=function(data){ console.warn('遅れて到着したJSONPデータを破棄:', data); };
-        cleanup();
-        reject(new Error('JSONP timeout ('+timeoutMs+'ms)'));
+        if(done) return; done=true;
+        window[cb]=function(d){ console.warn('late JSONP', d); };
+        cleanupFinal();
+        reject(new Error('JSONP timeout '+timeoutMs+'ms'));
       }, timeoutMs);
-      script.onerror=function(){
-        if(done) return;
-        done=true;
-        window[cb]=function(){};
-        cleanup();
-        reject(new Error('JSONP onerror'));
-      };
+      script.onerror=function(){ if(done) return; done=true; if(timer) clearTimeout(timer); window[cb]=function(){}; cleanupFinal(); reject(new Error('JSONP onerror')); };
       script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
       document.head.appendChild(script);
     });
   }
-
   window.yamateJsonp = async function(url, timeoutMs){
-    // analyzeは60秒、それ以外は30秒
     var isAnalyze = url.indexOf('action=analyze')>=0;
-    timeoutMs=timeoutMs||(isAnalyze?60000:30000);
+    timeoutMs = timeoutMs || (isAnalyze ? 60000 : 30000);
     try{
       var data = await fetchJson(url);
-      if(data && data.error && !data.result && !Array.isArray(data)){
-        throw new Error(data.error + (data.last_error?' / '+data.last_error:'') + (data.detail?' / '+data.detail:''));
-      }
-      console.log('GAS fetch OK:', url, data);
+      if(data && data.error && !data.result && !Array.isArray(data)) throw new Error(data.error);
       return data;
     }catch(fetchErr){
-      console.warn('GAS fetch failed, trying JSONP fallback:', fetchErr.message, url);
-      try{
-        var data2 = await jsonpJson(url, timeoutMs);
-        if(data2 && data2.error && !data2.result && !Array.isArray(data2)){
-          throw new Error(data2.error + (data2.last_error?' / '+data2.last_error:''));
-        }
-        console.log('GAS JSONP fallback OK:', data2);
-        return data2;
-      }catch(jpErr){
-        console.error('GAS both failed', fetchErr, jpErr);
-        throw new Error('GASへの接続に失敗しました。
-fetch: '+fetchErr.message+'
-jsonp: '+jpErr.message+'
-URL:'+url);
-      }
+      console.warn('fetch failed, JSONP fallback', fetchErr.message);
+      var data2 = await jsonpJson(url, timeoutMs);
+      if(data2 && data2.error && !data2.result && !Array.isArray(data2)) throw new Error(data2.error);
+      return data2;
     }
   };
-
-  // ★analyzeはPOSTを使う（GETだとURLが長くて404になりやすい）
   window.yamateAnalyzePost = async function(title, detail){
     var payload = {action:'analyze', q:title, text:title, detail:detail};
-    var isAnalyzeTimeout = 60000;
     try{
-      console.log('GAS analyze POST開始', payload);
-      var res = await fetch(GAS_URL, {
-        method:'POST',
-        mode:'cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify(payload)
-      });
-      if(!res.ok) throw new Error('GAS POST HTTP '+res.status);
+      var res = await fetch(GAS_URL, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
+      if(!res.ok) throw new Error('POST HTTP '+res.status);
       var txt = await res.text();
-      console.log('GAS analyze POST raw:', txt.slice(0,800));
+      console.log('analyze POST raw', txt.slice(0,800));
       var data = JSON.parse(txt);
-      if(data && data.error) throw new Error(data.error + (data.last_error?' / '+data.last_error:''));
+      if(data && data.error && !data.result) throw new Error(data.error);
       return data;
     }catch(e){
-      console.warn('POST analyze失敗、GETにフォールバック', e.message);
+      console.warn('POST analyze failed, fallback GET', e.message);
       var url = GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
-      return await window.yamateJsonp(url, isAnalyzeTimeout);
+      return await window.yamateJsonp(url, 60000);
     }
   };
-
   window.yamatePost = async function(payload, timeoutMs){
     timeoutMs=timeoutMs||15000;
     try{
-      var res = await fetch(GAS_URL, {
-        method:'POST',
-        mode:'cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify(payload)
-      });
+      var res = await fetch(GAS_URL, {method:'POST', mode:'cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)});
       var txt = await res.text();
-      console.log('GAS POST response:', txt.slice(0,500));
-      try{ return JSON.parse(txt); }catch(e){ return {status:'submitted', raw:txt}; }
-    }catch(fetchErr){
-      console.warn('POST fetch failed, fallback to iframe', fetchErr);
+      try{ return JSON.parse(txt); }catch(e){ return {status:'submitted'}; }
+    }catch(e){
       return new Promise(function(resolve,reject){
-        var iframe=document.createElement('iframe');iframe.name='yamate_post_'+Date.now();iframe.style.display='none';document.body.appendChild(iframe);
-        var form=document.createElement('form');form.method='POST';form.action=GAS_URL;form.target=iframe.name;form.style.display='none';
-        var input=document.createElement('input');input.type='hidden';input.name='payload';input.value=JSON.stringify(payload);form.appendChild(input);document.body.appendChild(form);
-        var done=false;function cleanup(){try{form.remove();}catch(e){}try{iframe.remove();}catch(e){}}
-        var timer=setTimeout(function(){if(done)return;done=true;cleanup();resolve({status:'submitted'});},timeoutMs);
-        iframe.onload=function(){if(done)return;done=true;clearTimeout(timer);cleanup();resolve({status:'submitted'});};
-        iframe.onerror=function(){if(done)return;done=true;clearTimeout(timer);cleanup();reject(fetchErr);};
-        try{form.submit();}catch(e){clearTimeout(timer);cleanup();reject(e);}
+        var iframe=document.createElement('iframe'); iframe.name='yamate_post_'+Date.now(); iframe.style.display='none'; document.body.appendChild(iframe);
+        var form=document.createElement('form'); form.method='POST'; form.action=GAS_URL; form.target=iframe.name; form.style.display='none';
+        var input=document.createElement('input'); input.type='hidden'; input.name='payload'; input.value=JSON.stringify(payload); form.appendChild(input); document.body.appendChild(form);
+        var done=false; function cleanup(){ try{form.remove();}catch(e){} try{iframe.remove();}catch(e){} }
+        var timer=setTimeout(function(){ if(done) return; done=true; cleanup(); resolve({status:'submitted'}); }, timeoutMs);
+        iframe.onload=function(){ if(done) return; done=true; clearTimeout(timer); cleanup(); resolve({status:'submitted'}); };
+        iframe.onerror=function(){ if(done) return; done=true; clearTimeout(timer); cleanup(); reject(e); };
+        try{form.submit();}catch(err){ clearTimeout(timer); cleanup(); reject(err); }
       });
     }
-  };
-  window.testGASConnection = async function(){
-    try{
-      var d = await yamateJsonp(GAS_URL+'?action=ping');
-      alert('GAS接続OK: '+JSON.stringify(d));
-    }catch(e){ alert('GAS接続NG: '+e.message); console.error(e); }
   };
 })();
 
