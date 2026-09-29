@@ -1,20 +1,25 @@
 {
-  "name": "山手町イベントボード",
-  "short_name": "山手イベント",
-  "start_url": "./index.html",
+  "background_color": "#F8F7F3",
+  "description": "思いつきが、町の行事になる。山手町のイベント掲示板",
   "display": "standalone",
-  "background_color": "#f0fdfa",
-  "theme_color": "#14b8a6",
   "icons": [
     {
-      "src": "./icon-192.png",
+      "purpose": "any maskable",
       "sizes": "192x192",
+      "src": "./icon-192.png",
       "type": "image/png"
     },
     {
-      "src": "./icon-512.png",
+      "purpose": "any maskable",
       "sizes": "512x512",
+      "src": "./icon-512.png",
       "type": "image/png"
     }
-  ]
+  ],
+  "name": "芦屋山手町・みんなでつくる",
+  "orientation": "portrait",
+  "scope": "./",
+  "short_name": "山手町",
+  "start_url": "./index.html",
+  "theme_color": "#2f7a6b"
 }
