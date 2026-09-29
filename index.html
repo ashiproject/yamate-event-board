@@ -343,7 +343,7 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 <section id="home" class="page active">
 <div class="home-v5 rounded-[30px] p-5 md:p-7">
   <div class="notice-board mb-5">
-    <div class="notice-icon">!</div><div class="notice-content"><div class="title">🔔 通知があります（2件未読）</div></div><button class="notice-link" onclick="showPage('notifications')">通知センターへ</button>
+    <div class="notice-icon">!</div><div class="notice-content"><div class="title">🔔 通知があります（2件未読）</div><div class="font-black mt-1">【重要】夏祭り2026 復活開催のお知らせ</div><div class="body">3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答できます。</div></div><button class="notice-link" onclick="showPage('notifications')">通知センターへ</button>
   </div>
   <div class="home-hero-grid">
     <div class="home-main-card">
@@ -802,33 +802,61 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 /* -------------------------------------------------------------
    1. CONFIG & DATA
 ------------------------------------------------------------- */
+
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ldl_JGkUYtyN9MAgSob94Lso2qg1B7-5vXTzs8VHx86W63wQ/exec";
 
-/* v15 FIXED: GAS JSONP + hidden form POST + 詳細エラー診断 */
-/* v16 FETCH FIRST + JSONP FALLBACK */
+/* v20 FIX: analyze用60秒タイムアウト + ReferenceError対策 + POST優先 */
 (function(){
   async function fetchJson(url){
     var res = await fetch(url, {method:'GET', mode:'cors', cache:'no-store'});
     if(!res.ok) throw new Error('GAS HTTP '+res.status+' '+res.statusText);
     var text = await res.text();
-    try{ return JSON.parse(text); }catch(e){ console.log('fetch raw:', text.slice(0,500)); throw new Error('GASがJSON以外を返しました: '+text.slice(0,200)); }
+    try{ return JSON.parse(text); }catch(e){ console.log('fetch raw:', text.slice(0,800)); throw new Error('GASがJSON以外を返しました: '+text.slice(0,300)); }
   }
   function jsonpJson(url, timeoutMs){
-    timeoutMs=timeoutMs||15000;
+    timeoutMs=timeoutMs||30000;
     return new Promise(function(resolve,reject){
       var cb='__yamate_jsonp_'+Date.now()+'_'+Math.floor(Math.random()*100000),
           script=document.createElement('script'), done=false, timer=null;
-      function cleanup(){ if(done)return; done=true; if(timer) clearTimeout(timer); try{delete window[cb];}catch(e){} if(script.parentNode) script.parentNode.removeChild(script); }
-      window[cb]=function(data){ cleanup(); resolve(data); };
-      timer=setTimeout(function(){ cleanup(); reject(new Error('JSONP timeout')); }, timeoutMs);
-      script.onerror=function(){ cleanup(); reject(new Error('JSONP onerror')); };
+      function cleanup(){
+        if(done) return; done=true;
+        if(timer) clearTimeout(timer);
+        // ★重要: ReferenceError対策 - コールバックを即削除しないで無効化だけする
+        // スクリプトが遅れて到達しても is not defined にならないように
+        setTimeout(function(){
+          try{ delete window[cb]; }catch(e){ window[cb]=function(){}; }
+          if(script.parentNode) script.parentNode.removeChild(script);
+        }, 2000);
+      }
+      window[cb]=function(data){
+        if(done) return;
+        cleanup();
+        resolve(data);
+      };
+      timer=setTimeout(function(){
+        if(done) return;
+        done=true;
+        // タイムアウト時もコールバックは残しておき、後から来たデータを捨てるだけにする
+        window[cb]=function(data){ console.warn('遅れて到着したJSONPデータを破棄:', data); };
+        cleanup();
+        reject(new Error('JSONP timeout ('+timeoutMs+'ms)'));
+      }, timeoutMs);
+      script.onerror=function(){
+        if(done) return;
+        done=true;
+        window[cb]=function(){};
+        cleanup();
+        reject(new Error('JSONP onerror'));
+      };
       script.src=url+(url.indexOf('?')>=0?'&':'?')+'callback='+encodeURIComponent(cb)+'&_='+Date.now();
       document.head.appendChild(script);
     });
   }
+
   window.yamateJsonp = async function(url, timeoutMs){
-    timeoutMs=timeoutMs||30000;
-    // 1. fetchを最優先
+    // analyzeは60秒、それ以外は30秒
+    var isAnalyze = url.indexOf('action=analyze')>=0;
+    timeoutMs=timeoutMs||(isAnalyze?60000:30000);
     try{
       var data = await fetchJson(url);
       if(data && data.error && !data.result && !Array.isArray(data)){
@@ -838,23 +866,50 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ld
       return data;
     }catch(fetchErr){
       console.warn('GAS fetch failed, trying JSONP fallback:', fetchErr.message, url);
-      // 2. fallback JSONP
       try{
         var data2 = await jsonpJson(url, timeoutMs);
         if(data2 && data2.error && !data2.result && !Array.isArray(data2)){
-          throw new Error(data2.error);
+          throw new Error(data2.error + (data2.last_error?' / '+data2.last_error:''));
         }
         console.log('GAS JSONP fallback OK:', data2);
         return data2;
       }catch(jpErr){
         console.error('GAS both failed', fetchErr, jpErr);
-        throw new Error('GASへの接続に失敗しました。\nfetch: '+fetchErr.message+'\njsonp: '+jpErr.message+'\n\n【必ず確認】デプロイ設定が「全員」に。GAS_URLが最新か。直接URLを開いてJSONが見えるか。\nURL:'+url);
+        throw new Error('GASへの接続に失敗しました。
+fetch: '+fetchErr.message+'
+jsonp: '+jpErr.message+'
+URL:'+url);
       }
     }
   };
+
+  // ★analyzeはPOSTを使う（GETだとURLが長くて404になりやすい）
+  window.yamateAnalyzePost = async function(title, detail){
+    var payload = {action:'analyze', q:title, text:title, detail:detail};
+    var isAnalyzeTimeout = 60000;
+    try{
+      console.log('GAS analyze POST開始', payload);
+      var res = await fetch(GAS_URL, {
+        method:'POST',
+        mode:'cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok) throw new Error('GAS POST HTTP '+res.status);
+      var txt = await res.text();
+      console.log('GAS analyze POST raw:', txt.slice(0,800));
+      var data = JSON.parse(txt);
+      if(data && data.error) throw new Error(data.error + (data.last_error?' / '+data.last_error:''));
+      return data;
+    }catch(e){
+      console.warn('POST analyze失敗、GETにフォールバック', e.message);
+      var url = GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
+      return await window.yamateJsonp(url, isAnalyzeTimeout);
+    }
+  };
+
   window.yamatePost = async function(payload, timeoutMs){
     timeoutMs=timeoutMs||15000;
-    // fetch POST優先 (CORS)
     try{
       var res = await fetch(GAS_URL, {
         method:'POST',
@@ -863,7 +918,7 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ld
         body: JSON.stringify(payload)
       });
       var txt = await res.text();
-      console.log('GAS POST fetch response:', txt.slice(0,500));
+      console.log('GAS POST response:', txt.slice(0,500));
       try{ return JSON.parse(txt); }catch(e){ return {status:'submitted', raw:txt}; }
     }catch(fetchErr){
       console.warn('POST fetch failed, fallback to iframe', fetchErr);
@@ -882,10 +937,11 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ld
   window.testGASConnection = async function(){
     try{
       var d = await yamateJsonp(GAS_URL+'?action=ping');
-      alert('GAS接続OK: '+JSON.stringify(d)); console.log(d);
+      alert('GAS接続OK: '+JSON.stringify(d));
     }catch(e){ alert('GAS接続NG: '+e.message); console.error(e); }
   };
 })();
+
 const BASE_CATEGORIES = [
 {key:"BIG-1",label:"防災・防犯",icon:"🛡",defaultDesc:"山手町は急坂と石垣が多い急斜面地に位置し、災害時の迅速な対応が不可欠です。班長・民生委員・LINEによる三重連絡網とブロック別安否確認マップを整備し、発災後30分以内の全戸確認を目指します。また、坂道を避けた避難訓練や電動アシスト台車による分散備蓄を推進。オリジナル腕章での防犯パトロールや防災ラジオの配布により、安全で静穏な邸宅街を次世代へ継承します。"},
 {key:"BIG-2",label:"インフラ・環境",icon:"🌿",defaultDesc:"北部の急斜面では高齢者の歩行負担が大きいため、景観に調和した天然木ベンチや手すり、滑り止め舗装による回遊路を整備します。また、幅員の狭い道路や詰まりやすい側溝を蓋付きへ更新し、定期清掃や電柱地中化も検討します。コンビニ不在の課題に対しては移動販売やスマート受取拠点を活用し、石垣や生垣の美観を損なわない持続可能なインフラと環境保全を両立させます。"},
@@ -3085,8 +3141,7 @@ function yamateOpenIdeasNow(ev){
       if(detail.length<5){ alert('詳細内容を5文字以上入力してください'); if(detailEl) detailEl.focus(); return; }
       if(slip) slip.innerHTML='<div class="bg-white border-2 border-amber-400 rounded-2xl p-5 mt-3 shadow-sm"><div class="font-black text-amber-900">🤖 AI分析中…</div><div class="text-xs text-slate-600 mt-2">GASのAI分析を実行しています。数秒お待ちください。</div></div>';
       btn.disabled=true; btn.classList.add('opacity-60','cursor-wait');
-      var url=GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
-      yamateJsonp(url)
+      yamateAnalyzePost(title, detail)
         .then(function(data){
           if(!data) throw new Error('GASから応答がありません');
           if(!data || !data.result){ throw new Error(data&&data.error ? data.error : (data&&data.last_error ? data.last_error : 'AI分析結果が返りませんでした')); }
