@@ -1266,10 +1266,8 @@ function verifySpreadsheetStorage(){
 function loadFromSheet(){
   if(!GAS_URL || GAS_URL.indexOf('XXXX')!==-1){ console.warn('GAS_URL未設定'); return; }
   console.log("スプレッドシートから実データ取得開始:", GAS_URL);
-  // まず疎通確認
-  yamateJsonp(GAS_URL+'?action=ping').then(function(d){ console.log('GAS ping:', d); }).catch(function(e){ console.warn('GAS ping failed:', e.message); });
 
-  // 意見（声のボード）
+  // 意見（声のボード）- 失敗してもローカルの96件で動くのでwarn止まり
   yamateJsonp(GAS_URL+"?action=getIdeas")
     .then(function(data){
       console.log("getIdeas:", data);
@@ -1352,7 +1350,7 @@ function loadFromSheet(){
       try{ renderAccordion(); }catch(e){ console.log(e); }
       try{ renderCoCreationUpdate(); }catch(e){ console.log(e); }
     })
-    .catch(function(e){ console.log("getIdeas error", e); });
+    .catch(function(e){ console.warn("getIdeas warn (sheet無しでもOK):", e && e.message || e); });
 
   // イベント
     // イベント：idea- 始まり＝企画、それ以外＝今後のイベント
@@ -1396,7 +1394,7 @@ function loadFromSheet(){
         if(ic) ic.textContent = EVENT_IDEAS.length + '件';
       }catch(e){ console.log(e); }
     })
-    .catch(function(e){ console.log("getEvents error", e); });
+    .catch(function(e){ console.warn("getEvents warn:", e && e.message || e); });
 }
 
   
