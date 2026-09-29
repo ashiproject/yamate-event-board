@@ -251,6 +251,102 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 .idea-board{background:#fff;border:1px solid #dbe5e2;border-radius:22px;padding:18px}.idea-card{background:#f8fafc;border:1px solid #dbe3ea;border-radius:18px;padding:16px}.idea-progress{height:7px;border-radius:999px;background:#e2e8f0;overflow:hidden;display:flex;margin:10px 0}.idea-progress span:nth-child(1){background:#0f172a}.idea-progress span:nth-child(2){background:#16877f}.idea-progress span:nth-child(3){background:#f59e0b}
 @media(max-width:900px){.home-hero-grid{grid-template-columns:1fr}.home-cta-row{grid-template-columns:1fr}.home-mini-grid{grid-template-columns:1fr 1fr}.admin-grid{grid-template-columns:1fr}}
 @media(max-width:640px){.home-main-card{padding:22px;min-height:230px}.home-mini-grid{grid-template-columns:1fr}.home-cta .title{font-size:16px}.proposal-tabs{grid-template-columns:1fr}.admin-shell{padding:14px}}
+
+/* v13 mobile layout correction */
+@media (max-width: 640px){
+  body{overflow-x:hidden;}
+  main{padding-left:10px!important;padding-right:10px!important;}
+  .event-result-grid{grid-template-columns:1fr!important;padding:8px!important;gap:12px!important;}
+  .event-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;}
+  .event-action-grid button{min-height:68px!important;font-size:12px!important;padding:9px 4px!important;line-height:1.25!important;}
+  .event-card-footer{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+  .event-card-footer button{width:100%!important;min-width:0!important;}
+  .top-three{grid-template-columns:1fr!important;}
+  .proposal-tabs{grid-template-columns:1fr!important;}
+  #proposalIdeaPanel,#proposalAdminPanel{padding-left:0!important;padding-right:0!important;}
+  #proposalIdeaPanel .flex.gap-2{align-items:stretch;}
+  #evTitle,#evDetail{min-width:0!important;}
+  #btnSubmitEvent{width:100%!important;}
+  #btnSubmitEvent + button{width:100%!important;}
+  #proposalIdeaPanel .mt-4.flex{display:grid!important;grid-template-columns:1fr!important;}
+  #evSlip{overflow-wrap:anywhere;}
+  header .max-w-\[1240px\]{padding-left:12px!important;padding-right:12px!important;}
+}
+
+
+/* v14: mobile navigation/modal containment fix - independent of Tailwind CDN */
+.nav-fit{display:none!important;}
+#mnav{display:none!important;}
+#mnav.mnav-open{display:flex!important;}
+#mobileNavToggle{display:inline-flex!important;align-items:center;justify-content:center;}
+#loginModal{display:none!important;}
+#loginModal.flex{display:flex!important;}
+#loginModal > div{max-height:calc(100vh - 24px);overflow-y:auto;}
+@media (min-width:1024px){
+  .nav-fit{display:flex!important;}
+  #mobileNavToggle{display:none!important;}
+  #mnav{display:none!important;}
+}
+@media (max-width:1023px){
+  header .max-w-\[1240px\]{width:100%;max-width:none;box-sizing:border-box;}
+  header .max-w-\[1240px\] > div:first-child{min-width:0;}
+  header .max-w-\[1240px\] > div:first-child > div{min-width:0;}
+  header .max-w-\[1240px\] .text-\[18px\]{font-size:16px!important;}
+  header .max-w-\[1240px\] .tracking-\[0\.25em\]{font-size:8px!important;letter-spacing:.14em!important;}
+}
+@media (max-width:640px){
+  header .max-w-\[1240px\]{padding:10px 12px!important;}
+  #mnav{width:100%;box-sizing:border-box;padding:8px 12px 12px!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;}
+  #mnav button{flex:0 0 auto!important;}
+  #loginModal{padding:10px!important;align-items:flex-start!important;}
+  #loginModal > div{width:100%!important;max-width:520px!important;max-height:calc(100vh - 20px)!important;border-radius:22px!important;}
+  #loginModal > div > div:first-child{padding:18px 18px 10px!important;}
+  #loginForm{padding:0 18px 18px!important;}
+  #loginForm .grid.grid-cols-2{grid-template-columns:1fr!important;}
+  #loginForm input{font-size:16px!important;min-width:0!important;}
+  .home-v5{border-radius:20px!important;padding:14px!important;}
+  .home-hero-grid,.home-mini-grid,.home-cta-row{width:100%!important;min-width:0!important;}
+  .home-main-card{min-width:0!important;overflow:hidden!important;}
+  .home-main-card h1{font-size:28px!important;}
+  .home-cta{width:100%!important;min-width:0!important;box-sizing:border-box!important;}
+  .home-cta .title{white-space:normal!important;overflow-wrap:anywhere!important;}
+}
+
+/* Home v6 — polished, compact, mobile-first */
+.home-v6{position:relative;overflow:hidden;border:1px solid #dbe7e5;border-radius:30px;background:linear-gradient(145deg,#f8fcfb 0%,#ffffff 52%,#fff9ed 100%);box-shadow:0 20px 55px rgba(15,23,42,.08);padding:28px;}
+.home-v6:before{content:"";position:absolute;width:520px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(20,145,132,.10),transparent 68%);right:-180px;top:-220px;pointer-events:none;}
+.home-v6-hero{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center;}
+.home-kicker{display:flex;gap:9px;align-items:center;font-size:11px;font-weight:900;letter-spacing:.09em;color:#0d766d;}
+.home-kicker b{padding:5px 9px;border:1px solid #9dded7;border-radius:999px;background:#ecfffb;font-size:9px;}
+.home-v6-copy h1{font-size:clamp(34px,4.1vw,58px);line-height:1.08;letter-spacing:-.045em;color:#0f172a;margin:13px 0 15px;}
+.home-v6-copy h1 em{font-style:normal;color:#0d8b80;}
+.home-lead{font-size:15px;line-height:1.9;color:#526174;max-width:590px;}
+.home-hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:22px;max-width:650px;}
+.home-v6-primary,.home-v6-secondary{display:flex;align-items:center;gap:11px;border-radius:18px;padding:15px 16px;text-align:left;cursor:pointer;min-width:0;transition:.2s;box-sizing:border-box;}
+.home-v6-primary{background:#0f172a;color:#fff;border:1px solid #0f172a;box-shadow:0 12px 24px rgba(15,23,42,.16);}
+.home-v6-secondary{background:#fff;color:#0f172a;border:1px solid #cfe0dc;box-shadow:0 8px 20px rgba(15,23,42,.06);}
+.home-v6-primary:hover,.home-v6-secondary:hover,.home-flow-card:hover{transform:translateY(-2px);}
+.home-v6-primary>span,.home-v6-secondary>span{font-size:24px;flex:none;}
+.home-v6-primary div,.home-v6-secondary div{min-width:0;flex:1;}
+.home-v6-primary strong,.home-v6-secondary strong{display:block;font-size:14px;white-space:nowrap;}
+.home-v6-primary small,.home-v6-secondary small{display:block;font-size:10px;margin-top:3px;opacity:.72;white-space:nowrap;}
+.home-v6-primary>b,.home-v6-secondary>b{font-size:22px;font-weight:400;flex:none;}
+.home-v6-visual{position:relative;min-height:300px;display:flex;align-items:center;justify-content:center;}
+.home-scene-card{position:relative;z-index:2;width:min(100%,430px);padding:24px;border-radius:28px;background:rgba(255,255,255,.9);border:1px solid #dce8e5;box-shadow:0 22px 45px rgba(15,23,42,.12);backdrop-filter:blur(8px);}
+.home-scene-title{text-align:center;font-weight:900;font-size:15px;color:#0f172a;margin-bottom:20px;}
+.home-scene-path{display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr;align-items:center;}
+.scene-node{text-align:center;position:relative;}.scene-node span{display:flex;align-items:center;justify-content:center;width:58px;height:58px;margin:0 auto 8px;border-radius:20px;background:#f0fdfa;font-size:28px;box-shadow:inset 0 0 0 1px #cceee8;}.scene-node b{font-size:11px;color:#334155;}.scene-line{height:3px;border-radius:99px;background:linear-gradient(90deg,#8dded2,#f5b13a);}
+.home-scene-note{margin-top:22px;padding:11px 13px;border-radius:13px;background:#fff9e9;color:#6b571f;font-size:11px;font-weight:800;text-align:center;border:1px solid #f6df9a;}
+.home-orbit{position:absolute;border-radius:50%;border:1px dashed #a9ddd7;}.orbit-a{width:290px;height:290px}.orbit-b{width:360px;height:220px;transform:rotate(-22deg);border-color:#f1d38e;}.home-spark{position:absolute;font-weight:900;color:#e3a01d;}.spark-1{top:8%;left:9%;font-size:24px}.spark-2{bottom:12%;right:8%;font-size:18px}.spark-3{top:18%;right:15%;font-size:11px;color:#0d9488;}
+.home-v6-section-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin:30px 2px 13px;}.home-v6-section-head>div>span{font-size:9px;font-weight:900;letter-spacing:.12em;color:#0d9488;}.home-v6-section-head h2{font-size:20px;font-weight:900;color:#0f172a;margin-top:3px;}.home-text-link{font-size:12px;font-weight:900;color:#0d766d;background:#effcf9;border:1px solid #bfe8e1;border-radius:999px;padding:8px 12px;white-space:nowrap;}
+.home-flow-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;}
+.home-flow-card{position:relative;text-align:left;background:#fff;border:1px solid #dce6e4;border-radius:22px;padding:18px;cursor:pointer;transition:.2s;box-shadow:0 7px 18px rgba(15,23,42,.04);min-width:0;}
+.home-flow-card.featured{border-color:#8fd9d0;background:linear-gradient(145deg,#f5fffd,#ffffff);box-shadow:0 10px 24px rgba(13,148,136,.10);}
+.flow-illust{height:70px;border-radius:17px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}.flow-illust span{position:relative;z-index:2;font-size:32px;}.flow-illust i{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);}.flow-illust i:first-of-type{width:90px;height:90px;left:-24px;bottom:-55px;}.flow-illust i:last-of-type{width:70px;height:70px;right:-18px;top:-40px;}.illust-search{background:linear-gradient(135deg,#e8f8f5,#f9fff9)}.illust-help{background:linear-gradient(135deg,#eef4ff,#f8fbff)}.illust-idea{background:linear-gradient(135deg,#fff4d9,#fffdf7)}
+.flow-no{font-size:9px;font-weight:900;letter-spacing:.1em;color:#0d9488;}.home-flow-card h3{font-size:15px;font-weight:900;color:#0f172a;margin-top:4px;}.home-flow-card p{font-size:11px;line-height:1.65;color:#64748b;margin-top:7px;min-height:38px;}.home-flow-card>b{display:inline-block;margin-top:12px;font-size:11px;color:#0d766d;}
+.home-v6-bottom{margin-top:14px;}.home-status-card{border:1px solid #dce6e4;border-radius:22px;background:#fff;padding:17px 18px;box-shadow:0 7px 18px rgba(15,23,42,.04);}.home-status-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}.home-status-head span:first-child{font-size:9px;font-weight:900;letter-spacing:.12em;color:#64748b;}.home-status-head h3{font-size:15px;font-weight:900;color:#0f172a;margin-top:2px;}.home-live-dot{font-size:10px;color:#0d766d;font-weight:900;background:#ecfdf5;border:1px solid #bcebd8;border-radius:999px;padding:6px 9px;white-space:nowrap;}.home-status-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;}.home-status-actions button{position:relative;display:flex;align-items:center;gap:9px;text-align:left;border:1px solid #e2e8f0;background:#f8fafc;border-radius:15px;padding:11px;min-width:0;cursor:pointer;}.home-status-actions button>span{font-size:20px;flex:none;}.home-status-actions button div{min-width:0;flex:1;}.home-status-actions strong{display:block;font-size:11px;color:#0f172a;white-space:nowrap;}.home-status-actions small{display:block;font-size:9px;color:#64748b;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.home-status-actions b{font-size:16px;color:#94a3b8;}.home-status-actions em{position:absolute;right:8px;top:6px;font-style:normal;font-size:9px;background:#ef4444;color:#fff;border-radius:999px;padding:2px 5px;font-weight:900;}
+@media(max-width:900px){.home-v6{padding:20px;border-radius:24px}.home-v6-hero{grid-template-columns:1fr}.home-v6-visual{min-height:250px}.home-flow-cards{grid-template-columns:1fr 1fr}.home-flow-card.featured{grid-column:1/-1}.home-status-actions{grid-template-columns:1fr 1fr;}.home-status-actions small{white-space:normal;}}
+@media(max-width:640px){.home-v6{padding:15px;border-radius:20px}.home-kicker{font-size:9px}.home-v6-copy h1{font-size:31px}.home-lead{font-size:13px}.home-hero-actions{grid-template-columns:1fr}.home-v6-primary,.home-v6-secondary{padding:13px}.home-v6-primary strong,.home-v6-secondary strong{font-size:13px}.home-v6-primary small,.home-v6-secondary small{font-size:9px}.home-v6-visual{min-height:220px}.home-scene-card{padding:18px;border-radius:22px}.home-scene-title{font-size:13px}.scene-node span{width:48px;height:48px;font-size:23px;border-radius:16px}.scene-node b{font-size:9px}.home-scene-note{font-size:10px}.orbit-a{width:220px;height:220px}.orbit-b{width:280px;height:170px}.home-v6-section-head{align-items:flex-start;flex-direction:column;margin-top:24px}.home-v6-section-head h2{font-size:18px}.home-text-link{margin-top:-6px}.home-flow-cards{grid-template-columns:1fr;}.home-flow-card.featured{grid-column:auto}.home-flow-card p{min-height:0}.home-status-actions{grid-template-columns:1fr 1fr;}.home-status-card{padding:14px}.home-status-head{align-items:flex-start;}.home-live-dot{font-size:8px;padding:5px 7px}.home-status-actions button{padding:10px 9px}.home-status-actions button>span{font-size:18px}.home-status-actions strong{font-size:10px}.home-status-actions small{font-size:8px;}}
 </style>
 </head>
 <body>
@@ -267,25 +363,25 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 <nav class="nav-fit hidden lg:flex flex-nowrap items-center whitespace-nowrap">
 <button type="button" onclick="showPage('home')" class="px-4 py-2 rounded-full text-sm font-bold bg-teal-700 text-white whitespace-nowrap">🏠 ホーム</button>
 <button type="button" onclick="showPage('event')" class="px-4 py-2 rounded-full text-sm font-bold bg-white border whitespace-nowrap">🎉 イベント</button>
-<button type="button" onclick="showPage('notifications')" class="px-4 py-2 rounded-full text-sm font-bold bg-white border whitespace-nowrap">🔔 通知(2)</button>
+<button type="button" onclick="showPage('notifications')" class="px-4 py-2 rounded-full text-sm font-bold bg-white border whitespace-nowrap">🔔 通知(1)</button>
 <button type="button" onclick="showPage('eventReport')" class="px-4 py-2 rounded-full text-sm font-bold bg-teal-700 text-white whitespace-nowrap">📷 様子</button>
 <button type="button" onclick="showPage('admin')" class="px-4 py-2 rounded-full text-sm font-bold bg-slate-800 text-white whitespace-nowrap">🛡 管理</button>
 <button type="button" onclick="openLoginModal()" id="loginNavBtn" class="px-4 py-2 rounded-full text-sm font-bold bg-slate-900 text-white whitespace-nowrap">🔐 ログイン</button>
 <button type="button" onclick="window.open('https://sites.google.com/view/yamatechoasiya-city','_blank')" style="background:#fff;color:#2f7a6b;border:2px solid #2f7a6b;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏠 町内会サイト</button>
 <button type="button" onclick="window.open('https://mimo-lgtm.github.io/ashiya-issues/','_blank')" style="background:#e8a33d;color:#1b1f1d;border:2px solid #e8a33d;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏛 芦屋市の課題</button> <button type="button" onclick="showPage('flyerCreator')" class="px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-sm whitespace-nowrap">🎨 チラシ作成</button>
 </nav>
-<button type="button" onclick="document.getElementById('mnav').classList.toggle('hidden')" class="lg:hidden w-9 h-9 border rounded-xl">☰</button>
+<button type="button" onclick="document.getElementById('mnav').classList.toggle('mnav-open')" id="mobileNavToggle" class="lg:hidden w-9 h-9 border rounded-xl">☰</button>
 </div>
 <div id="mnav" class="hidden lg:hidden px-3 pb-3 flex flex-row gap-2 overflow-x-auto whitespace-nowrap">
-<button type="button" onclick="showPage('home')" class="px-4 py-2 bg-teal-700 text-white rounded-full text-left whitespace-nowrap text-sm">🏠 ホーム</button>
-<button type="button" onclick="showPage('event')" class="px-4 py-2 bg-white border rounded-full text-left whitespace-nowrap text-sm">🎉 イベント</button>
-<button type="button" onclick="showPage('notifications')" class="px-4 py-2 bg-white border rounded-full text-left whitespace-nowrap text-sm">🔔 通知(2)</button>
-<button type="button" onclick="showPage('eventReport')" class="px-4 py-2 bg-teal-700 text-white rounded-full text-left whitespace-nowrap text-sm">📷 様子</button>
-<button type="button" onclick="showPage('admin')" class="px-4 py-2 bg-slate-800 text-white rounded-full text-left whitespace-nowrap text-sm">🛡 管理</button>
-<button type="button" onclick="openLoginModal()" id="loginNavBtnMobile" class="px-4 py-2 bg-slate-900 text-white rounded-full text-left whitespace-nowrap text-sm">🔐 ログイン</button>
+<button type="button" onclick="showPage('home');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-teal-700 text-white rounded-full text-left whitespace-nowrap text-sm">🏠 ホーム</button>
+<button type="button" onclick="showPage('event');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-white border rounded-full text-left whitespace-nowrap text-sm">🎉 イベント</button>
+<button type="button" onclick="showPage('notifications');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-white border rounded-full text-left whitespace-nowrap text-sm">🔔 通知(1)</button>
+<button type="button" onclick="showPage('eventReport');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-teal-700 text-white rounded-full text-left whitespace-nowrap text-sm">📷 様子</button>
+<button type="button" onclick="showPage('admin');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-slate-800 text-white rounded-full text-left whitespace-nowrap text-sm">🛡 管理</button>
+<button type="button" onclick="document.getElementById('mnav').classList.remove('mnav-open');openLoginModal()" id="loginNavBtnMobile" class="px-4 py-2 bg-slate-900 text-white rounded-full text-left whitespace-nowrap text-sm">🔐 ログイン</button>
 <button type="button" onclick="window.open('https://sites.google.com/view/yamatechoasiya-city','_blank')" style="background:#fff;color:#2f7a6b;border:2px solid #2f7a6b;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏠 町内会サイト</button>
 <button type="button" onclick="window.open('https://mimo-lgtm.github.io/ashiya-issues/','_blank')" style="background:#e8a33d;color:#1b1f1d;border:2px solid #e8a33d;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏛 芦屋市の課題</button>
-<button type="button" onclick="showPage('flyerCreator')" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-full text-left font-bold whitespace-nowrap text-sm">🎨 チラシ作成</button>
+<button type="button" onclick="showPage('flyerCreator');document.getElementById('mnav').classList.remove('mnav-open')" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-full text-left font-bold whitespace-nowrap text-sm">🎨 チラシ作成</button>
 </div>
 <div class="h-[2px] bg-gradient-to-r from-teal-800 to-amber-400"></div>
 </header>
@@ -318,30 +414,62 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 
 <!-- PAGE 1: HOME -->
 <section id="home" class="page active">
-<div class="home-v5 rounded-[30px] p-5 md:p-7">
-  <div class="notice-board mb-5">
-    <div class="notice-icon">!</div><div class="notice-content"><div class="title">🔔 通知があります（2件未読）</div><div class="font-black mt-1">【重要】夏祭り2026 復活開催のお知らせ</div><div class="body">3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答できます。</div></div><button class="notice-link" onclick="showPage('notifications')">通知センターへ</button>
-  </div>
-  <div class="home-hero-grid">
-    <div class="home-main-card">
-      <div class="eyebrow">ASHIYA YAMATECHO / FUTURE NOTEBOOK</div>
-      <h1>山手町の「やりたい」を、<br>みんなで形にする。</h1>
-      <p>イベントを見つける。できることから参加する。思いついたアイデアを提案する。山手町の活動を、もっと身近に。</p>
-      <div class="flex flex-wrap gap-2 mt-6"><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">🔎 見つける</span><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">🤝 関わる</span><span class="px-3 py-2 rounded-full bg-white/10 border border-white/20 text-xs font-black">💡 つくる</span></div>
+  <div class="home-v6">
+    <div class="home-v6-hero">
+      <div class="home-v6-copy">
+        <div class="home-kicker"><span>ASHIYA YAMATECHO</span><b>FUTURE NOTEBOOK</b></div>
+        <h1>山手町の「やりたい」が、<br><em>次のイベント</em>になる。</h1>
+        <p class="home-lead">見つける。参加する。思いつく。<br>住民の小さなアイデアを、みんなで育てていく町の活動ノートです。</p>
+        <div class="home-hero-actions">
+          <button type="button" onclick="openEventSection('upcoming')" class="home-v6-primary"><span>📅</span><div><strong>今後のイベントを見る</strong><small>参加できる活動を探す</small></div><b>›</b></button>
+          <button type="button" onclick="return yamateOpenProposalNow(event)" class="home-v6-secondary"><span>💡</span><div><strong>イベントを提案する</strong><small>入力内容をAIが自動整理</small></div><b>›</b></button>
+        </div>
+      </div>
+      <div class="home-v6-visual" aria-hidden="true">
+        <div class="home-orbit orbit-a"></div><div class="home-orbit orbit-b"></div>
+        <div class="home-scene-card">
+          <div class="home-scene-title">山手町の活動がつながる</div>
+          <div class="home-scene-path">
+            <div class="scene-node n1"><span>🔎</span><b>見つける</b></div>
+            <div class="scene-line"></div>
+            <div class="scene-node n2"><span>🤝</span><b>関わる</b></div>
+            <div class="scene-line"></div>
+            <div class="scene-node n3"><span>💡</span><b>つくる</b></div>
+          </div>
+          <div class="home-scene-note">あなたの「ちょっとやってみたい」から始まります。</div>
+        </div>
+        <div class="home-spark spark-1">✦</div><div class="home-spark spark-2">✦</div><div class="home-spark spark-3">●</div>
+      </div>
     </div>
-    <div class="home-mini-grid">
-      <div class="home-mini"><div class="ic">🔎</div><h3>興味から探す</h3><p>季節・子ども・食・趣味・ペットなどから、自分に合うイベントを見つけます。</p></div>
-      <div class="home-mini"><div class="ic">🤝</div><h3>できることから参加</h3><p>受付・設営・写真・見守りなど、あなたの得意を活かせます。</p></div>
-      <div class="home-mini"><div class="ic">💡</div><h3>アイデアを出す</h3><p>思いつきを入力すると、AIが企画として整理します。</p></div>
-      <div class="home-mini"><div class="ic">📷</div><h3>活動の様子を見る</h3><p>終わったイベントを写真と言葉で振り返れます。</p></div>
+
+    <div class="home-v6-section-head">
+      <div><span>HOW IT WORKS</span><h2>山手町では、こんなふうに参加できます</h2></div>
+      <button type="button" onclick="showPage('event')" class="home-text-link">イベントをのぞく →</button>
+    </div>
+    <div class="home-flow-cards">
+      <button type="button" onclick="openEventSection('upcoming')" class="home-flow-card">
+        <div class="flow-illust illust-search"><span>🔎</span><i></i><i></i></div><div class="flow-no">01</div><h3>気になる活動を見つける</h3><p>季節・子ども・食・趣味・ペットなどから、自分に合うイベントを探せます。</p><b>イベントを見る →</b>
+      </button>
+      <button type="button" onclick="showPage('event');showEventTab('upcoming')" class="home-flow-card">
+        <div class="flow-illust illust-help"><span>🤝</span><i></i><i></i></div><div class="flow-no">02</div><h3>できることから参加する</h3><p>受付、写真、見守り、設営など、無理なくできる役割から参加できます。</p><b>参加できることを見る →</b>
+      </button>
+      <button type="button" onclick="return yamateOpenIdeasNow(event)" class="home-flow-card featured">
+        <div class="flow-illust illust-idea"><span>💡</span><i></i><i></i></div><div class="flow-no">03</div><h3>アイデアを次の企画へ</h3><p>思いつきを入力すると、GAS経由のAIがカテゴリや企画内容を自動整理します。</p><b>アイデアを見る →</b>
+      </button>
+    </div>
+
+    <div class="home-v6-bottom">
+      <div class="home-status-card">
+        <div class="home-status-head"><div><span>MY YAMATE</span><h3>参加状況・お知らせ</h3></div><span class="home-live-dot">● いつでも確認</span></div>
+        <div class="home-status-actions">
+          <button type="button" onclick="openLoginModal()"><span>🔐</span><div><strong>ログイン</strong><small>電話番号だけで参加表明</small></div><b>›</b></button>
+          <button type="button" onclick="showPage('notifications')"><span>🔔</span><div><strong>通知を見る</strong><small>重要なお知らせを確認</small></div><em>1</em><b>›</b></button>
+          <button type="button" onclick="showPage('eventReport')"><span>📷</span><div><strong>イベントの様子</strong><small>活動の写真・レポート</small></div><b>›</b></button>
+          <button type="button" onclick="showPage('admin')"><span>🛡</span><div><strong>管理</strong><small>運営メニュー</small></div><b>›</b></button>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="home-cta-row">
-    <button type="button" onclick="openEventSection('upcoming')" class="home-cta primary"><div class="text-2xl">📅</div><div class="title mt-2">今後のイベントを見る</div><div class="sub">開催予定・参加者募集中を一覧</div></button>
-    <button type="button" onclick="return yamateOpenIdeasNow(event)" class="home-cta"><div class="text-2xl">💡</div><div class="title mt-2">アイデアを見る</div><div class="sub">住民提案・AI要約付き</div></button>
-    <button type="button" onclick="return yamateOpenProposalNow(event)" class="home-cta"><div class="text-2xl">➕</div><div class="title mt-2">イベントを提案</div><div class="sub">アイデア投稿・運営登録</div></button>
-  </div>
-</div>
 </section>
 
 <!-- PAGE 2: OPINION POST -->
@@ -457,7 +585,7 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
       <button type="button" onclick="clearEventFilters()" class="ml-auto px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-black">すべて</button>
     </div>
     <div class="mb-6">
-      <div class="flex items-center gap-2 mb-2"><h3 class="font-black text-base">② 興味のある分野を選んでください</h3><span class="text-[10px] px-2 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-black">7カテゴリ</span></div>
+      <div class="flex items-center gap-2 mb-2"><h3 class="font-black text-base">② 興味のある分野を選んでください</h3><span class="text-[10px] px-2 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-black">7カテゴリ</span></div><p class="text-xs text-slate-500 mb-3">※ここでのカテゴリはイベント登録時の分類です。新しく提案したアイデアは「AIで分析」を実行した時にAI分類されます。</p>
       <p class="text-xs text-slate-500 mb-3">例：ペットのことに興味がある人は「🐾 ペットと一緒に」を選択 → ペット関連のイベントが見られます</p>
       <div id="event-interest-filters" class="flex flex-wrap gap-2"></div>
     </div>
@@ -498,6 +626,7 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
   <div class="proposal-tabs mt-5"><button type="button" class="proposal-tab active" onclick="setProposalMode('idea')">💡 Lv3: アイデア投稿（AI分析）</button><button type="button" class="proposal-tab" onclick="setProposalMode('admin')">🛠 Lv3: 運営がイベント登録</button></div>
   <div id="proposalIdeaPanel" class="mt-5 border-2 border-teal-200 rounded-[22px] p-5">
     <h3 class="text-xl font-black">💡 イベントアイデア投稿（AI分析付き）</h3>
+        <p class="text-xs text-slate-500 mt-2">分類は選びません。入力内容をGAS経由のAIが自動分析し、6カテゴリ・坂・必要スキルなどを判定します。</p>
     <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-4 mt-5">
       <div>
         <div class="flex gap-2"><input id="evTitle" placeholder="例）坂道ベンチマップを作りたい" class="w-full p-4 border rounded-2xl text-base"><button type="button" class="w-14 rounded-2xl border text-xl">🎤</button></div>
@@ -539,8 +668,7 @@ main{padding-bottom:0;min-height:auto;overflow:visible;}
 <!-- PAGE: NOTIFICATIONS -->
 <section id="notifications" class="page">
 <div class="text-sm text-slate-500 mb-3"><button type="button" onclick="showPage('home')">← ホーム</button></div>
-<div class="notice-center"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h1 class="text-3xl font-black">🔔 通知センター</h1><p class="text-sm text-slate-500 mt-2">管理者からの一斉通知（800世帯）— 紙チラシ代替。バッジはホーム画面に表示。</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white font-black text-sm">2件未読</span><button class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">すべて既読</button></div></div>
-<div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill" style="background:#fff;color:#ef4444;border:1px solid #fecaca">重要</span><span>2026/6/1 9:00</span><span class="notice-pill normal">山手町自治会</span></div><h3>【重要】夏祭り2026 復活開催のお知らせ</h3><p>3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答お願いします。紙チラシに代わる一斉通知です。</p><div class="notice-event-link"><div><div class="font-black">🌴 夏祭り2026 復活開催</div><div class="text-xs text-slate-500 mt-1">2026-07-19 山手公園</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
+<div class="notice-center"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h1 class="text-3xl font-black">🔔 通知センター</h1><p class="text-sm text-slate-500 mt-2">管理者からの一斉通知（800世帯）— 紙チラシ代替。バッジはホーム画面に表示。</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white font-black text-sm">1件未読</span><button class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">すべて既読</button></div></div>
 <div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill normal">通常</span><span>2026/5/30 18:00</span><span class="notice-pill normal">環境部</span></div><h3>一斉清掃のお知らせ（6/7）</h3><p>6/7(土)9時〜一斉清掃を実施します。急坂側溝重点。軍手・長靴推奨。参加される方はアプリから参加表明をお願いします。</p><div class="notice-event-link"><div><div class="font-black">🧹 一斉清掃＆側溝そうじ</div><div class="text-xs text-slate-500 mt-1">2026-06-07 集会所集合 → 町内全域</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
 </div></section>
 
@@ -2078,14 +2206,27 @@ function toggleEventFilters(){
 function eventInterestKey(label){ return String(label||'').replace(/^\S+\s*/,'').replace('で楽しむ','').replace('をシェア','').trim(); }
 function eventMatchesInterest(e){
   if(openEventInterest==='すべて') return true;
-  var c=normalizeEventCategory(e.category||'');
-  var raw=String(e.category||'')+' '+String(e.title||'')+' '+String(e.detail||'');
-  if(openEventInterest.indexOf('季節')>=0) return /季節|祭|イルミ|花見|夏祭|盆踊|清掃|美化/.test(raw) || /季節/.test(c);
-  if(openEventInterest.indexOf('子ども')>=0) return /子ども|親子|子供|縁日|キッズ|ラジオ体操/.test(raw) || /子ども/.test(c);
-  if(openEventInterest.indexOf('食べる')>=0) return /食|マルシェ|お茶|餅|料理|BBQ|バザー|集ま/.test(raw) || /食べる/.test(c);
-  if(openEventInterest.indexOf('趣味')>=0) return /趣味|学び|講座|写真|音楽|読書|ハイキング|ツアー/.test(raw) || /趣味/.test(c);
-  if(openEventInterest.indexOf('ペット')>=0) return /ペット|犬|わん|猫|しつけ/.test(raw) || /ペット/.test(c);
-  if(openEventInterest.indexOf('一般')>=0) return /一般|地域|コミュニティ|合同|防災|防犯|自治|町内/.test(raw) || /一般/.test(c);
+  /* v12: フィルターは本文の単語ではなく「登録されたカテゴリ」を優先。
+     これにより「清掃の記事だから季節」「飲み物が本文にあるから食べる」などの誤分類を防ぐ。
+     カテゴリが空の場合だけタイトル・本文を補助判定する。 */
+  var stored=String(e.category||'').trim();
+  var c=normalizeEventCategory(stored);
+  if(stored){
+    if(openEventInterest.indexOf('季節')>=0) return /季節/.test(c);
+    if(openEventInterest.indexOf('子ども')>=0) return /子ども/.test(c);
+    if(openEventInterest.indexOf('食べる')>=0) return /食べる/.test(c);
+    if(openEventInterest.indexOf('趣味')>=0) return /趣味/.test(c);
+    if(openEventInterest.indexOf('ペット')>=0) return /ペット/.test(c);
+    if(openEventInterest.indexOf('一般')>=0) return /一般/.test(c);
+    return false;
+  }
+  var raw=String(e.title||'')+' '+String(e.detail||'');
+  if(openEventInterest.indexOf('季節')>=0) return /祭|イルミ|花見|夏祭|盆踊|季節/.test(raw);
+  if(openEventInterest.indexOf('子ども')>=0) return /子ども|親子|子供|縁日|キッズ|ラジオ体操/.test(raw);
+  if(openEventInterest.indexOf('食べる')>=0) return /食べ|マルシェ|お茶|餅|料理|BBQ|バザー/.test(raw);
+  if(openEventInterest.indexOf('趣味')>=0) return /趣味|学び|講座|写真|音楽|読書|ハイキング|ツアー/.test(raw);
+  if(openEventInterest.indexOf('ペット')>=0) return /ペット|犬|わん|猫|しつけ/.test(raw);
+  if(openEventInterest.indexOf('一般')>=0) return /一般|地域|コミュニティ|合同|防災|防犯|自治|町内|清掃|美化/.test(raw);
   return true;
 }
 function eventMatchesSkill(e){
@@ -2981,14 +3122,99 @@ function yamateOpenIdeasNow(ev){
   try{
     document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
     var page=document.getElementById('event'); if(page) page.classList.add('active');
-    var filterPanel=document.getElementById('event-filter-panel'); if(filterPanel) filterPanel.classList.remove('hidden');
+    var filterPanel=document.getElementById('event-filter-panel'); if(filterPanel) filterPanel.classList.add('hidden');
     var categoryGrid=document.getElementById('event-category-grid'); if(categoryGrid) categoryGrid.classList.add('hidden');
     ['event-upcoming-list','event-ideas-list','event-hatsuan-list'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.add('hidden');});
-    var target=document.getElementById('event-ideas-list'); if(target) target.classList.remove('hidden');
+    var target=document.getElementById('event-ideas-list');
+    if(target){ target.classList.remove('hidden'); }
+    try{ renderEventIdeas(); }catch(renderErr){ console.error('renderEventIdeas failed',renderErr); }
+    var b1=document.getElementById('btn-upcoming'), b2=document.getElementById('btn-ideas'), b3=document.getElementById('btn-hatsuan');
+    [b1,b2,b3].forEach(function(b){if(b)b.classList.remove('bg-teal-700','text-white','ring-2','ring-rose-300');});
+    if(b2){b2.classList.add('bg-teal-700','text-white');}
     window.scrollTo(0,0);
-  }catch(err){console.error(err);}
+  }catch(err){console.error('ideas navigation error',err);}
   return false;
 }
+</script>
+<script>
+/* v12: AI分析・登録をGAS v10の実際の仕様に合わせた確実なイベント処理 */
+(function(){
+  function escV12(v){
+    return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+  function install(){
+    var oldBtn=document.getElementById('btnSubmitEvent');
+    if(!oldBtn) return;
+    /* 既存の複雑なイベントハンドラを除去 */
+    var btn=oldBtn.cloneNode(true);
+    oldBtn.parentNode.replaceChild(btn,oldBtn);
+    btn.addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      var titleEl=document.getElementById('evTitle'), detailEl=document.getElementById('evDetail'), slip=document.getElementById('evSlip');
+      var title=(titleEl&&titleEl.value||'').trim(), detail=(detailEl&&detailEl.value||'').trim();
+      if(!title){ alert('タイトルを入力してください'); if(titleEl) titleEl.focus(); return; }
+      if(detail.length<5){ alert('詳細内容を5文字以上入力してください'); if(detailEl) detailEl.focus(); return; }
+      if(slip) slip.innerHTML='<div class="bg-white border-2 border-amber-400 rounded-2xl p-5 mt-3 shadow-sm"><div class="font-black text-amber-900">🤖 AI分析中…</div><div class="text-xs text-slate-600 mt-2">GASのAI分析を実行しています。数秒お待ちください。</div></div>';
+      btn.disabled=true; btn.classList.add('opacity-60','cursor-wait');
+      var url=GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
+      fetch(url,{method:'GET',redirect:'follow',cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); })
+        .then(function(txt){
+          var data; try{data=JSON.parse(txt);}catch(e){throw new Error('GASからJSONを受信できませんでした: '+String(txt).slice(0,120));}
+          if(!data || !data.result){ throw new Error(data&&data.error ? data.error : (data&&data.last_error ? data.last_error : 'AI分析結果が返りませんでした')); }
+          var r=data.result;
+          var analysis={
+            title:r.title||title,
+            category:r.category||'一般', slope:r.slope||'平坦', place:r.place||'',
+            skillsNeeded:Array.isArray(r.skillsNeeded)?r.skillsNeeded:[], summary:r.summary||'', details:r.details||'',
+            feasibility:r.feasibility||'', risks:Array.isArray(r.risks)?r.risks:[], nextAction:r.nextAction||'', checklist:Array.isArray(r.checklist)?r.checklist:[],
+            source:data.source||''
+          };
+          window.__v12EventAnalysis=analysis;
+          if(slip){
+            slip.innerHTML='<div class="bg-white border-2 border-teal-700 rounded-2xl p-5 mt-3 shadow-sm">'
+              +'<div class="flex items-center justify-between gap-2 flex-wrap"><div class="font-black text-teal-900">✅ AI分析が完了しました</div><span class="text-[10px] bg-slate-100 px-2 py-1 rounded-full">🤖 実AI：GAS / '+escV12(analysis.source||'AI')+'</span></div>'
+              +'<div class="mt-4 grid gap-3 text-sm">'
+              +'<div><b>企画名：</b>'+escV12(analysis.title)+'</div>'
+              +'<div><b>カテゴリ：</b>'+escV12(analysis.category)+'</div>'
+              +'<div><b>坂：</b>'+escV12(analysis.slope)+'</div>'
+              +'<div><b>場所：</b>'+escV12(analysis.place)+'</div>'
+              +'<div><b>必要なスキル：</b>'+escV12(analysis.skillsNeeded.join('・'))+'</div>'
+              +'<div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><b>要約：</b><div class="mt-1 leading-6">'+escV12(analysis.summary)+'</div></div>'
+              +'<div class="bg-slate-50 border rounded-xl p-3"><b>企画詳細：</b><div class="mt-1 leading-6 whitespace-pre-wrap">'+escV12(analysis.details)+'</div></div>'
+              +'</div>'
+              +'<button type="button" id="btnRegisterAnalyzedEvent" class="mt-4 w-full bg-teal-700 text-white py-3 rounded-xl font-black">📊 スプレッドシートに登録する</button>'
+              +'<div id="v12RegisterStatus" class="text-xs text-center text-slate-500 mt-2">AI分析結果を確認してから登録できます。</div>'
+              +'</div>';
+            document.getElementById('btnRegisterAnalyzedEvent').addEventListener('click',function(){
+              var a=window.__v12EventAnalysis||analysis;
+              var reg=this, st=document.getElementById('v12RegisterStatus');
+              reg.disabled=true; reg.classList.add('opacity-60');
+              if(st) st.textContent='📤 スプレッドシートへ送信中…';
+              var payload={action:'postEventIdea',id:'idea-'+Date.now(),title:a.title,content:detail,detail:a.details||detail,summary:a.summary,summary200:a.summary,category:a.category,slope:a.slope,skills:a.skillsNeeded,skillsNeeded:a.skillsNeeded,status:'アイデア募集中',place:a.place,name:'',phone:''};
+              /* GASのdoPostはpostEventIdeaを受け取りEventsへ保存する。応答を読めない環境でも送信を実行する。 */
+              fetch(GAS_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+                .then(function(){
+                  if(st) st.innerHTML='<span class="text-teal-700 font-black">✅ GASへ送信しました。Eventsシートへの登録を確認してください。</span>';
+                  reg.textContent='✅ 登録送信済み';
+                  try{ EVENT_IDEAS.unshift({id:payload.id,title:a.title,detail:a.summary,summary:a.summary,category:a.category,status:'アイデア募集中'}); renderEventIdeas(); }catch(e){}
+                })
+                .catch(function(err){
+                  reg.disabled=false; reg.classList.remove('opacity-60');
+                  if(st) st.innerHTML='<span class="text-rose-700 font-black">❌ 送信できませんでした：'+escV12(err.message)+'</span>';
+                });
+            });
+          }
+        })
+        .catch(function(err){
+          console.error('v12 AI analyze error',err);
+          if(slip) slip.innerHTML='<div class="bg-white border-2 border-rose-300 rounded-2xl p-5 mt-3"><div class="font-black text-rose-800">❌ AI分析に失敗しました</div><div class="text-xs text-slate-600 mt-2">'+escV12(err.message)+'</div><div class="text-xs text-slate-500 mt-3">このイベント提案ではローカル代替分析は行っていません。GAS経由の実AI分析に失敗しています。GASのAPIキー・AI設定・公開URLを確認する段階です。</div></div>';
+        })
+        .finally(function(){btn.disabled=false;btn.classList.remove('opacity-60','cursor-wait');});
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install); else install();
+})();
 </script>
 </body>
 </html>
