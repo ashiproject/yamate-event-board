@@ -3073,18 +3073,48 @@ window.filterEventCategory = filterEventCategory;
 <button type="button" onclick="showPage('eventReport')" class="flex flex-col items-center justify-center p-1 text-teal-700"><span class="text-lg">📷</span><span class="text-[10px] font-bold">様子</span></button>
 </div>
 
+
 <script>
 ensureEventSkills();
 initLogin();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('./sw.js').catch(function(err){
+    navigator.serviceWorker.register('./sw.js', {scope: './'}).then(function(reg){
+      console.log('SW registered:', reg.scope);
+    }).catch(function(err){
       console.log('SW registration failed:', err);
     });
   });
 }
+
+// PWAインストールプロンプトを保存
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log('beforeinstallprompt fired - インストール可能');
+  // インストールボタンを表示
+  var btn = document.getElementById('pwaInstallBtn');
+  if(btn) btn.classList.remove('hidden');
+});
+
+function installPWA(){
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choice) => {
+      console.log('userChoice', choice.outcome);
+      deferredPrompt = null;
+    });
+  } else {
+    alert('インストール方法:
+
+iPhone: Safariの共有ボタン → ホーム画面に追加
+Android: Chromeのメニュー → アプリをインストール');
+  }
+}
 </script>
+
 
 
 <script>
