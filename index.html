@@ -1228,7 +1228,6 @@ function loadFromSheet(){
   // 意見（声のボード）
   yamateJsonp(GAS_URL+"?action=getIdeas")
     .then(function(data){
-    .then(function(data){
       console.log("getIdeas:", data);
       if(!data || !Array.isArray(data) || data.length===0){
         ensureDefaultIntegrated24();
@@ -1314,7 +1313,6 @@ function loadFromSheet(){
   // イベント
     // イベント：idea- 始まり＝企画、それ以外＝今後のイベント
   yamateJsonp(GAS_URL+"?action=getEvents")
-    .then(function(data){
     .then(function(data){
       console.log("getEvents:", data);
       if(!data || !Array.isArray(data) || data.length===0) return;
