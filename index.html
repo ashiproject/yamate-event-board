@@ -435,7 +435,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </main>
 <footer class="w-full mt-4 text-center">
 <div class="bg-neutral-100/80 rounded-2xl py-3 px-4 border border-neutral-200/60">
-<p class="text-[11px] text-neutral-500 font-medium">「静かな住宅街だからこそ、自然体でつながれる場所を」</p>
+<p class="text-[11px] text-neutral-500 font-medium">静かな住宅街だからこそ自然体でつながれる場所を</p>
 <p class="text-[11px] text-neutral-600 font-bold mt-0.5">芦屋山手町・code for ashiya</p>
 </div>
 </footer>
@@ -532,10 +532,10 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <section id="event" class="page">
 <div class="text-sm text-slate-500 mb-2"><button type="button" onclick="showPage('home')">← ホーム</button></div>
 <h1 class="text-xl font-black">イベント</h1>
-<div class="flex gap-2 mt-3">
-<button type="button" onclick="openEventSection('upcoming')" class="flex-1 py-2.5 rounded-full bg-teal-700 text-white text-xs font-black">📅 今後</button>
-<button type="button" onclick="openEventSection('ideas')" class="flex-1 py-2.5 rounded-full bg-white border text-xs font-black">💡 アイデア</button>
-<button type="button" onclick="openEventSection('hatsuan')" class="flex-1 py-2.5 rounded-full bg-white border text-xs font-black">➕ 提案</button>
+<div class="flex gap-2 mt-3" id="eventMainTabs">
+<button type="button" id="tabBtnUpcoming" onclick="openEventSection('upcoming')" class="flex-1 py-2.5 rounded-full bg-teal-700 text-white text-xs font-black border-2 border-teal-700">📅 今後</button>
+<button type="button" id="tabBtnIdeas" onclick="openEventSection('ideas')" class="flex-1 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold text-slate-700">💡 アイデア</button>
+<button type="button" id="tabBtnHatsuan" onclick="openEventSection('hatsuan')" class="flex-1 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold text-slate-700">➕ 提案</button>
 </div>
 
 <div class="mt-4">
@@ -600,7 +600,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
   </div>
 </div>
 <div id="event-category-grid" class="hidden"></div>
-<div id="event-upcoming-list" class="hidden"></div>
+<div id="event-upcoming-list"></div>
 <div id="event-ideas-list" class="hidden"></div>
 <div id="event-hatsuan-list" class="hidden">
 <div class="border-2 border-slate-800 rounded-[24px] p-5 md:p-6 bg-white shadow-sm">
@@ -2203,56 +2203,59 @@ function closeHowto(){ document.getElementById('howtoModal').classList.remove('o
 /* -------------------------------------------------------------
    4. EVENT BOARD LOGIC
 ------------------------------------------------------------- */
-function openEventSection(tab){
-  // イベント関連ボタンは必ず「イベントページへ移動」してから
-  // 指定されたLv2を開く。トップページが残って表示される問題を防止。
-  try{
-    document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-    var eventPage=document.getElementById('event');
-    if(eventPage) eventPage.classList.add('active');
-    try{ ensureEventSkills(); }catch(e){}
-    try{ renderEventCategoryGrid(); }catch(e){}
-    showEventTab(tab || 'upcoming');
-    window.scrollTo(0,0);
-  }catch(e){
-    console.error('openEventSection error:', e);
-  }
-}
+
+
+
 
 function showEventTab(tab){
-  try{ renderKentou(); }catch(e){}
+  try{ ensureJoinCountsPersist(); }catch(e){}
   currentTab = tab || 'upcoming';
   var upcomingList = document.getElementById('event-upcoming-list');
   var ideasList = document.getElementById('event-ideas-list');
   var hatsuanList = document.getElementById('event-hatsuan-list');
-  var eventPage = document.getElementById('event');
-  if(eventPage) eventPage.classList.add('active');
+  var filterPanel = document.getElementById('event-filter-panel');
+  var kentouBoard = document.getElementById('kentouBoard');
+  var catGrid = document.getElementById('event-category-grid');
+  
   if(upcomingList) upcomingList.classList.add('hidden');
   if(ideasList) ideasList.classList.add('hidden');
   if(hatsuanList) hatsuanList.classList.add('hidden');
+  if(catGrid) catGrid.classList.add('hidden');
 
-  var baseBtn = 'flex-shrink-0 px-5 py-2.5 rounded-full bg-white border font-bold text-sm whitespace-nowrap';
-  var activeBtn = 'flex-shrink-0 px-5 py-2.5 rounded-full bg-teal-700 text-white font-black text-sm whitespace-nowrap';
-  var hatsuanBtn = 'relative flex-shrink-0 px-5 py-2.5 rounded-full bg-gradient-to-r from-rose-500 via-amber-500 to-orange-500 text-white font-black text-sm shadow-md whitespace-nowrap';
-  var b1=document.getElementById('btn-upcoming'), b2=document.getElementById('btn-ideas'), b3=document.getElementById('btn-hatsuan');
+  var baseBtn = 'flex-1 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold text-slate-700';
+  var activeUpcoming = 'flex-1 py-2.5 rounded-full bg-teal-700 text-white text-xs font-black shadow border-2 border-teal-700';
+  var activeIdeas = 'flex-1 py-2.5 rounded-full bg-amber-500 text-black text-xs font-black shadow border-2 border-amber-500';
+  var activeHatsuan = 'flex-1 py-2.5 rounded-full bg-slate-900 text-white text-xs font-black shadow border-2 border-slate-900';
+  var b1=document.getElementById('tabBtnUpcoming'), b2=document.getElementById('tabBtnIdeas'), b3=document.getElementById('tabBtnHatsuan');
   if(b1) b1.className=baseBtn;
   if(b2) b2.className=baseBtn;
-  if(b3) b3.className=hatsuanBtn;
+  if(b3) b3.className=baseBtn;
 
   if(tab === 'ideas'){
     if(ideasList) ideasList.classList.remove('hidden');
-    if(b2) b2.className=activeBtn;
+    if(b2) b2.className=activeIdeas;
+    if(filterPanel) filterPanel.classList.remove('hidden');
+    if(kentouBoard) kentouBoard.classList.add('hidden');
   }else if(tab === 'hatsuan'){
     if(hatsuanList) hatsuanList.classList.remove('hidden');
-    if(b3) b3.className=hatsuanBtn+' ring-2 ring-rose-300';
+    if(b3) b3.className=activeHatsuan;
+    if(filterPanel) filterPanel.classList.add('hidden');
+    if(kentouBoard) kentouBoard.classList.add('hidden');
   }else{
     if(upcomingList) upcomingList.classList.remove('hidden');
-    if(b1) b1.className=activeBtn;
+    if(b1) b1.className=activeUpcoming;
+    if(filterPanel) filterPanel.classList.remove('hidden');
+    if(kentouBoard) kentouBoard.classList.remove('hidden');
   }
-  try{ renderEventCategoryGrid(); }catch(e){ console.log('renderEventCategoryGrid error',e); }
-  try{ renderEvents(); }catch(e){ console.log('renderEvents error',e); }
-  try{ renderEventIdeas(); }catch(e){ console.log('renderEventIdeas error',e); }
+  try{ renderEventCategoryGrid(); }catch(e){}
+  try{ renderEvents(); }catch(e){}
+  try{ renderEventIdeas(); }catch(e){}
+  try{ renderKentou(); }catch(e){}
 }
+
+function openEventSection(tab){ document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); }); var ep=document.getElementById('event'); if(ep) ep.classList.add('active'); showEventTab(tab||'upcoming'); window.scrollTo(0,0); }
+
+
 
 function normalizeEventCategory(cat){
   var s = String(cat||'');
@@ -2365,6 +2368,189 @@ function eventCardHtml(ev){
     + '<div class="event-card-footer"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')">📍 チェックイン</button><button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')">🎨 チラシ化</button></div>'
     + '</div></article>';
 }
+
+var _eventStage = {}; // id -> 0,1,2
+function toggleEventDetailStage(id){
+  try{
+    var cur = _eventStage[id] || 0;
+    cur = (cur + 1) % 3;
+    _eventStage[id] = cur;
+    renderEvents();
+    renderEventIdeas();
+    // 開いた状態を維持するため、クリックしたカードはスクロール位置を保持
+    setTimeout(function(){
+      var el=document.getElementById('event-card-'+id);
+      if(el && cur>0) el.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }, 50);
+  }catch(e){ console.log('toggle error', e); }
+}
+function getEventById(id){
+  var all = [];
+  if(typeof EVENT_DATA!=='undefined') all = all.concat(EVENT_DATA);
+  if(typeof EVENT_IDEAS!=='undefined') all = all.concat(EVENT_IDEAS);
+  for(var i=0;i<all.length;i++) if(all[i].id===id) return all[i];
+  return null;
+}
+function eventCardBorderColor(cat){
+  var s=String(cat||'');
+  if(/季節/.test(s)) return 'border-pink-500';
+  if(/子ども|親子/.test(s)) return 'border-sky-500';
+  if(/食べる|集まる/.test(s)) return 'border-amber-500';
+  if(/趣味|学び/.test(s)) return 'border-violet-500';
+  if(/ペット/.test(s)) return 'border-emerald-500';
+  return 'border-slate-800';
+}
+function eventCardHtmlUnified(ev, isIdea){
+  var stage = _eventStage[ev.id] || 0;
+  var statusLabel = ev.status || (isIdea ? 'アイデア募集中' : '予定');
+  var statusMap = {postEventIdea:'アイデア募集中',idea:'アイデア募集中',planned:'企画中',confirmed:'実施確定'};
+  if(statusMap[statusLabel]) statusLabel = statusMap[statusLabel];
+  var statusColor = statusLabel.indexOf('確定')>=0 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : statusLabel.indexOf('募集中')>=0 ? 'bg-green-100 text-green-800 border-green-300' : 'bg-slate-100 text-slate-700 border-slate-300';
+  var borderColor = eventCardBorderColor(ev.category);
+  var counts={want:getJoinCount(ev.id,'want'),help:getJoinCount(ev.id,'help'),lead:getJoinCount(ev.id,'lead'),place:getJoinCount(ev.id,'place'),interest:getJoinCount(ev.id,'interest')};
+  var total=counts.want+counts.help+counts.lead+counts.place+counts.interest;
+  var gaugePct=Math.min(100, total*10);
+
+  var html = '<article id="event-card-'+ev.id+'" class="bg-white border-[4px] '+borderColor+' rounded-[20px] p-4 shadow-sm mb-4">';
+  // ヘッダー：タイトルクリックで変わる
+  html += '<div class="flex items-start justify-between gap-2 cursor-pointer" onclick="toggleEventDetailStage(\''+ev.id+'\')">';
+  html += '<div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap">';
+  html += '<span class="text-[11px]">'+(isIdea?'💡':'📅')+'</span>';
+  html += '<h3 class="font-black text-[15px] leading-tight">'+esc(ev.title)+'</h3>';
+  html += '</div>';
+  html += '<div class="text-[11px] text-slate-500 mt-1.5">📍 '+esc(ev.date||'')+' | '+esc(ev.place||'')+' | '+esc(eventCategoryLabel(ev.category))+'</div>';
+  if(isIdea){
+    html += '<div class="text-[11px] text-slate-500 mt-1">🙋'+counts.want+' 🤝'+counts.help+' 📋'+counts.lead+' 📍'+counts.place+' 👀'+counts.interest+' | 合計'+total+'票</div>';
+    html += '<div class="w-full h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div class="h-full bg-amber-500" style="width:'+gaugePct+'%"></div></div>';
+  }
+  html += '</div>';
+  html += '<div class="flex flex-col items-end gap-1 shrink-0">';
+  html += '<span class="px-2.5 py-1 rounded-full text-[11px] font-black border '+statusColor+'">'+esc(statusLabel)+'</span>';
+  html += '<button type="button" class="px-2.5 py-1 rounded-full bg-slate-100 border-2 border-slate-200 text-[11px] font-bold">'+ (stage===0?'▼ 詳細表示': stage===1?'▲ 要約を閉じる':'▲ 最初に戻る') +'</button>';
+  html += '</div></div>';
+
+  // 3段階の内容
+  if(stage===1){
+    var detail = ev.detail || ev.summary || '';
+    var skills = ev.skillsNeeded||[];
+    html += '<div class="mt-3 bg-slate-50 border-2 border-slate-200 rounded-2xl p-3">';
+    html += '<div class="font-bold text-[11px] text-slate-600 mb-2">📝 要約とスキル</div>';
+    html += '<div class="text-[13px] text-slate-700 leading-relaxed">'+esc(detail.slice(0,120))+'</div>';
+    html += '<div class="flex flex-wrap gap-1.5 mt-3">'+skills.slice(0,5).map(function(s){return '<span class="px-2.5 py-1 rounded-full bg-white border-2 border-slate-200 text-[10px] font-bold">'+esc(s)+'</span>';}).join('')+'</div>';
+    html += '<div class="grid grid-cols-3 gap-2 mt-3">';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'want\')" class="py-2 rounded-full bg-amber-400 text-black text-[11px] font-black border-2 border-amber-500">🙋 やりたい '+counts.want+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'help\')" class="py-2 rounded-full bg-blue-500 text-white text-[11px] font-black border-2 border-blue-600">🤝 手伝える '+counts.help+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'lead\')" class="py-2 rounded-full bg-violet-600 text-white text-[11px] font-black border-2 border-violet-700">📋 仕切り '+counts.lead+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'place\')" class="py-2 rounded-full bg-emerald-600 text-white text-[11px] font-black border-2 border-emerald-700">📍 場所提供 '+counts.place+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'interest\')" class="py-2 rounded-full bg-slate-800 text-white text-[11px] font-black border-2 border-slate-900">👀 興味あり '+counts.interest+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="py-2 rounded-full bg-white text-slate-700 text-[11px] font-black border-2 border-slate-300">📖 150-200字を読む</button>';
+    html += '</div>';
+    html += '<button type="button" onclick="event.stopPropagation(); createFlyerFromEventObj(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs font-black shadow">🎨 このイベントでチラシ作成 →</button>';
+    html += '</div>';
+  }else if(stage===2){
+    html += '<div class="mt-3 bg-white border-[3px] border-teal-600 rounded-2xl p-4 shadow-sm">';
+    html += '<div class="font-black text-xs text-teal-800 mb-2">📖 150-200文字の詳細</div>';
+    html += '<div class="text-[13px] leading-relaxed text-slate-800">'+esc(ev.detail||ev.summary||'')+'</div>';
+    html += '<div class="mt-3 p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 leading-relaxed">タイトル：'+esc(ev.title)+'<br>場所：'+esc(ev.place||'')+' / 日時：'+esc(ev.date||'')+' / カテゴリ：'+esc(ev.category||'')+'</div>';
+    html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-slate-100 border-2 border-slate-300 text-xs font-bold">▲ 最初に戻る（タイトルのみ）</button></div>';
+  }
+  html += '</article>';
+  return html;
+}
+
+
+
+var _eventStage = _eventStage || {};
+function toggleEventDetailStage(id){
+  var cur = _eventStage[id] || 0;
+  cur = (cur + 1) % 3;
+  _eventStage[id] = cur;
+  try{ renderEvents(); renderEventIdeas(); }catch(e){}
+}
+function getEventById(id){
+  var all = [];
+  if(typeof EVENT_DATA!=='undefined') all = all.concat(EVENT_DATA);
+  if(typeof EVENT_IDEAS!=='undefined') all = all.concat(EVENT_IDEAS);
+  for(var i=0;i<all.length;i++) if(all[i].id===id) return all[i];
+  return null;
+}
+function eventCardBorderColor(cat){
+  var s=String(cat||'');
+  if(/季節/.test(s)) return 'border-pink-500';
+  if(/子ども|親子/.test(s)) return 'border-sky-500';
+  if(/食べる|集まる/.test(s)) return 'border-amber-500';
+  if(/趣味|学び/.test(s)) return 'border-violet-500';
+  if(/ペット/.test(s)) return 'border-emerald-500';
+  return 'border-slate-800';
+}
+function eventCardHtmlUnified(ev, isIdea){
+  var stage = _eventStage[ev.id] || 0;
+  var statusLabel = ev.status || (isIdea ? 'アイデア募集中' : '予定');
+  var statusMap = {postEventIdea:'アイデア募集中',idea:'アイデア募集中',planned:'企画中',confirmed:'実施確定'};
+  if(statusMap[statusLabel]) statusLabel = statusMap[statusLabel];
+  var statusColor = statusLabel.indexOf('確定')>=0 ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : statusLabel.indexOf('募集中')>=0 ? 'bg-green-100 text-green-800 border-green-300' : 'bg-slate-100 text-slate-700 border-slate-300';
+  var borderColor = eventCardBorderColor(ev.category);
+  var counts={want:getJoinCount(ev.id,'want'),help:getJoinCount(ev.id,'help'),lead:getJoinCount(ev.id,'lead'),place:getJoinCount(ev.id,'place'),interest:getJoinCount(ev.id,'interest')};
+  var total=counts.want+counts.help+counts.lead+counts.place+counts.interest;
+  var gaugePct=Math.min(100, total*10);
+
+  var html = '<article id="event-card-'+ev.id+'" class="bg-white border-[4px] '+borderColor+' rounded-[20px] p-4 shadow-sm mb-4">';
+  html += '<div class="flex items-start justify-between gap-2 cursor-pointer" onclick="toggleEventDetailStage(\''+ev.id+'\')">';
+  html += '<div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap">';
+  html += '<span class="text-[11px]">'+(isIdea?'💡':'📅')+'</span>';
+  html += '<h3 class="font-black text-[15px] leading-tight">'+esc(ev.title)+'</h3>';
+  html += '</div>';
+  html += '<div class="text-[11px] text-slate-500 mt-1.5">📍 '+esc(ev.date||'')+' | '+esc(ev.place||'')+' | '+esc(eventCategoryLabel(ev.category))+'</div>';
+  html += '<div class="text-[11px] text-slate-500 mt-1">やりたい '+counts.want+' / 手伝える '+counts.help+' / 仕切り '+counts.lead+' / 場所 '+counts.place+' | 合計'+total+'票</div>';
+  html += '<div class="w-full h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div class="h-full bg-amber-500" style="width:'+gaugePct+'%"></div></div>';
+  html += '</div>';
+  html += '<div class="flex flex-col items-end gap-1 shrink-0">';
+  html += '<span class="px-2.5 py-1 rounded-full text-[11px] font-black border '+statusColor+'">'+esc(statusLabel)+'</span>';
+  html += '<button type="button" class="px-2.5 py-1 rounded-full bg-slate-100 border-2 border-slate-200 text-[11px] font-bold">'+ (stage===0?'▼ 詳細表示': stage===1?'▼ 150-200字を読む':'▲ 閉じる') +'</button>';
+  html += '</div></div>';
+
+  if(stage===1){
+    var detail = ev.detail || ev.summary || '';
+    var skills = ev.skillsNeeded||[];
+    html += '<div class="mt-3 bg-slate-50 border-2 border-slate-200 rounded-2xl p-3">';
+    html += '<div class="font-bold text-[11px] text-slate-600 mb-2">📝 要約とスキル</div>';
+    html += '<div class="text-[13px] text-slate-700 leading-relaxed">'+esc(detail.slice(0,120))+'</div>';
+    html += '<div class="flex flex-wrap gap-1.5 mt-3">'+skills.slice(0,5).map(function(s){return '<span class="px-2.5 py-1 rounded-full bg-white border-2 border-slate-200 text-[10px] font-bold">'+esc(s)+'</span>';}).join('')+'</div>';
+    html += '<div class="grid grid-cols-3 gap-2 mt-3">';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'want\')" class="py-2 rounded-full bg-amber-400 text-black text-[11px] font-black border-2 border-amber-500">🙋 やりたい '+counts.want+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'help\')" class="py-2 rounded-full bg-blue-500 text-white text-[11px] font-black border-2 border-blue-600">🤝 手伝える '+counts.help+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'lead\')" class="py-2 rounded-full bg-violet-600 text-white text-[11px] font-black border-2 border-violet-700">📋 仕切り '+counts.lead+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'place\')" class="py-2 rounded-full bg-emerald-600 text-white text-[11px] font-black border-2 border-emerald-700">📍 場所提供 '+counts.place+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'interest\')" class="py-2 rounded-full bg-slate-800 text-white text-[11px] font-black border-2 border-slate-900">👀 興味あり '+counts.interest+'</button>';
+    html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="py-2 rounded-full bg-white text-slate-700 text-[11px] font-black border-2 border-slate-300">📖 150-200字を読む</button>';
+    html += '</div>';
+    html += '<button type="button" onclick="event.stopPropagation(); createFlyerFromEventObj(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-red-500 text-white text-xs font-black shadow">🎨 このイベントでチラシ作成 →</button>';
+    html += '</div>';
+  }else if(stage===2){
+    html += '<div class="mt-3 bg-white border-[3px] border-teal-600 rounded-2xl p-4 shadow-sm">';
+    html += '<div class="font-black text-xs text-teal-800 mb-2">📖 150-200文字の詳細</div>';
+    html += '<div class="text-[13px] leading-relaxed text-slate-800">'+esc(ev.detail||ev.summary||'')+'</div>';
+    html += '<div class="mt-3 p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 leading-relaxed">タイトル：'+esc(ev.title)+'<br>場所：'+esc(ev.place||'')+' / 日時：'+esc(ev.date||'')+' / カテゴリ：'+esc(ev.category||'')+'</div>';
+    html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-slate-100 border-2 border-slate-300 text-xs font-bold">▲ 最初に戻る（タイトルのみ）</button></div>';
+  }
+  html += '</article>';
+  return html;
+}
+function renderEvents(){
+  var el=document.getElementById('event-upcoming-list'); if(!el) return;
+  var filtered=EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
+  var html='<div class="flex flex-col">';
+  filtered.forEach(function(ev){ html+=eventCardHtmlUnified(ev,false); });
+  html+='</div>'; el.innerHTML=html;
+}
+function renderEventIdeas(){
+  var el=document.getElementById('event-ideas-list'); if(!el) return;
+  var filtered=EVENT_IDEAS.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
+  var html='<div class="flex flex-col">';
+  filtered.forEach(function(ev){ html+=eventCardHtmlUnified(ev,true); });
+  html+='</div>'; el.innerHTML=html;
+}
+
 function renderEventCategoryGrid(){
   renderEventFilterButtons(); updateEventFilterButtonStates();
   var source=(currentTab==='ideas')?EVENT_IDEAS:EVENT_DATA;
@@ -2452,58 +2638,9 @@ function getSupportBtnClass(id, type){
 }
 
 function getJoinCount(id, type){ try{ var c={}; try{ c=JSON.parse(localStorage.getItem("join_"+id)||"{}"); }catch(e){} if(type) return c[type]||0; var total=0; for(var k in c){ total+=c[k]; } return total; }catch(e){ return 0; } }
-function toggleEventDetail(id){ var el = document.getElementById('event-detail-'+id); if(el) el.classList.toggle('hidden'); }
-
-renderKentou();
-function renderEvents(){
-  var el = document.getElementById('event-upcoming-list'); if(!el) return;
-  var filtered = EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered = filtered.filter(function(e){ return eventMatchesOpenCat(e); });
-  var html = '';
-  filtered.forEach(ev => {
-    html += '<div class="border rounded-2xl p-4 mb-3 bg-white w-full" hover:shadow-sm transition-shadow">'
-    + '<div class="flex justify-between gap-2 cursor-pointer" onclick="toggleEventDetail(\''+ev.id+'\')"><div class="font-black text-sm">📅 '+esc(ev.title)+' <span class="text-[10px] bg-slate-100 border px-2 py-0.5 rounded-full">▼ 詳細表示</span></div><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">'+esc(ev.status)+'</span></div>'
-    + '<div class="text-xs text-slate-500 mt-1">📍 '+esc(ev.date)+' | '+esc(ev.place)+' | '+esc(ev.category)+'</div>'
-    + '<div id="event-detail-'+ev.id+'" class="hidden mt-3 space-y-3"><div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||'')+'</div>'
-    + '<div class="flex gap-1.5 flex-wrap">'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+'">🙋 やりたい '+(getJoinCount(ev.id,'want')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+'">🤝 手伝える '+(getJoinCount(ev.id,'help')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+'">📋 仕切り '+(getJoinCount(ev.id,'lead')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+'">📍 場所提供 '+(getJoinCount(ev.id,'place')||'')+'</button>'
-    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+'">👀 興味あり '+(getJoinCount(ev.id,'interest')||'')+'</button>'
-    + '</div>'
-    + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold rounded-xl text-xs shadow-sm hover:from-amber-600">🎨 このイベントでチラシ作成 →</button>'
-    + '</div></div>';
-  });
-  el.innerHTML = html;
-}
 
 
-function renderEventIdeas(){
-  var el=document.getElementById('event-ideas-list'); if(!el) return;
-  var filtered=EVENT_IDEAS.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
-  var html='<div class="idea-board"><div class="mb-4 flex items-center justify-between"><div><h2 class="text-xl font-black">💡 アイデアボード</h2><p class="text-xs text-slate-500 mt-1">やりたいを集めて、みんなで実現しましょう。</p></div><button type="button" onclick="openEventSection(\'hatsuan\')" class="px-5 py-2.5 rounded-full bg-teal-700 text-white text-sm font-black">＋ アイデアを提案</button></div><div class="grid md:grid-cols-2 gap-4 mt-4">';
-  filtered.forEach(function(ev){
-    var counts={want:getJoinCount(ev.id,'want'),help:getJoinCount(ev.id,'help'),lead:getJoinCount(ev.id,'lead'),place:getJoinCount(ev.id,'place'),interest:getJoinCount(ev.id,'interest')};
-    var total=counts.want+counts.help+counts.lead+counts.place;
-    var gaugePct=Math.min(100, total*10);
-    html+='<article class="border rounded-2xl bg-white p-4">'
-      +'<h3 class="font-black text-[15px]">'+esc(ev.title)+'</h3>'
-      +'<p class="text-xs text-slate-600 mt-1">'+esc(((ev.detail||ev.summary||'').slice(0,60)))+'</p>'
-      +'<div class="text-[11px] text-slate-500 mt-2">やりたい '+counts.want+' / 手伝える '+counts.help+' / 仕切り '+counts.lead+' / 場所 '+counts.place+'</div>'
-      +'<div class="w-full h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div class="h-full bg-amber-500" style="width:'+gaugePct+'%"></div></div>'
-      +'<div class="flex gap-2 mt-3"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="flex-1 py-2.5 rounded-full bg-amber-500 text-slate-900 font-black text-xs">🙋 やりたい</button><button type="button" onclick="toggleEventDetail(\''+ev.id+'\')" class="px-4 py-2.5 rounded-full bg-white border text-xs font-bold">詳細</button></div>'
-      +'<div class="flex gap-1.5 mt-2 flex-wrap">'
-        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+' text-[10px]">🙋 やりたい '+counts.want+'</button>'
-        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+' text-[10px]">🤝 手伝える '+counts.help+'</button>'
-        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+' text-[10px]">📋 仕切り '+counts.lead+'</button>'
-        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+' text-[10px]">📍 場所提供 '+counts.place+'</button>'
-        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+' text-[10px]">👀 興味あり '+counts.interest+'</button>'
-      +'</div>'
-      +'<div id="event-detail-'+ev.id+'" class="hidden mt-3 p-3 bg-slate-50 rounded-xl text-xs whitespace-pre-wrap border leading-relaxed"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||ev.content||'')+'</div>'
-      +'</article>';
-  });
-  html+='</div></div>'; el.innerHTML=html;
-}
+
 
 
 
@@ -2874,8 +3011,7 @@ document.addEventListener('DOMContentLoaded', function(){
   
   renderAccordion();
   renderEventCategoryGrid();
-  renderEvents();
-  renderEventIdeas();
+  showEventTab('upcoming');
   renderKentou();
   renderHiroba();
   
