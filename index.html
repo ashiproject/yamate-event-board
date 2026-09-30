@@ -629,7 +629,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div></div>
 </div>
 
-<div id="kentouBoard" class="mt-6 border-[3px] border-teal-800 rounded-[20px] overflow-hidden bg-white shadow-sm block">
+<div id="kentouBoard" class="mt-6 border-[3px] border-teal-800 rounded-[20px] overflow-hidden bg-white shadow-sm">
 <div class="bg-teal-800 text-white px-5 py-3 flex items-center justify-between"><div class="font-black">📋 町内会で検討のボード <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full ml-2">応援10票以上で自動表示</span></div><span class="text-[10px] bg-amber-400 text-black px-2 py-1 rounded-full font-black">正式検討</span></div>
 <div class="p-4"><div id="kentouWrap"></div></div>
 </div>
@@ -2220,7 +2220,6 @@ function openEventSection(tab){
 }
 
 function showEventTab(tab){
-  try{ ensureJoinCountsPersist(); }catch(e){}
   try{ renderKentou(); }catch(e){}
   currentTab = tab || 'upcoming';
   var upcomingList = document.getElementById('event-upcoming-list');
@@ -2422,20 +2421,13 @@ function joinEvent(event, id, type){
     var counts = {}; try{ counts = JSON.parse(localStorage.getItem('join_'+id)||'{}'); }catch(e){}
     counts[type] = (counts[type]||0) + 1;
     try{ localStorage.setItem('join_'+id, JSON.stringify(counts)); }catch(e){}
-    postToGAS({action:"joinEvent", eventId:id, type:type, count:counts[type]});
-    
+    try{ postToGAS({action:"joinEvent", eventId:id, type:type, count:counts[type]}); }catch(e){}
     var typeLabels = {want:'🙋 やりたい', help:'🤝 手伝える', lead:'📋 仕切り', place:'📍 場所提供', interest:'👀 興味あり'};
-    showToast('🎉 「' + (typeLabels[type]||'応援') + '」に投票しました！（現在 ' + counts[type] + ' 票） - 画面はそのまま');
-    
-    try{
-      var btns = document.querySelectorAll('[onclick*="joinEvent"][onclick*="'+id+'"][onclick*="'+type+'"]');
-      btns.forEach(function(btn){
-        var baseLabel = typeLabels[type]||type;
-        btn.textContent = baseLabel + ' ' + counts[type];
-        btn.classList.add('bg-amber-500','text-black','font-black');
-      });
-    }catch(e){}
-    console.log('joinEvent - 画面変わらない仕様（前回同様）:', id, type, counts[type]);
+    showToast('🎉 「' + (typeLabels[type]||'応援') + '」に投票しました！（現在 ' + counts[type] + ' 票）');
+    try{ renderEvents(); }catch(e){ console.log('renderEvents fail', e); }
+    try{ renderEventIdeas(); }catch(e){}
+    try{ renderKentou(); }catch(e){}
+    try{ renderEventCategoryGrid(); }catch(e){}
   }catch(e){ console.log('joinEvent error', e); }
 }
 
@@ -2459,8 +2451,417 @@ function getSupportBtnClass(id, type){
   return base + 'bg-slate-800 border-slate-900 text-white font-black';
 }
 
+function getJoinCount(id, type){ try{ var c={}; try{ c=JSON.parse(localStorage.getItem("join_"+id)||"{}"); }catch(e){} if(type) return c[type]||0; var total=0; for(var k in c){ total+=c[k]; } return total; }catch(e){ return 0; } }
+function toggleEventDetail(id){ var el = document.getElementById('event-detail-'+id); if(el) el.classList.toggle('hidden'); }
+
+renderKentou();
+function renderEvents(){
+  var el = document.getElementById('event-upcoming-list'); if(!el) return;
+  var filtered = EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered = filtered.filter(function(e){ return eventMatchesOpenCat(e); });
+  var html = '';
+  filtered.forEach(ev => {
+    html += '<div class="border rounded-2xl p-4 mb-3 bg-white w-full" hover:shadow-sm transition-shadow">'
+    + '<div class="flex justify-between gap-2 cursor-pointer" onclick="toggleEventDetail(\''+ev.id+'\')"><div class="font-black text-sm">📅 '+esc(ev.title)+' <span class="text-[10px] bg-slate-100 border px-2 py-0.5 rounded-full">▼ 詳細表示</span></div><span class="text-xs bg-emerald-100 text-emerald-800 font-bold px-2.5 py-1 rounded-full">'+esc(ev.status)+'</span></div>'
+    + '<div class="text-xs text-slate-500 mt-1">📍 '+esc(ev.date)+' | '+esc(ev.place)+' | '+esc(ev.category)+'</div>'
+    + '<div id="event-detail-'+ev.id+'" class="hidden mt-3 space-y-3"><div class="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||'')+'</div>'
+    + '<div class="flex gap-1.5 flex-wrap">'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+'">🙋 やりたい '+(getJoinCount(ev.id,'want')||'')+'</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+'">🤝 手伝える '+(getJoinCount(ev.id,'help')||'')+'</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+'">📋 仕切り '+(getJoinCount(ev.id,'lead')||'')+'</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+'">📍 場所提供 '+(getJoinCount(ev.id,'place')||'')+'</button>'
+    + '<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+'">👀 興味あり '+(getJoinCount(ev.id,'interest')||'')+'</button>'
+    + '</div>'
+    + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold rounded-xl text-xs shadow-sm hover:from-amber-600">🎨 このイベントでチラシ作成 →</button>'
+    + '</div></div>';
+  });
+  el.innerHTML = html;
+}
 
 
+function renderEventIdeas(){
+  var el=document.getElementById('event-ideas-list'); if(!el) return;
+  var filtered=EVENT_IDEAS.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
+  var html='<div class="idea-board"><div class="mb-4 flex items-center justify-between"><div><h2 class="text-xl font-black">💡 アイデアボード</h2><p class="text-xs text-slate-500 mt-1">やりたいを集めて、みんなで実現しましょう。</p></div><button type="button" onclick="openEventSection(\'hatsuan\')" class="px-5 py-2.5 rounded-full bg-teal-700 text-white text-sm font-black">＋ アイデアを提案</button></div><div class="grid md:grid-cols-2 gap-4 mt-4">';
+  filtered.forEach(function(ev){
+    var counts={want:getJoinCount(ev.id,'want'),help:getJoinCount(ev.id,'help'),lead:getJoinCount(ev.id,'lead'),place:getJoinCount(ev.id,'place'),interest:getJoinCount(ev.id,'interest')};
+    var total=counts.want+counts.help+counts.lead+counts.place;
+    var gaugePct=Math.min(100, total*10);
+    html+='<article class="border rounded-2xl bg-white p-4">'
+      +'<h3 class="font-black text-[15px]">'+esc(ev.title)+'</h3>'
+      +'<p class="text-xs text-slate-600 mt-1">'+esc(((ev.detail||ev.summary||'').slice(0,60)))+'</p>'
+      +'<div class="text-[11px] text-slate-500 mt-2">やりたい '+counts.want+' / 手伝える '+counts.help+' / 仕切り '+counts.lead+' / 場所 '+counts.place+'</div>'
+      +'<div class="w-full h-2 bg-slate-200 rounded-full mt-2 overflow-hidden"><div class="h-full bg-amber-500" style="width:'+gaugePct+'%"></div></div>'
+      +'<div class="flex gap-2 mt-3"><button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="flex-1 py-2.5 rounded-full bg-amber-500 text-slate-900 font-black text-xs">🙋 やりたい</button><button type="button" onclick="toggleEventDetail(\''+ev.id+'\')" class="px-4 py-2.5 rounded-full bg-white border text-xs font-bold">詳細</button></div>'
+      +'<div class="flex gap-1.5 mt-2 flex-wrap">'
+        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'want\')" class="'+getSupportBtnClass(ev.id,'want')+' text-[10px]">🙋 やりたい '+counts.want+'</button>'
+        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'help\')" class="'+getSupportBtnClass(ev.id,'help')+' text-[10px]">🤝 手伝える '+counts.help+'</button>'
+        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'lead\')" class="'+getSupportBtnClass(ev.id,'lead')+' text-[10px]">📋 仕切り '+counts.lead+'</button>'
+        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'place\')" class="'+getSupportBtnClass(ev.id,'place')+' text-[10px]">📍 場所提供 '+counts.place+'</button>'
+        +'<button type="button" onclick="joinEvent(event,\''+ev.id+'\',\'interest\')" class="'+getSupportBtnClass(ev.id,'interest')+' text-[10px]">👀 興味あり '+counts.interest+'</button>'
+      +'</div>'
+      +'<div id="event-detail-'+ev.id+'" class="hidden mt-3 p-3 bg-slate-50 rounded-xl text-xs whitespace-pre-wrap border leading-relaxed"><div class="font-bold text-[11px] mb-1 text-slate-500">📝 詳細（detail）</div>'+esc(ev.detail||ev.summary||ev.content||'')+'</div>'
+      +'</article>';
+  });
+  html+='</div></div>'; el.innerHTML=html;
+}
+
+
+
+
+
+function renderKentou(){
+  var wrap = document.getElementById('kentouWrap'); if(!wrap) return;
+  var all = EVENT_DATA.concat(EVENT_IDEAS);
+  var kentou = all.filter(ev => {
+    var c = {}; try{ c = JSON.parse(localStorage.getItem('join_'+ev.id)||'{}'); }catch(e){}
+    return (c.want >= 10) || (c.want >= 5 && c.help >= 2 && c.place >= 1) || (c.want >= 7 && c.lead >= 1);
+  });
+  if(kentou.length === 0){
+    wrap.innerHTML = '<div class="bg-white border-2 border-dashed rounded-2xl p-6 text-center"><div class="font-black text-sm text-slate-700">現在検討中の案件はありません</div><div class="text-xs text-slate-400 mt-1">応援要件（やりたい10票等）を満たすと自動的に検討ボード入りします</div></div>';
+    return;
+  }
+  var html = '';
+  kentou.forEach(ev => {
+    var want = getJoinCount(ev.id,'want'), help = getJoinCount(ev.id,'help'), lead = getJoinCount(ev.id,'lead'), place = getJoinCount(ev.id,'place'), interest = getJoinCount(ev.id,'interest');
+    var total = want + help + lead + place + interest;
+    var isAlreadyUpcoming = EVENT_DATA.some(x=>x.id===ev.id);
+    html += '<div class="border-2 border-amber-400 bg-amber-50/80 rounded-2xl p-4 mb-3">'
+      + '<div class="flex justify-between gap-2"><div class="font-black text-sm">📌 '+esc(ev.title)+'（応援'+total+'票）</div><span class="bg-rose-600 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">正式検討</span></div>'
+      + '<div class="flex gap-2 mt-2 text-xs"><span>🙋'+want+'</span><span>🤝'+help+'</span><span>📋'+lead+'</span><span>📍'+place+'</span><span>👀'+interest+'</span></div>'
+      + '<div class="mt-3 bg-white p-3 rounded-xl text-xs text-slate-700 leading-relaxed border border-amber-200">'+esc(ev.detail)+'</div>'
+      + '<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">'
+      + '<button type="button" onclick="approveKentouToUpcoming(\''+ev.id+'\')" class="w-full '+(isAlreadyUpcoming?'bg-amber-600 hover:bg-amber-700':'bg-slate-900 hover:bg-black')+' text-white py-3 rounded-xl text-xs font-black shadow">'+(isAlreadyUpcoming?'✏️ 内容を修正して再登録（管理者）':'📅 今後のイベントとして登録（1クリック）')+'</button>'
+      + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-3 rounded-xl text-xs font-black shadow">🎨 チラシ作成フォーマットに入力して作成 →</button>'
+      + '</div>'
+      + '</div>';
+  });
+  wrap.innerHTML = html;
+}
+
+function approveKentouToUpcoming(id){
+  try{
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev){ showToast('イベントが見つかりません'); return; }
+    // 既に今後のイベントにあるか
+    var exists = EVENT_DATA.find(x=>x.id===id);
+    if(exists){
+      exists.status = '実施確定';
+      showToast('✅ 既に今後のイベントに登録済みです - ステータスを「実施確定」に更新しました');
+    } else {
+      // アイデアから今後のイベントへ昇格
+      var newEv = Object.assign({}, ev);
+      newEv.status = '参加者募集中';
+      newEv.date = newEv.date || new Date().toISOString().slice(0,10);
+      EVENT_DATA.unshift(newEv);
+      showToast('🎉 「'+newEv.title+'」を今後のイベントに登録しました！（管理者の手入力なし）');
+    }
+    // GASへ送信
+    try{ postToGAS({action:'approveToUpcoming', eventId:id, title:ev.title}); }catch(e){}
+    // 再描画
+    renderEvents();
+    renderEventCategoryGrid();
+    renderKentou();
+    // 提案ページの管理者パネルも自動入力
+    try{
+      document.getElementById('evTitleAdmin').value = ev.title || '';
+      document.getElementById('evDetailAdmin').value = ev.detail || '';
+      document.getElementById('evDate').value = ev.date || '';
+      document.getElementById('evTime').value = ev.time || '';
+      document.getElementById('evPlace').value = ev.place || '';
+    }catch(e){}
+  }catch(e){ console.log('approve error', e); showToast('登録エラー'); }
+}
+
+
+/* -------------------------------------------------------------
+   5. PHOTO GALLERY (HIROBA) LOGIC
+------------------------------------------------------------- */
+function getHirobaCatIcon(cat){
+  for(var i=0;i<EVENT_PHOTO_CATEGORIES.length;i++){
+    var full = EVENT_PHOTO_CATEGORIES[i];
+    var label = full.replace(/^\S+\s*/, '').trim();
+    if(cat && (cat.indexOf(label) !== -1 || label.indexOf(cat) !== -1)){
+      var iconMatch = full.match(/^(\S+)/);
+      return iconMatch ? iconMatch[1] : '📸';
+    }
+  }
+  return '📸';
+}
+
+function renderHiroba(){
+  var container = document.getElementById('hirobaList'); if(!container) return;
+  var posts = (hirobaPosts && hirobaPosts.length ? hirobaPosts : INITIAL_HIROBA).slice();
+  container.innerHTML = posts.map(function(p){
+    return '<article class="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-shadow">'
+      + '<div class="relative h-56 bg-slate-100">'
+      + '<img src="'+esc(p.imageUrl)+'" alt="'+esc(p.summary)+'" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+      + '<div style="display:none" class="absolute inset-0 items-center justify-center text-5xl bg-slate-100">📷</div>'
+      + '<span class="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-white/95 text-xs font-black shadow-sm">'+esc(getHirobaCatIcon(p.category))+' '+esc(p.category)+'</span>'
+      + '</div>'
+      + '<div class="p-5">'
+      + '<div class="text-xs text-slate-500">'+esc(p.author)+' ・ '+esc(String(p.timestamp||'').slice(0,10).replace(/-/g,'/'))+'</div>'
+      + '<h3 class="font-black text-lg mt-2 leading-snug">'+esc(p.summary)+'</h3>'
+      + '<p class="text-sm text-slate-600 mt-3 leading-7">'+esc(p.description)+'</p>'
+      + '<div class="mt-4 flex justify-end"><button type="button" onclick="createFlyerFromHirobaPost(\''+esc(p.timestamp)+'\')" class="px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-xs font-black">🎨 この写真でチラシ作成</button></div>'
+      + '</div></article>';
+  }).join('');
+}
+
+function toggleHirobaCat(cat){ openHirobaCat = (openHirobaCat === cat) ? null : cat; openHirobaArticle = null; renderHiroba(); }
+function toggleHirobaArticle(ts){ openHirobaArticle = (openHirobaArticle === ts) ? null : ts; renderHiroba(); }
+/* -------------------------------------------------------------
+   6. FLYER AUTOMATION STUDIO ENGINE
+------------------------------------------------------------- */
+function fillFlyerPreset(key){
+  var data = FLYER_PRESETS[key] || FLYER_PRESETS.pet;
+  document.getElementById('flyerF_category').value = data.category;
+  document.getElementById('flyerF_title').value = data.title;
+  document.getElementById('flyerF_content').value = data.content;
+  document.getElementById('flyerF_feel').value = data.feel;
+  document.getElementById('flyerF_target').value = data.target;
+  document.getElementById('flyerF_date').value = data.date;
+  document.getElementById('flyerF_time').value = data.time;
+  document.getElementById('flyerF_place').value = data.place;
+  document.getElementById('flyerF_meet').value = data.meet;
+  document.getElementById('flyerF_fee').value = data.fee;
+  document.getElementById('flyerF_rain').value = data.rain;
+  document.getElementById('flyerF_apply').value = data.apply;
+  document.getElementById('flyerF_emergency').value = data.emergency;
+  
+  if(data.photo){
+    document.getElementById('pPhotoImg').src = data.photo;
+  }
+  updateFlyerLivePreview();
+}
+
+function createFlyerFromHatsuan(){
+  var title = document.getElementById('evTitle').value;
+  var detail = document.getElementById('evDetail').value;
+  if(title) document.getElementById('flyerF_title').value = title;
+  if(detail) document.getElementById('flyerF_content').value = detail;
+  showPage('flyerCreator');
+}
+
+function createFlyerFromEventObj(id){
+  var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x => x.id === id);
+  if(ev){
+    document.getElementById('flyerF_title').value = ev.title || '';
+    document.getElementById('flyerF_content').value = ev.detail || '';
+    if(ev.date) document.getElementById('flyerF_date').value = ev.date;
+    if(ev.time) document.getElementById('flyerF_time').value = ev.time;
+    if(ev.place) document.getElementById('flyerF_place').value = ev.place;
+    if(ev.category && ev.category.includes('ペット')) document.getElementById('flyerF_category').value = 'pet';
+    else if(ev.category && ev.category.includes('子ども')) document.getElementById('flyerF_category').value = 'kids';
+  }
+  showPage('flyerCreator');
+}
+
+function createFlyerFromHirobaPost(ts){
+  var post = hirobaPosts.find(p => p.timestamp === ts);
+  if(post){
+    document.getElementById('flyerF_title').value = post.summary || '';
+    document.getElementById('flyerF_content').value = post.description || '';
+    if(post.imageUrl) document.getElementById('pPhotoImg').src = post.imageUrl;
+  }
+  showPage('flyerCreator');
+}
+
+function handleFlyerPhotoUpload(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(evt){
+    var img = document.getElementById('pPhotoImg');
+    img.src = evt.target.result;
+    applyFlyerPhotoFilter();
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyFlyerPhotoFilter(){
+  var filter = document.getElementById('flyerF_filterStyle').value;
+  var img = document.getElementById('pPhotoImg');
+  if (filter === 'watercolor') {
+    img.style.filter = 'saturate(1.8) contrast(1.2) brightness(1.05) hue-rotate(-5deg)';
+  } else if (filter === 'sketch') {
+    img.style.filter = 'grayscale(0.6) contrast(2.2) brightness(1.1)';
+  } else if (filter === 'vector') {
+    img.style.filter = 'saturate(2.2) contrast(1.4) brightness(0.95)';
+  } else {
+    img.style.filter = 'none';
+  }
+}
+
+function renderFlyerAIGraphic(category, titleText){
+  var container = document.getElementById('pAiGraphicContainer'); if(!container) return;
+  var svgContent = '';
+  var s = (category + " " + titleText).toLowerCase();
+
+  if (category === 'pet' || s.includes('犬') || s.includes('ペット')) {
+    svgContent = `<svg viewBox="0 0 100 100" class="w-20 h-20 text-emerald-600 drop-shadow"><circle cx="50" cy="55" r="28" fill="#fde047" opacity="0.4"/><path d="M30,55 Q50,75 70,55" fill="none" stroke="#854d0e" stroke-width="4" stroke-linecap="round"/><circle cx="28" cy="35" r="8" fill="#854d0e"/><circle cx="72" cy="35" r="8" fill="#854d0e"/><circle cx="40" cy="25" r="6" fill="#854d0e"/><circle cx="60" cy="25" r="6" fill="#854d0e"/><path d="M38,62 Q50,78 62,62" fill="#ef4444"/></svg>`;
+  } else if (category === 'hobby' || s.includes('バス') || s.includes('ツアー')) {
+    svgContent = `<svg viewBox="0 0 100 100" class="w-20 h-20 text-indigo-600 drop-shadow"><rect x="15" y="30" width="70" height="40" rx="8" fill="#3b82f6"/><rect x="22" y="38" width="16" height="12" rx="2" fill="#bfdbfe"/><rect x="42" y="38" width="16" height="12" rx="2" fill="#bfdbfe"/><rect x="62" y="38" width="16" height="12" rx="2" fill="#bfdbfe"/><circle cx="30" cy="70" r="8" fill="#1e293b"/><circle cx="70" cy="70" r="8" fill="#1e293b"/></svg>`;
+  } else if (category === 'seasonal' || s.includes('祭') || s.includes('餅')) {
+    svgContent = `<svg viewBox="0 0 100 100" class="w-20 h-20 text-rose-600 drop-shadow"><circle cx="50" cy="50" r="36" fill="#fecdd3"/><path d="M50,15 L50,85 M15,50 L85,50" stroke="#b91c1c" stroke-width="3"/><circle cx="50" cy="50" r="18" fill="#dc2626"/><text x="50" y="55" font-size="16" font-weight="900" fill="#ffffff" text-anchor="middle">祭</text></svg>`;
+  } else if (category === 'kids') {
+    svgContent = `<svg viewBox="0 0 100 100" class="w-20 h-20 text-amber-500 drop-shadow"><polygon points="50,15 61,38 86,41 67,59 73,83 50,70 27,83 33,59 14,41 39,38" fill="#fbbf24"/><circle cx="50" cy="50" r="12" fill="#f97316"/></svg>`;
+  } else {
+    svgContent = `<svg viewBox="0 0 100 100" class="w-20 h-20 text-teal-600 drop-shadow"><path d="M50,15 L85,80 L15,80 Z" fill="#2dd4bf" opacity="0.7"/><circle cx="50" cy="45" r="15" fill="#0d9488"/><path d="M30,80 Q50,55 70,80" fill="#115e59"/></svg>`;
+  }
+  container.innerHTML = svgContent;
+}
+
+function updateFlyerLivePreview(){
+  var cat = document.getElementById('flyerF_category').value;
+  var canvas = document.getElementById('flyerPreviewCanvas');
+  var categoryBadge = document.getElementById('pCategoryBadge');
+
+  canvas.className = 'a4-container p-6 flex flex-col justify-between space-y-3 theme-' + cat;
+
+  const themeNames = {
+    seasonal: '🌸 季節の行事',
+    kids: '🎈 子ども・親子',
+    eat: '☕ 食べる・集まる',
+    hobby: '📚 趣味・学び',
+    pet: '🐾 ペットと一緒に',
+    general: '🏛️ 一般・コミュニティ'
+  };
+
+  categoryBadge.textContent = themeNames[cat] || '一般';
+
+  document.getElementById('pTitle').textContent = document.getElementById('flyerF_title').value || 'イベントタイトル';
+  document.getElementById('pContent').textContent = document.getElementById('flyerF_content').value || '詳細内容';
+  
+  var feelVal = document.getElementById('flyerF_feel').value;
+  var pBadge = document.getElementById('pPassionBadge');
+  if (feelVal) {
+    pBadge.textContent = '💭 ' + feelVal;
+    pBadge.classList.remove('hidden');
+  } else {
+    pBadge.classList.add('hidden');
+  }
+
+  document.getElementById('pDate').textContent = document.getElementById('flyerF_date').value || '日時未設定';
+  document.getElementById('pTime').textContent = document.getElementById('flyerF_time').value || '時間未設定';
+  document.getElementById('pLocation').textContent = document.getElementById('flyerF_place').value || '場所未設定';
+  document.getElementById('pMeeting').textContent = '集合: ' + (document.getElementById('flyerF_meet').value || '指定なし');
+  document.getElementById('pTarget').textContent = document.getElementById('flyerF_target').value || 'どなたでも';
+  document.getElementById('pFee').textContent = document.getElementById('flyerF_fee').value || '無料';
+  document.getElementById('pRain').textContent = document.getElementById('flyerF_rain').value || '小雨決行';
+  document.getElementById('pApply').textContent = document.getElementById('flyerF_apply').value || '事前申込不要';
+  document.getElementById('pContact').textContent = document.getElementById('flyerF_emergency').value || '事務局';
+
+  renderFlyerAIGraphic(cat, document.getElementById('flyerF_title').value);
+}
+
+function downloadFlyerPDF(){
+  var element = document.getElementById('flyerPreviewCanvas');
+  var title = document.getElementById('flyerF_title').value || 'yamate_flyer';
+  var opt = {
+    margin: 0,
+    filename: title.replace(/[\s\/\\]/g, '_') + '_A4.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 3, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+function downloadFlyerPNG(){
+  var element = document.getElementById('flyerPreviewCanvas');
+  var title = document.getElementById('flyerF_title').value || 'yamate_flyer';
+  html2canvas(element, { scale: 3, useCORS: true }).then(canvas => {
+    var link = document.createElement('a');
+    link.download = title.replace(/[\s\/\\]/g, '_') + '_A4.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+
+/* -------------------------------------------------------------
+   7. INITIALIZATION ON DOM LOAD
+------------------------------------------------------------- */
+
+function setProposalMode(m){ try{ document.querySelectorAll('.proposal-tab').forEach(b=>b.classList.remove('active')); if(m==='idea'){ document.getElementById('proposalIdeaPanel').style.display='block'; var ap=document.getElementById('proposalAdminPanel'); if(ap) ap.style.display='none'; } else { document.getElementById('proposalIdeaPanel').style.display='none'; var ap=document.getElementById('proposalAdminPanel'); if(ap) ap.style.display='block'; } }catch(e){} }
+var _approvingEventId = null;
+
+function approveKentouToUpcoming(id){
+  try{
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev){ showToast('イベントが見つかりません'); return; }
+    _approvingEventId = id;
+    // モーダルに自動入力（管理者は修正可能）
+    document.getElementById('approveTitle').value = ev.title || '';
+    document.getElementById('approveDate').value = (ev.date||'').split('T')[0] || new Date().toISOString().slice(0,10);
+    document.getElementById('approveTime').value = ev.time || '';
+    document.getElementById('approvePlace').value = ev.place || '';
+    document.getElementById('approveDetail').value = ev.detail || ev.summary || '';
+    document.getElementById('approveEditModal').classList.add('open');
+  }catch(e){ console.log('approve open error', e); }
+}
+
+function closeApproveModal(){
+  document.getElementById('approveEditModal').classList.remove('open');
+  _approvingEventId = null;
+}
+
+function confirmApproveToUpcoming(){
+  try{
+    var id = _approvingEventId;
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev) return;
+    var title = document.getElementById('approveTitle').value;
+    var date = document.getElementById('approveDate').value;
+    var time = document.getElementById('approveTime').value;
+    var place = document.getElementById('approvePlace').value;
+    var detail = document.getElementById('approveDetail').value;
+    var exists = EVENT_DATA.find(x=>x.id===id);
+    if(exists){
+      exists.title = title; exists.date = date; exists.time = time; exists.place = place; exists.detail = detail; exists.status = '実施確定';
+      showToast('✅ 更新しました - 今後のイベントとして正式登録済み');
+    } else {
+      var newEv = Object.assign({}, ev);
+      newEv.title = title; newEv.date = date; newEv.time = time; newEv.place = place; newEv.detail = detail; newEv.status = '参加者募集中';
+      EVENT_DATA.unshift(newEv);
+      showToast('🎉 「'+title+'」を今後のイベントに正式登録しました！');
+    }
+    try{ postToGAS({action:'approveToUpcoming', eventId:id, title:title, date:date, time:time, place:place, detail:detail}); }catch(e){}
+    closeApproveModal();
+    renderEvents();
+    renderEventCategoryGrid();
+    renderKentou();
+    showPage('event'); showEventTab('upcoming');
+  }catch(e){ console.log('confirm error', e); }
+}
+
+// 応援ボタン数の保存を確実に - GASにも保存し、localStorageも保持
+function ensureJoinCountsPersist(){
+  try{
+    var ids = [];
+    if(typeof EVENT_DATA!=='undefined' && EVENT_DATA.length){
+      ids.push(EVENT_DATA[0].id);
+      if(EVENT_DATA.length>1) ids.push(EVENT_DATA[1].id);
+    }
+    if(typeof EVENT_IDEAS!=='undefined' && EVENT_IDEAS.length){
+      ids.push(EVENT_IDEAS[0].id);
+    }
+    var demo = ['evt-001','idea-101','evt-002'].concat(ids);
+    demo.forEach(function(did, i){
+      if(!did) return;
+      var k='join_'+did;
+      try{
+        var cur = JSON.parse(localStorage.getItem(k)||'{}');
+        if((cur.want||0) < 10 && i<3){
+          cur.want = 12 - i;
+          cur.help = 3; cur.place = 1; cur.lead = 1; cur.interest = 2;
+          localStorage.setItem(k, JSON.stringify(cur));
+        } else if(!localStorage.getItem(k) && i<5){
+          localStorage.setItem(k, JSON.stringify({want: (i<2?11:2), help:2, place:1, lead:1, interest:2}));
+        }
+      }catch(e){}
+    });
+  }catch(e){ console.log('ensure error', e); }
+}
 
 
 document.addEventListener('DOMContentLoaded', function(){
