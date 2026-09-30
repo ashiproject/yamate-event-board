@@ -629,9 +629,9 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div></div>
 </div>
 
-<div class="hidden">
-<div class="bg-teal-800 text-white p-4"><div class="font-black">📋 町内会で検討のボード</div></div>
-<div class="p-3"><div id="kentouWrap"></div></div>
+<div id="kentouBoard" class="mt-6 border-[3px] border-teal-800 rounded-[20px] overflow-hidden bg-white shadow-sm">
+<div class="bg-teal-800 text-white px-5 py-3 flex items-center justify-between"><div class="font-black">📋 町内会で検討のボード <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full ml-2">応援10票以上で自動表示</span></div><span class="text-[10px] bg-amber-400 text-black px-2 py-1 rounded-full font-black">正式検討</span></div>
+<div class="p-4"><div id="kentouWrap"></div></div>
 </div>
 </section>
 
@@ -2204,6 +2204,7 @@ function openEventSection(tab){
 }
 
 function showEventTab(tab){
+  try{ renderKentou(); }catch(e){}
   currentTab = tab || 'upcoming';
   var upcomingList = document.getElementById('event-upcoming-list');
   var ideasList = document.getElementById('event-ideas-list');
@@ -2444,6 +2445,7 @@ function getSupportBtnClass(id, type){
 function getJoinCount(id, type){ try{ var c={}; try{ c=JSON.parse(localStorage.getItem("join_"+id)||"{}"); }catch(e){} if(type) return c[type]||0; var total=0; for(var k in c){ total+=c[k]; } return total; }catch(e){ return 0; } }
 function toggleEventDetail(id){ var el = document.getElementById('event-detail-'+id); if(el) el.classList.toggle('hidden'); }
 
+renderKentou();
 function renderEvents(){
   var el = document.getElementById('event-upcoming-list'); if(!el) return;
   var filtered = EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered = filtered.filter(function(e){ return eventMatchesOpenCat(e); });
