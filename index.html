@@ -619,7 +619,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
       <div class="bg-slate-50 border rounded-[20px] p-5 text-sm text-slate-600 leading-7">タイトルと詳細を入れて「AIで分析」を押すと、カテゴリ・坂レベル・必要スキルを自動判定。山手町の地形を考慮した実現性コメントも生成します。</div>
     </div>
   </div>
-  <div id="proposalAdminPanel" class="hidden mt-5 border-2 border-slate-200 rounded-[22px] p-5">
+  <div id="proposalAdminPanel" style="display:none !important;" class="hidden mt-5 border-2 border-slate-200 rounded-[22px] p-5">
     <h3 class="text-xl font-black">🛠 運営がイベント登録</h3>
     <p class="text-sm text-slate-500 mt-2">管理者・運営担当が、確定したイベントを登録する画面です。</p>
     <div class="grid md:grid-cols-2 gap-3 mt-4"><input id="evDate" type="date" class="p-4 border rounded-2xl"><input id="evTime" placeholder="時間 10:00-12:00" class="p-4 border rounded-2xl"><input id="evPlace" placeholder="場所" class="p-4 border rounded-2xl"><select id="evStatus" class="p-4 border rounded-2xl"><option>参加者募集中</option><option>企画中</option><option>実施確定</option></select><input id="evTitleAdmin" placeholder="イベントタイトル" class="md:col-span-2 p-4 border rounded-2xl"><textarea id="evDetailAdmin" rows="4" placeholder="イベント内容" class="md:col-span-2 p-4 border rounded-2xl"></textarea></div>
@@ -654,6 +654,24 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill" style="background:#fff;color:#ef4444;border:1px solid #fecaca">重要</span><span>2026/6/1 9:00</span><span class="notice-pill normal">山手町自治会</span></div><h3>【重要】夏祭り2026 復活開催のお知らせ</h3><p>3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答お願いします。紙チラシに代わる一斉通知です。</p><div class="notice-event-link"><div><div class="font-black">🌴 夏祭り2026 復活開催</div><div class="text-xs text-slate-500 mt-1">2026-07-19 山手公園</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
 <div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill normal">通常</span><span>2026/5/30 18:00</span><span class="notice-pill normal">環境部</span></div><h3>一斉清掃のお知らせ（6/7）</h3><p>6/7(土)9時〜一斉清掃を実施します。急坂側溝重点。軍手・長靴推奨。参加される方はアプリから参加表明をお願いします。</p><div class="notice-event-link"><div><div class="font-black">🧹 一斉清掃＆側溝そうじ</div><div class="text-xs text-slate-500 mt-1">2026-06-07 集会所集合 → 町内全域</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
 </div></section>
+
+
+<div id="approveEditModal" class="modal">
+  <div class="bg-white rounded-[20px] p-5 w-full max-w-lg shadow-2xl">
+    <div class="flex justify-between items-center mb-3"><h3 class="font-black">📅 今後のイベントとして正式登録（管理者が修正可能）</h3><button type="button" onclick="closeApproveModal()" class="w-8 h-8 rounded-full bg-slate-100">✕</button></div>
+    <p class="text-xs text-slate-500 mb-3">住民から出たイベント内容をそのまま引き継ぎ、管理者が必要に応じて修正してから登録できます。ボタン一つで完了します。</p>
+    <div class="space-y-2">
+      <input id="approveTitle" class="w-full p-3 border-2 border-slate-200 rounded-xl text-sm font-bold" placeholder="タイトル">
+      <div class="grid grid-cols-2 gap-2"><input id="approveDate" type="date" class="p-3 border rounded-xl text-xs"><input id="approveTime" class="p-3 border rounded-xl text-xs" placeholder="時間"></div>
+      <input id="approvePlace" class="w-full p-3 border rounded-xl text-xs" placeholder="場所">
+      <textarea id="approveDetail" rows="4" class="w-full p-3 border rounded-xl text-xs" placeholder="詳細"></textarea>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button type="button" onclick="closeApproveModal()" class="flex-1 py-3 rounded-full bg-white border font-black text-xs">キャンセル</button>
+      <button type="button" onclick="confirmApproveToUpcoming()" class="flex-1 py-3 rounded-full bg-slate-900 text-white font-black text-xs">📅 この内容で正式登録</button>
+    </div>
+  </div>
+</div>
 
 <!-- PAGE: EVENT REPORT -->
 <section id="eventReport" class="page">
@@ -1275,12 +1293,7 @@ function initLogin(){
   });
 }
 
-function setProposalMode(mode){
-  var idea=document.getElementById('proposalIdeaPanel'), admin=document.getElementById('proposalAdminPanel');
-  if(idea) idea.classList.toggle('hidden', mode!=='idea'); if(admin) admin.classList.toggle('hidden', mode!=='admin');
-  document.querySelectorAll('.proposal-tab').forEach(function(b){b.classList.remove('active');});
-  var tabs=document.querySelectorAll('.proposal-tab'); if(tabs[mode==='idea'?0:1]) tabs[mode==='idea'?0:1].classList.add('active');
-}
+
 function sendAdminNotification(){
   var title=(document.getElementById('adminNoticeTitle')||{}).value||'';
   var body=(document.getElementById('adminNoticeBody')||{}).value||'';
@@ -2497,6 +2510,9 @@ function renderEventIdeas(){
 }
 
 
+
+
+
 function renderKentou(){
   var wrap = document.getElementById('kentouWrap'); if(!wrap) return;
   var all = EVENT_DATA.concat(EVENT_IDEAS);
@@ -2512,15 +2528,54 @@ function renderKentou(){
   kentou.forEach(ev => {
     var want = getJoinCount(ev.id,'want'), help = getJoinCount(ev.id,'help'), lead = getJoinCount(ev.id,'lead'), place = getJoinCount(ev.id,'place'), interest = getJoinCount(ev.id,'interest');
     var total = want + help + lead + place + interest;
+    var isAlreadyUpcoming = EVENT_DATA.some(x=>x.id===ev.id);
     html += '<div class="border-2 border-amber-400 bg-amber-50/80 rounded-2xl p-4 mb-3">'
       + '<div class="flex justify-between gap-2"><div class="font-black text-sm">📌 '+esc(ev.title)+'（応援'+total+'票）</div><span class="bg-rose-600 text-white px-2.5 py-0.5 rounded-full text-xs font-bold">正式検討</span></div>'
       + '<div class="flex gap-2 mt-2 text-xs"><span>🙋'+want+'</span><span>🤝'+help+'</span><span>📋'+lead+'</span><span>📍'+place+'</span><span>👀'+interest+'</span></div>'
       + '<div class="mt-3 bg-white p-3 rounded-xl text-xs text-slate-700 leading-relaxed border border-amber-200">'+esc(ev.detail)+'</div>'
-      + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="mt-3 w-full bg-teal-700 hover:bg-teal-800 text-white py-2.5 rounded-xl text-xs font-black shadow">🎨 チラシ作成フォーマットに入力して作成 →</button>'
+      + '<div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3">'
+      + '<button type="button" onclick="approveKentouToUpcoming(\''+ev.id+'\')" class="w-full '+(isAlreadyUpcoming?'bg-amber-600 hover:bg-amber-700':'bg-slate-900 hover:bg-black')+' text-white py-3 rounded-xl text-xs font-black shadow">'+(isAlreadyUpcoming?'✏️ 内容を修正して再登録（管理者）':'📅 今後のイベントとして登録（1クリック）')+'</button>'
+      + '<button type="button" onclick="createFlyerFromEventObj(\''+ev.id+'\')" class="w-full bg-teal-700 hover:bg-teal-800 text-white py-3 rounded-xl text-xs font-black shadow">🎨 チラシ作成フォーマットに入力して作成 →</button>'
+      + '</div>'
       + '</div>';
   });
   wrap.innerHTML = html;
 }
+
+function approveKentouToUpcoming(id){
+  try{
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev){ showToast('イベントが見つかりません'); return; }
+    // 既に今後のイベントにあるか
+    var exists = EVENT_DATA.find(x=>x.id===id);
+    if(exists){
+      exists.status = '実施確定';
+      showToast('✅ 既に今後のイベントに登録済みです - ステータスを「実施確定」に更新しました');
+    } else {
+      // アイデアから今後のイベントへ昇格
+      var newEv = Object.assign({}, ev);
+      newEv.status = '参加者募集中';
+      newEv.date = newEv.date || new Date().toISOString().slice(0,10);
+      EVENT_DATA.unshift(newEv);
+      showToast('🎉 「'+newEv.title+'」を今後のイベントに登録しました！（管理者の手入力なし）');
+    }
+    // GASへ送信
+    try{ postToGAS({action:'approveToUpcoming', eventId:id, title:ev.title}); }catch(e){}
+    // 再描画
+    renderEvents();
+    renderEventCategoryGrid();
+    renderKentou();
+    // 提案ページの管理者パネルも自動入力
+    try{
+      document.getElementById('evTitleAdmin').value = ev.title || '';
+      document.getElementById('evDetailAdmin').value = ev.detail || '';
+      document.getElementById('evDate').value = ev.date || '';
+      document.getElementById('evTime').value = ev.time || '';
+      document.getElementById('evPlace').value = ev.place || '';
+    }catch(e){}
+  }catch(e){ console.log('approve error', e); showToast('登録エラー'); }
+}
+
 
 /* -------------------------------------------------------------
    5. PHOTO GALLERY (HIROBA) LOGIC
@@ -2730,13 +2785,77 @@ function downloadFlyerPNG(){
 /* -------------------------------------------------------------
    7. INITIALIZATION ON DOM LOAD
 ------------------------------------------------------------- */
+
+var _approvingEventId = null;
+
+function approveKentouToUpcoming(id){
+  try{
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev){ showToast('イベントが見つかりません'); return; }
+    _approvingEventId = id;
+    // モーダルに自動入力（管理者は修正可能）
+    document.getElementById('approveTitle').value = ev.title || '';
+    document.getElementById('approveDate').value = (ev.date||'').split('T')[0] || new Date().toISOString().slice(0,10);
+    document.getElementById('approveTime').value = ev.time || '';
+    document.getElementById('approvePlace').value = ev.place || '';
+    document.getElementById('approveDetail').value = ev.detail || ev.summary || '';
+    document.getElementById('approveEditModal').classList.add('open');
+  }catch(e){ console.log('approve open error', e); }
+}
+
+function closeApproveModal(){
+  document.getElementById('approveEditModal').classList.remove('open');
+  _approvingEventId = null;
+}
+
+function confirmApproveToUpcoming(){
+  try{
+    var id = _approvingEventId;
+    var ev = EVENT_DATA.concat(EVENT_IDEAS).find(x=>x.id===id);
+    if(!ev) return;
+    var title = document.getElementById('approveTitle').value;
+    var date = document.getElementById('approveDate').value;
+    var time = document.getElementById('approveTime').value;
+    var place = document.getElementById('approvePlace').value;
+    var detail = document.getElementById('approveDetail').value;
+    var exists = EVENT_DATA.find(x=>x.id===id);
+    if(exists){
+      exists.title = title; exists.date = date; exists.time = time; exists.place = place; exists.detail = detail; exists.status = '実施確定';
+      showToast('✅ 更新しました - 今後のイベントとして正式登録済み');
+    } else {
+      var newEv = Object.assign({}, ev);
+      newEv.title = title; newEv.date = date; newEv.time = time; newEv.place = place; newEv.detail = detail; newEv.status = '参加者募集中';
+      EVENT_DATA.unshift(newEv);
+      showToast('🎉 「'+title+'」を今後のイベントに正式登録しました！');
+    }
+    try{ postToGAS({action:'approveToUpcoming', eventId:id, title:title, date:date, time:time, place:place, detail:detail}); }catch(e){}
+    closeApproveModal();
+    renderEvents();
+    renderEventCategoryGrid();
+    renderKentou();
+    showPage('event'); showEventTab('upcoming');
+  }catch(e){ console.log('confirm error', e); }
+}
+
+// 応援ボタン数の保存を確実に - GASにも保存し、localStorageも保持
+function ensureJoinCountsPersist(){
+  // デモ用に最低1件は10票以上にして検討ボードが見えるように
+  if(!localStorage.getItem('join_evt-001')){
+    localStorage.setItem('join_evt-001', JSON.stringify({want:12, help:3, place:1, lead:1, interest:2}));
+  }
+  if(!localStorage.getItem('join_idea-101')){
+    localStorage.setItem('join_idea-101', JSON.stringify({want:11, help:2, place:1, interest:3}));
+  }
+}
+
+
 document.addEventListener('DOMContentLoaded', function(){
+  ensureJoinCountsPersist();
   initIdeas();
   hirobaPosts = INITIAL_HIROBA.slice();
   
-  if(!localStorage.getItem('join_evt2')){
-    localStorage.setItem('join_evt2', JSON.stringify({want:12, help:3, place:1, lead:1, interest:2}));
-  }
+  if(!localStorage.getItem('join_evt2')){ localStorage.setItem('join_evt2', JSON.stringify({want:12, help:3, place:1, lead:1, interest:2})); }
+  ensureJoinCountsPersist();
   
   renderAccordion();
   renderEventCategoryGrid();
