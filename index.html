@@ -16,7 +16,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="山手町">
 <!-- Tailwind CSS CDN -->
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script><script>console.warn = (function(orig){ return function(...args){ if(args[0] && typeof args[0]==="string" && args[0].includes("cdn.tailwindcss.com should not be used")) return; orig.apply(console, args); }; })(console.warn);</script>
 <!-- html2pdf.js & html2canvas for High-Res PDF & PNG Export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -605,7 +605,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <div id="event-hatsuan-list" class="hidden">
 <div class="border-2 border-slate-800 rounded-[24px] p-5 md:p-6 bg-white shadow-sm">
   <div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="text-xl md:text-2xl font-black">➕ Lv2: 提案する — 形式を選んでください</h2><button type="button" onclick="openEventSection('upcoming')" class="px-4 py-2 rounded-full bg-slate-100 border text-xs font-black">閉じる</button></div>
-  <div class="proposal-tabs mt-5"><button type="button" class="proposal-tab active" onclick="setProposalMode('idea')">💡 Lv3: アイデア投稿（AI分析）</button><button type="button" class="proposal-tab" onclick="setProposalMode('admin')">🛠 Lv3: 運営がイベント登録</button></div>
+  <div class="mt-5"><div class="inline-flex px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black">💡 住民のアイデア投稿（AI分析）</div><span class="text-[10px] text-slate-500 ml-2">運営登録は検討ボードから1クリックで行えます</span></div>
   <div id="proposalIdeaPanel" class="mt-5 border-2 border-teal-200 rounded-[22px] p-5">
     <h3 class="text-xl font-black">💡 イベントアイデア投稿（AI分析付き）</h3>
         <p class="text-xs text-slate-500 mt-2">分類は選びません。入力内容をGAS経由のAIが自動分析し、6カテゴリ・坂・必要スキルなどを判定します。</p>
@@ -1346,12 +1346,15 @@ function postToGASAndWait(payload){
 }
 function postToGAS(payload){
   try{
-    payload.timestamp = new Date().toISOString();
-    if(typeof GAS_URL !== 'undefined' && GAS_URL && GAS_URL.indexOf('XXXX') === -1){
-      yamatePost(payload).then(function(){try{setTimeout(function(){loadFromSheet();},2500);}catch(e){}})
-      .catch(function(e){console.log('GAS form error',e);});
-    }
-  }catch(e){console.log('postToGAS error',e);}
+    var url = (typeof GAS_URL!=='undefined'?GAS_URL:'') || 'https://script.google.com/macros/s/AKfycbyTZJKq9OYMv9H2KBTL72ldl_JGkUYtyN9MAgSob94Lso2qg1B7-5vXTzs8VHx86W63wQ/exec';
+    // joinEvent と approveToUpcoming は旧GASでは未対応なので、エラーになっても無視
+    var isLocalOnly = payload && (payload.action==='joinEvent' || payload.action==='approveToUpcoming');
+    fetch(url, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload)})
+    .then(r=>{ if(!isLocalOnly) console.log('GAS POST ok', payload.action); })
+    .catch(e=>{ if(!isLocalOnly) console.log('GAS POST fail', e); });
+    // GASがv23で joinEvent 未対応なので、エラーは無視してlocalStorageで保持
+    if(isLocalOnly) return;
+  }catch(e){ console.log('postToGAS error', e); }
 }
 
 function verifySpreadsheetStorage(){
@@ -2786,6 +2789,7 @@ function downloadFlyerPNG(){
    7. INITIALIZATION ON DOM LOAD
 ------------------------------------------------------------- */
 
+function setProposalMode(m){ try{ document.querySelectorAll('.proposal-tab').forEach(b=>b.classList.remove('active')); if(m==='idea'){ document.getElementById('proposalIdeaPanel').style.display='block'; var ap=document.getElementById('proposalAdminPanel'); if(ap) ap.style.display='none'; } else { document.getElementById('proposalIdeaPanel').style.display='none'; var ap=document.getElementById('proposalAdminPanel'); if(ap) ap.style.display='block'; } }catch(e){} }
 var _approvingEventId = null;
 
 function approveKentouToUpcoming(id){
@@ -2850,12 +2854,12 @@ function ensureJoinCountsPersist(){
 
 
 document.addEventListener('DOMContentLoaded', function(){
-  ensureJoinCountsPersist();
+  ensureJoinCountsPersist(); try{ setProposalMode('idea'); }catch(e){}
   initIdeas();
   hirobaPosts = INITIAL_HIROBA.slice();
   
   if(!localStorage.getItem('join_evt2')){ localStorage.setItem('join_evt2', JSON.stringify({want:12, help:3, place:1, lead:1, interest:2})); }
-  ensureJoinCountsPersist();
+  ensureJoinCountsPersist(); try{ setProposalMode('idea'); }catch(e){}
   
   renderAccordion();
   renderEventCategoryGrid();
