@@ -604,11 +604,11 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <div id="event-ideas-list" class="hidden"></div>
 <div id="event-hatsuan-list" class="hidden">
 <div class="border-2 border-slate-800 rounded-[24px] p-5 md:p-6 bg-white shadow-sm">
-  <div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="text-xl md:text-2xl font-black">➕ Lv2: 提案する — 形式を選んでください</h2><button type="button" onclick="openEventSection('upcoming')" class="px-4 py-2 rounded-full bg-slate-100 border text-xs font-black">閉じる</button></div>
+  <div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="text-xl md:text-2xl font-black">➕ 提案する — 形式を選んで</h2><button type="button" onclick="openEventSection('upcoming')" class="px-4 py-2 rounded-full bg-slate-100 border text-xs font-black">閉じる</button></div>
   <div class="mt-5"><div class="inline-flex px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black">💡 住民のアイデア投稿（AI分析）</div><span class="text-[10px] text-slate-500 ml-2">運営登録は検討ボードから1クリックで行えます</span></div>
   <div id="proposalIdeaPanel" class="mt-5 border-2 border-teal-200 rounded-[22px] p-5">
-    <h3 class="text-xl font-black">💡 イベントアイデア投稿（AI分析付き）</h3>
-        <p class="text-xs text-slate-500 mt-2">分類は選びません。入力内容をGAS経由のAIが自動分析し、6カテゴリ・坂・必要スキルなどを判定します。</p>
+    <h3 class="text-xl font-black">💡 イベント発案（AI分析）</h3>
+        <p class="text-xs text-slate-500 mt-2">タイトルと詳細を入れて「AIで分析」を押すと、1分程で分析結果が表示されます。その後、投稿登録のボタンが表示されるので、それをクリックして終了です。</p>
     <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-4 mt-5">
       <div>
         <div class="flex gap-2"><input id="evTitle" placeholder="例）坂道ベンチマップを作りたい" class="w-full p-4 border rounded-2xl text-base"><button type="button" id="btnVoiceEventTitle" class="w-14 rounded-2xl border text-xl" title="タイトルを音声入力">🎤</button></div>
