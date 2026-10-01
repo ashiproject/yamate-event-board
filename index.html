@@ -435,7 +435,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </main>
 <footer class="w-full mt-4 text-center">
 <div class="bg-neutral-100/80 rounded-2xl py-3 px-4 border border-neutral-200/60">
-<p class="text-[11px] text-neutral-500 font-medium">静かな住宅街だからこそ自然体でつながれる場所を</p>
+<p class="text-[11px] font-black whitespace-nowrap text-neutral-800 md:text-[12px]" style="letter-spacing:-0.02em">静かな住宅街だからこそ自然体でつながれる場所を！</p>
 <p class="text-[11px] text-neutral-600 font-bold mt-0.5">芦屋山手町・code for ashiya</p>
 </div>
 </footer>
@@ -604,11 +604,17 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <div id="event-ideas-list" class="hidden"></div>
 <div id="event-hatsuan-list" class="hidden">
 <div class="border-2 border-slate-800 rounded-[24px] p-5 md:p-6 bg-white shadow-sm">
-  <div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="text-xl md:text-2xl font-black">➕ 提案する — 形式を選んで</h2><button type="button" onclick="openEventSection('upcoming')" class="px-4 py-2 rounded-full bg-slate-100 border text-xs font-black">閉じる</button></div>
-  <div class="mt-5"><div class="inline-flex px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black">💡 住民のアイデア投稿（AI分析）</div><span class="text-[10px] text-slate-500 ml-2">運営登録は検討ボードから1クリックで行えます</span></div>
+  <div class="flex items-center justify-between gap-3 flex-wrap"><h2 class="text-xl md:text-2xl font-black whitespace-nowrap">➕ 提案する — 発案</h2><button type="button" onclick="openEventSection('upcoming')" class="px-4 py-2 rounded-full bg-slate-100 border text-xs font-black">閉じる</button></div>
+  <div class="mt-5"><div class="inline-flex px-4 py-2 rounded-full bg-teal-700 text-white text-xs font-black whitespace-nowrap">💡 イベント発案投稿（AI分析）</div><span class="text-[10px] text-slate-500 ml-2">運営登録は検討ボードから1クリックで行えます</span></div>
   <div id="proposalIdeaPanel" class="mt-5 border-2 border-teal-200 rounded-[22px] p-5">
-    <h3 class="text-xl font-black">💡 イベント発案（AI分析）</h3>
-        <p class="text-xs text-slate-500 mt-2">タイトルと詳細を入れて「AIで分析」を押すと、1分程で分析結果が表示されます。その後、投稿登録のボタンが表示されるので、それをクリックして終了です。</p>
+    <h3 class="text-xl font-black whitespace-nowrap">💡 イベント発案投稿（AI分析）</h3>
+        <div class="text-xs text-slate-700 mt-2 leading-relaxed bg-amber-50 border border-amber-200 rounded-xl p-3">
+      <div class="font-black text-[11px] text-amber-900 mb-1">🎤 入力方法</div>
+      <div>タイトルを記入（又は音声認識）</div>
+      <div>詳細を記入（又は音声認識）</div>
+      <div>音声認識はマイクボタン🎤を押して始めてください。</div>
+      <div class="font-bold">タイトル、詳細二つのマイクがあります。</div>
+    </div>
     <div class="grid lg:grid-cols-[1.2fr_.8fr] gap-4 mt-5">
       <div>
         <div class="flex gap-2"><input id="evTitle" placeholder="例）坂道ベンチマップを作りたい" class="w-full p-4 border rounded-2xl text-base"><button type="button" id="btnVoiceEventTitle" class="w-14 rounded-2xl border text-xl" title="タイトルを音声入力">🎤</button></div>
@@ -616,7 +622,25 @@ div.flex:has(> #upcomingCount) { display:none !important; }
         <div class="flex gap-2 mt-4"><button type="button" id="btnSubmitEvent" class="bg-teal-700 text-white px-6 py-3 rounded-full font-black">🤖 AIで分析</button><button type="button" onclick="createFlyerFromHatsuan()" class="bg-white border px-6 py-3 rounded-full font-black">🎨 チラシ</button></div>
         <div id="evSlip" class="mt-3 text-xs text-slate-500">AI分析結果がここに表示されます。</div>
       </div>
-      <div class="bg-slate-50 border rounded-[20px] p-5 text-sm text-slate-600 leading-7">タイトルと詳細を入れて「AIで分析」を押すと、カテゴリ・坂レベル・必要スキルを自動判定。山手町の地形を考慮した実現性コメントも生成します。</div>
+      
+      <div class="bg-white border-[3px] border-slate-800 rounded-[20px] p-4">
+        <div class="font-black text-sm mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-600"></span>投稿までの流れ（図解）</div>
+        <div class="flex flex-col gap-2 text-[11px] font-bold">
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">1</span><span>タイトルを記入（又は🎤音声認識）</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-[10px]">2</span><span>詳細を記入（又は🎤音声認識）</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-teal-700 text-white flex items-center justify-center text-[10px]">3</span><span class="bg-teal-50 border border-teal-200 rounded-full px-3 py-1">「AIで分析」ボタンを押す</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px]">4</span><span>1分程度、待つ（AI分析中の表示確認）</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-amber-500 text-black flex items-center justify-center text-[10px]">5</span><span>分析結果が表示</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">6</span><span class="bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1">確認して投稿ボタンを押す</span></div>
+          <div class="ml-3 border-l-2 border-dashed border-slate-300 h-3"></div>
+          <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px]">✓</span><span class="font-black text-teal-700">終了</span></div>
+        </div>
+      </div>
     </div>
   </div>
   <div id="proposalAdminPanel" style="display:none !important;" class="hidden mt-5 border-2 border-slate-200 rounded-[22px] p-5">
@@ -673,13 +697,97 @@ div.flex:has(> #upcomingCount) { display:none !important; }
   </div>
 </div>
 
-<!-- PAGE: EVENT REPORT -->
+
 <section id="eventReport" class="page">
 <div class="text-sm text-slate-500 mb-3"><button type="button" onclick="showPage('home')">← ホーム</button> / <button type="button" onclick="showPage('event')">イベント</button></div>
-<div class="report-shell"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h1 class="text-3xl font-black">📷 イベントの様子</h1><p class="text-sm text-slate-500 mt-2">終わったイベントを画像と言葉で振り返り。管理者が簡単に入力、画像は自動生成。</p></div><div class="flex items-center gap-2"><span class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">4件のレポート</span><button class="px-5 py-3 rounded-full bg-amber-400 font-black">＋ レポート作成</button></div></div>
-<div class="report-box mt-6"><h2 class="font-black text-lg">🛠 レポート作成 - 管理者が簡単に書く</h2><div class="report-grid mt-5"><div><label class="text-xs font-black text-slate-500">元のイベント（選択すると自動入力）</label><select class="w-full mt-2 p-4 rounded-2xl border"><option>自由入力 / イベントを選択</option><option>夏祭り2026 復活開催</option><option>一斉清掃＆側溝そうじ</option></select><input class="w-full mt-4 p-4 rounded-2xl border" placeholder="タイトル例）夏祭り2026の様子"><div class="grid grid-cols-2 gap-3 mt-3"><input type="date" value="2026-09-28" class="p-4 rounded-2xl border"><select class="p-4 rounded-2xl border"><option>🏠 一般</option><option>🌱 季節の行事</option><option>👨‍👩‍👧 子ども・親子</option></select></div><textarea rows="4" class="w-full mt-3 p-4 rounded-2xl border" placeholder="一言メモ 1-2行例）30名参加、屋台完売、次回も継続！"></textarea><div class="grid grid-cols-2 gap-3 mt-4"><button class="py-3 rounded-full bg-slate-900 text-white font-black">🖼 画像を自動生成</button><button class="py-3 rounded-full bg-teal-700 text-white font-black">💾 保存してGASへ送信</button></div></div><div class="report-preview"><div class="font-black text-sm text-slate-500 mb-3">プレビュー</div><div class="report-placeholder">画像がここに表示されます</div><div class="mt-3 bg-slate-50 border rounded-2xl p-4"><div class="font-black text-lg">タイトル未入力</div><div class="text-xs text-slate-500 mt-1">2026-09-28 / 一般</div><p class="text-sm mt-4 text-slate-600">一言メモを入力</p></div></div></div></div>
-<div class="mt-8"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h2 class="text-2xl font-black">📷 これまでのイベントの様子</h2><p class="text-sm text-slate-500 mt-1">実際の活動を写真と言葉で振り返ります。</p></div><span class="px-3 py-2 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-black">4件</span></div><div id="hirobaList" class="grid md:grid-cols-2 xl:grid-cols-3 gap-5 mt-5"></div></div>
-</div></section>
+<div class="report-shell">
+  <div class="bg-white border-[3px] border-slate-800 rounded-[20px] p-5">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <h1 class="text-2xl font-black">📷 イベントの様子</h1>
+        <p class="text-sm text-slate-500 mt-1">終わったイベントを画像と言葉で振り返り。管理者が簡単に入力、画像は自動生成。</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">4件のレポート</span>
+        <button onclick="document.getElementById('reportForm').scrollIntoView({behavior:'smooth'})" class="px-5 py-2.5 rounded-full bg-amber-400 font-black text-sm border-2 border-amber-500 shadow">＋ レポート作成</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportForm" class="mt-5 bg-white border-[3px] border-amber-400 rounded-[24px] p-5 shadow-sm">
+    <h2 class="font-black text-lg flex items-center gap-2">🛠 レポート作成 - 管理者が簡単に書く</h2>
+    <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-5 mt-5">
+      <!-- 左：入力フォーム -->
+      <div class="space-y-3">
+        <div>
+          <label class="text-[11px] font-black text-slate-600">元のイベント（選択すると自動入力）</label>
+          <select class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
+            <option>自由入力 / イベントを選択</option>
+            <option>夏祭り2026 復活開催</option>
+            <option>一斉清掃＆側溝そうじ</option>
+            <option>山手町春の花見茶会</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-black text-slate-600">タイトル</label>
+          <input class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold" placeholder="例）夏祭り2026の様子 — 30名参加で大盛況！">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-[11px] font-black text-slate-600">日付</label>
+            <input type="date" value="2026-09-28" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm">
+          </div>
+          <div>
+            <label class="text-[11px] font-black text-slate-600">カテゴリ</label>
+            <select class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
+              <option>🏠 一般</option>
+              <option>🌸 季節の行事</option>
+              <option>👨‍👩‍👧 子ども・親子</option>
+              <option>☕ 食べる・集まる</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-[11px] font-black text-slate-600">一言メモ（1-2行）</label>
+          <textarea rows="3" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm" placeholder="例）30名参加、屋台完売、次回も継続！子どもたちの笑顔が印象的でした。"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2">
+          <button class="py-3 rounded-full bg-slate-900 text-white font-black text-sm border-2 border-slate-900">🖼 画像を自動生成</button>
+          <button class="py-3 rounded-full bg-teal-700 text-white font-black text-sm border-2 border-teal-700">💾 保存してGASへ送信</button>
+        </div>
+      </div>
+      <!-- 右：プレビュー -->
+      <div class="bg-slate-50 border-2 border-slate-200 rounded-[20px] p-4">
+        <div class="font-black text-[11px] text-slate-500 mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>プレビュー</div>
+        <div class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
+          <div class="text-3xl">🖼️</div>
+          <div class="text-[11px] text-slate-400 mt-2">画像がここに表示されます<br>「画像を自動生成」でAI画像を作成</div>
+        </div>
+        <div class="mt-4 bg-white border-2 border-slate-200 rounded-2xl p-4">
+          <div class="font-black text-[15px]">タイトル未入力</div>
+          <div class="text-[11px] text-slate-500 mt-1">2026-09-28 / 一般</div>
+          <p class="text-[13px] mt-3 text-slate-600 leading-relaxed">一言メモを入力するとここに表示されます。</p>
+          <div class="mt-3 flex gap-1.5">
+            <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold border">📷 写真あり</span>
+            <span class="px-2 py-1 rounded-full bg-teal-100 text-teal-800 text-[10px] font-bold border">✅ 公開中</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <h2 class="text-xl font-black">📷 これまでのイベントの様子</h2>
+        <p class="text-sm text-slate-500 mt-1">実際の活動を写真と言葉で振り返ります。</p>
+      </div>
+      <span class="px-3 py-1.5 rounded-full bg-teal-50 text-teal-800 border-2 border-teal-200 text-xs font-black">4件のレポート</span>
+    </div>
+    <div id="hirobaList" class="grid md:grid-cols-2 gap-4 mt-5"></div>
+  </div>
+</div>
+</section>
 
 <!-- PAGE 6: FLYER CREATOR (13 FIELDS + 6 LAYOUTS + DUAL ILLUSTRATIONS + HIGH RES EXPORT) -->
 <section id="flyerCreator" class="page">
@@ -2725,24 +2833,27 @@ function getHirobaCatIcon(cat){
   return '📸';
 }
 
+
 function renderHiroba(){
-  var container = document.getElementById('hirobaList'); if(!container) return;
-  var posts = (hirobaPosts && hirobaPosts.length ? hirobaPosts : INITIAL_HIROBA).slice();
-  container.innerHTML = posts.map(function(p){
-    return '<article class="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm hover:shadow-md transition-shadow">'
-      + '<div class="relative h-56 bg-slate-100">'
-      + '<img src="'+esc(p.imageUrl)+'" alt="'+esc(p.summary)+'" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
-      + '<div style="display:none" class="absolute inset-0 items-center justify-center text-5xl bg-slate-100">📷</div>'
-      + '<span class="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-white/95 text-xs font-black shadow-sm">'+esc(getHirobaCatIcon(p.category))+' '+esc(p.category)+'</span>'
-      + '</div>'
-      + '<div class="p-5">'
-      + '<div class="text-xs text-slate-500">'+esc(p.author)+' ・ '+esc(String(p.timestamp||'').slice(0,10).replace(/-/g,'/'))+'</div>'
-      + '<h3 class="font-black text-lg mt-2 leading-snug">'+esc(p.summary)+'</h3>'
-      + '<p class="text-sm text-slate-600 mt-3 leading-7">'+esc(p.description)+'</p>'
-      + '<div class="mt-4 flex justify-end"><button type="button" onclick="createFlyerFromHirobaPost(\''+esc(p.timestamp)+'\')" class="px-4 py-2 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white text-xs font-black">🎨 この写真でチラシ作成</button></div>'
-      + '</div></article>';
-  }).join('');
+  var el=document.getElementById('hirobaList'); if(!el) return;
+  var data = typeof INITIAL_HIROBA!=='undefined' ? INITIAL_HIROBA : [];
+  if(!data.length){
+    el.innerHTML='<div class="col-span-full bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-sm text-slate-500">まだレポートがありません。「レポート作成」から最初のレポートを作ってみましょう。</div>';
+    return;
+  }
+  var html='';
+  data.forEach(function(item){
+    html+='<article class="bg-white border-[3px] border-slate-800 rounded-[20px] overflow-hidden shadow-sm">'
+      +'<div class="h-40 bg-gradient-to-br from-amber-100 to-teal-100 flex items-center justify-center text-4xl">📷</div>'
+      +'<div class="p-4"><div class="font-black text-[15px] leading-tight">'+esc(item.title||'レポート')+'</div>'
+      +'<div class="text-[11px] text-slate-500 mt-1">'+esc(item.date||'')+' | '+esc(item.category||'一般')+'</div>'
+      +'<p class="text-[13px] text-slate-700 mt-3 leading-relaxed line-clamp-3">'+esc(item.memo||item.detail||'')+'</p>'
+      +'<div class="mt-3 flex gap-2"><span class="px-2.5 py-1 rounded-full bg-slate-100 border text-[10px] font-bold">'+esc(item.category||'一般')+'</span><span class="px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold">📷 レポート</span></div>'
+      +'</div></article>';
+  });
+  el.innerHTML=html;
 }
+
 
 function toggleHirobaCat(cat){ openHirobaCat = (openHirobaCat === cat) ? null : cat; openHirobaArticle = null; renderHiroba(); }
 function toggleHirobaArticle(ts){ openHirobaArticle = (openHirobaArticle === ts) ? null : ts; renderHiroba(); }
