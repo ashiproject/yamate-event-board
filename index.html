@@ -2834,25 +2834,37 @@ function getHirobaCatIcon(cat){
 }
 
 
+
 function renderHiroba(){
   var el=document.getElementById('hirobaList'); if(!el) return;
   var data = typeof INITIAL_HIROBA!=='undefined' ? INITIAL_HIROBA : [];
+  // hirobaPostsがあればそちらを優先（GASからの実データ）
+  if(typeof hirobaPosts!=='undefined' && hirobaPosts && hirobaPosts.length){
+    data = hirobaPosts;
+  }
   if(!data.length){
     el.innerHTML='<div class="col-span-full bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-sm text-slate-500">まだレポートがありません。「レポート作成」から最初のレポートを作ってみましょう。</div>';
     return;
   }
   var html='';
   data.forEach(function(item){
+    var title = item.summary || item.title || 'レポート';
+    var date = (item.timestamp||item.date||'').toString().slice(0,10).replace(/T.*/,'');
+    var memo = item.description || item.memo || item.detail || '';
+    var cat = item.category || '一般';
+    var img = item.imageUrl || item.image || '';
+    var author = item.author || '';
     html+='<article class="bg-white border-[3px] border-slate-800 rounded-[20px] overflow-hidden shadow-sm">'
-      +'<div class="h-40 bg-gradient-to-br from-amber-100 to-teal-100 flex items-center justify-center text-4xl">📷</div>'
-      +'<div class="p-4"><div class="font-black text-[15px] leading-tight">'+esc(item.title||'レポート')+'</div>'
-      +'<div class="text-[11px] text-slate-500 mt-1">'+esc(item.date||'')+' | '+esc(item.category||'一般')+'</div>'
-      +'<p class="text-[13px] text-slate-700 mt-3 leading-relaxed line-clamp-3">'+esc(item.memo||item.detail||'')+'</p>'
-      +'<div class="mt-3 flex gap-2"><span class="px-2.5 py-1 rounded-full bg-slate-100 border text-[10px] font-bold">'+esc(item.category||'一般')+'</span><span class="px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold">📷 レポート</span></div>'
+      + (img ? '<div class="h-48 bg-slate-100 overflow-hidden"><img src="'+esc(img)+'" alt="'+esc(title)+'" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display=\'none\'"><div class="h-48 bg-gradient-to-br from-amber-100 to-teal-100 flex items-center justify-center text-4xl" style="display:none">📷</div></div>' : '<div class="h-40 bg-gradient-to-br from-amber-100 to-teal-100 flex items-center justify-center text-4xl">📷</div>')
+      +'<div class="p-4"><div class="font-black text-[15px] leading-tight">'+esc(title)+'</div>'
+      +'<div class="text-[11px] text-slate-500 mt-1">'+esc(date)+' | '+esc(cat)+(author?' | '+esc(author):'')+'</div>'
+      +'<p class="text-[13px] text-slate-700 mt-3 leading-relaxed">'+esc(memo)+'</p>'
+      +'<div class="mt-3 flex gap-2 flex-wrap"><span class="px-2.5 py-1 rounded-full bg-slate-100 border text-[10px] font-bold">'+esc(cat)+'</span><span class="px-2.5 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-[10px] font-bold">📷 レポート</span>'+(author?'<span class="px-2.5 py-1 rounded-full bg-white border text-[10px] font-bold">'+esc(author)+'</span>':'')+'</div>'
       +'</div></article>';
   });
   el.innerHTML=html;
 }
+
 
 
 function toggleHirobaCat(cat){ openHirobaCat = (openHirobaCat === cat) ? null : cat; openHirobaArticle = null; renderHiroba(); }
