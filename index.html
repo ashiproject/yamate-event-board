@@ -666,8 +666,31 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <div class="admin-shell">
   <div class="flex items-center justify-between gap-3 flex-wrap"><div><h1 class="text-2xl md:text-3xl font-black">🛡 管理者ダッシュボード — 800世帯 一斉通知＆参加管理</h1><p class="text-sm text-slate-300 mt-2">ログイン：ゲスト（デモでは全員送信可） / 未回答：800世帯</p></div><div class="flex gap-2"><button type="button" onclick="document.getElementById('adminNoticeTitle').focus()" class="px-4 py-3 rounded-full bg-white text-slate-900 font-black">📣 一斉通知送信</button><button type="button" onclick="showToast('参加管理画面はGAS連携時に接続します')" class="px-4 py-3 rounded-full bg-slate-700 text-white font-black">📊 参加管理</button></div></div>
   <div class="admin-grid mt-5">
-    <div class="admin-card"><h2 class="font-black">📣 800世帯へ一斉通知（紙チラシ代替）</h2><input id="adminNoticeTitle" class="w-full p-4 border rounded-2xl mt-4" placeholder="タイトル例）【重要】夏祭り復活開催のお知らせ"><textarea id="adminNoticeBody" rows="5" class="w-full p-4 border rounded-2xl mt-3" placeholder="本文：イベント告知文を入力。参加可否をアプリから回答してください、など。"></textarea><select id="adminNoticeType" class="w-full p-4 border rounded-2xl mt-3"><option>通常</option><option>重要</option></select><button type="button" id="btnAdminSend" class="admin-send mt-4">📣 800世帯に一斉通知送信</button><p class="text-[11px] text-slate-500 mt-3">GAS action: sendNotification / setAppBadge。現在はローカル保存＋GAS送信準備です。</p></div>
-    <div class="admin-side"><h2 class="font-black text-lg">送信済み通知（最新5件）</h2><div id="adminSentList" class="mt-4"></div><div class="mt-4 bg-amber-400 text-slate-900 rounded-2xl p-4 text-xs font-black">💡 運用Tips：重要通知は月1回まで、通常はイベント告知に。参加表明ボタンで回答率を確認できます。</div></div>
+    <div class="admin-card">
+      <h2 class="font-black text-lg">📣 800世帯へ一斉通知（紙チラシ代替）</h2>
+      <p class="text-xs text-slate-500 mt-2">イベント告知なら、チラシへの導線を自動で付与できます。</p>
+      <input id="adminNoticeTitle" class="w-full p-4 border rounded-2xl mt-4" placeholder="タイトル例）【重要】夏祭り復活開催のお知らせ">
+      <textarea id="adminNoticeBody" rows="5" class="w-full p-4 border rounded-2xl mt-3" placeholder="本文：イベント告知文を入力。参加可否をアプリから回答してください、など。"></textarea>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <select id="adminNoticeType" class="w-full p-4 border rounded-2xl"><option>通常</option><option>重要</option><option>イベント告知</option></select>
+        <select id="adminNoticeEventSelect" class="w-full p-4 border-2 border-amber-300 bg-amber-50 rounded-2xl text-sm font-bold"><option value="">🔗 チラシ紐付けなし（通常通知）</option></select>
+      </div>
+      <div id="adminFlyerLinkPreview" class="hidden mt-3 p-3 bg-amber-50 border-2 border-amber-300 rounded-xl">
+        <div class="text-[11px] font-black text-amber-800">🎨 チラシURL（ワンクリックで閲覧）</div>
+        <div id="adminFlyerLinkText" class="text-[11px] text-slate-600 mt-1 break-all font-mono"></div>
+        <div class="flex gap-2 mt-2">
+          <button type="button" onclick="previewSelectedFlyer()" class="px-3 py-2 rounded-full bg-white border-2 border-amber-300 text-[11px] font-black">👀 チラシをプレビュー</button>
+          <button type="button" onclick="copyFlyerLink()" class="px-3 py-2 rounded-full bg-slate-900 text-white text-[11px] font-black">📋 URLをコピー</button>
+        </div>
+      </div>
+      <button type="button" id="btnAdminSend" class="admin-send mt-4 w-full py-4 rounded-full bg-slate-900 text-white font-black text-sm">📣 800世帯に一斉通知送信（チラシ付き）</button>
+      <p class="text-[11px] text-slate-500 mt-3">GAS: sendNotification with eventId + flyerUrl / setAppBadge。通知タップでチラシへ直接遷移します。</p>
+    </div>
+    <div class="admin-side">
+      <h2 class="font-black text-lg">送信済み通知（最新5件）</h2>
+      <div id="adminSentList" class="mt-4"></div>
+      <div class="mt-4 bg-amber-400 text-slate-900 rounded-2xl p-4 text-xs font-black">💡 運用Tips：<br>・イベント告知は「イベント告知」タイプ＋チラシ紐付けを選ぶ<br>・住民は通知をタップ→「🎨チラシを見る」で即閲覧<br>・URLはLINEや掲示板にも貼れます</div>
+    </div>
   </div>
 </div>
 </section>
@@ -1450,6 +1473,109 @@ window.yamateForceLogin=function(phone){
   location.reload();
 };
 
+
+function setupAdminSelectListener(){
+  var sel=document.getElementById('adminNoticeEventSelect');
+  if(!sel) return;
+  sel.addEventListener('change', function(){
+    var eventId=this.value;
+    var preview=document.getElementById('adminFlyerLinkPreview');
+    var txt=document.getElementById('adminFlyerLinkText');
+    if(eventId){
+      var url=getFlyerUrlForEvent(eventId);
+      if(txt) txt.textContent=url;
+      if(preview) preview.classList.remove('hidden');
+    } else {
+      if(preview) preview.classList.add('hidden');
+    }
+  });
+}
+function populateAdminEventSelect(){
+  setupAdminSelectListener();
+
+  var sel=document.getElementById('adminNoticeEventSelect');
+  if(!sel) return;
+  var all=[];
+  try{
+    if(typeof EVENT_DATA!=='undefined') all=all.concat(EVENT_DATA);
+    if(typeof EVENT_IDEAS!=='undefined') all=all.concat(EVENT_IDEAS);
+    if(typeof getUpcomingEvents==='function'){
+      var up=getUpcomingEvents();
+      if(up && up.length) all=up;
+    }
+  }catch(e){}
+  // Unique
+  var seen={};
+  var opts='<option value="">🔗 チラシ紐付けなし（通常通知）</option>';
+  for(var i=0;i<all.length;i++){
+    var ev=all[i];
+    if(!ev || !ev.id || seen[ev.id]) continue;
+    seen[ev.id]=1;
+    var label=(ev.date||'')+' '+ev.title;
+    opts+='<option value="'+ev.id+'">🎨 '+esc(label).slice(0,30)+'</option>';
+  }
+  sel.innerHTML=opts;
+}
+
+function getFlyerUrlForEvent(eventId){
+  if(!eventId) return '';
+  var base=location.origin + location.pathname;
+  return base + '?flyer='+encodeURIComponent(eventId);
+}
+
+function previewSelectedFlyer(){
+  var sel=document.getElementById('adminNoticeEventSelect');
+  var eventId=sel?sel.value:'';
+  if(!eventId){ alert('イベントを選択してください'); return; }
+  // Open flyer directly
+  try{
+    if(typeof createFlyerFromEventObj==='function'){
+      createFlyerFromEventObj(eventId);
+    } else {
+      location.href=getFlyerUrlForEvent(eventId);
+    }
+  }catch(e){ location.href=getFlyerUrlForEvent(eventId); }
+}
+
+function copyFlyerLink(){
+  var txtEl=document.getElementById('adminFlyerLinkText');
+  var txt=txtEl?txtEl.textContent:'';
+  if(!txt){ alert('リンクがありません'); return; }
+  try{ navigator.clipboard.writeText(txt); showToast('📋 URLをコピーしました'); }catch(e){ prompt('コピーしてください', txt); }
+}
+
+function openFlyerFromNotification(eventId){
+  if(!eventId) return;
+  try{
+    showPage('event');
+    setTimeout(function(){
+      // Try to open flyer preview
+      if(typeof createFlyerFromEventObj==='function'){
+        createFlyerFromEventObj(eventId);
+      } else {
+        // Fallback: scroll to event card and toggle
+        var el=document.getElementById('event-card-'+eventId);
+        if(el) el.scrollIntoView({behavior:'smooth'});
+      }
+    }, 300);
+  }catch(e){ location.href=getFlyerUrlForEvent(eventId); }
+}
+
+function checkFlyerUrlParam(){
+  try{
+    var params=new URLSearchParams(location.search);
+    var flyerId=params.get('flyer');
+    if(flyerId){
+      console.log('flyer param detected', flyerId);
+      setTimeout(function(){
+        showPage('event');
+        setTimeout(function(){ openFlyerFromNotification(flyerId); }, 500);
+      }, 800);
+    }
+  }catch(e){}
+}
+
+
 var INITIAL_NOTIFICATIONS = [
   {id:'notice-20260601',title:'【重要】夏祭り2026 復活開催のお知らせ',body:'3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。',type:'重要',date:'2026/6/1 9:00',author:'山手町自治会'},
   {id:'notice-20260530',title:'一斉清掃のお知らせ（6/7）',body:'6/7(土)9時〜一斉清掃を実施します。急坂側溝重点。',type:'通常',date:'2026/5/30 18:00',author:'環境部'}
@@ -1490,15 +1616,31 @@ function renderNotifications(){
   var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
   if(!all.length){ el.innerHTML='<div class="bg-white border-2 border-dashed p-8 text-center text-sm">通知はまだありません。</div>'; return; }
   var unreadCount=0; for(var i=0;i<all.length;i++){ if(read.indexOf(all[i].id)===-1) unreadCount++; }
-  var html='<div class="flex justify-between mb-4"><div><h1 class="text-2xl font-black">通知センター</h1><p class="text-sm text-slate-500">管理者からの一斉通知（800世帯）</p></div><div><span class="px-3 py-2 rounded-full bg-red-500 text-white text-sm">'+unreadCount+'件未読</span> <button onclick="yamateMarkAllRead()" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm">すべて既読</button></div></div>';
+  var html='<div class="flex justify-between mb-4 flex-wrap gap-2"><div><h1 class="text-2xl font-black">通知センター</h1><p class="text-sm text-slate-500">管理者からの一斉通知（800世帯） チラシ付き通知はワンクリックで閲覧</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white text-sm">'+unreadCount+'件未読</span> <button onclick="yamateMarkAllRead()" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm">すべて既読</button></div></div>';
   for(var k=0;k<all.length;k++){
     var n=all[k]; var isUnread=read.indexOf(n.id)===-1;
-    html+='<div class="bg-white border-2 '+(isUnread?'border-amber-400':'border-slate-200')+' rounded-[20px] p-4 mb-3" onclick="yamateMarkRead(\''+n.id+'\')">'
-      +'<div class="flex gap-2"><span class="px-2 py-1 rounded-full text-[10px] '+(isUnread?'bg-amber-400':'bg-slate-100')+'">'+(isUnread?'未読':'既読')+'</span><span class="text-[11px]">'+(n.date||'')+'</span></div>'
-      +'<h3 class="font-black mt-2">'+n.title+'</h3><p class="text-sm mt-2">'+n.body+'</p></div>';
+    var eventId=n.eventId||n.event_id||'';
+    var flyerUrl=n.flyerUrl||n.flyer_url||'';
+    if(!flyerUrl && eventId) flyerUrl=getFlyerUrlForEvent(eventId);
+    html+='<div class="bg-white border-2 '+(isUnread?'border-amber-400 shadow-md':'border-slate-200')+' rounded-[20px] p-5 mb-4 cursor-pointer" onclick="yamateMarkRead(\''+n.id+'\')">'
+      +'<div class="flex justify-between items-start gap-2"><div class="flex gap-2 items-center flex-wrap"><span class="px-2.5 py-1 rounded-full text-[10px] font-black '+(isUnread?'bg-amber-400 text-black':'bg-slate-100 text-slate-600')+'">'+(isUnread?'未読':'既読')+'</span><span class="px-2.5 py-1 rounded-full text-[10px] font-bold border '+(n.type==='重要'?'bg-red-50 border-red-200 text-red-700': n.type==='イベント告知'?'bg-amber-50 border-amber-300 text-amber-800':'bg-slate-50 border-slate-200')+'">'+esc(n.type||'通常')+'</span><span class="text-[11px] text-slate-500">'+esc(n.date||'')+'</span></div>'
+      +'<span class="text-[11px] text-slate-400">'+esc(n.author||'')+'</span></div>'
+      +'<h3 class="font-black text-[16px] mt-3 leading-tight">'+esc(n.title)+'</h3>'
+      +'<p class="text-[13px] mt-2 leading-relaxed text-slate-700 whitespace-pre-wrap">'+esc(n.body||'').replace(/https?:\/\/[^\s]+/g, function(url){ return url; })+'</p>';
+    if(eventId || flyerUrl){
+      html+='<div class="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl">'
+        +'<div class="flex items-center justify-between gap-2 flex-wrap">'
+        +'<div><div class="text-[11px] font-black text-amber-800">🎨 この通知のチラシ</div><div class="text-[10px] text-slate-500 mt-0.5 break-all">'+esc(flyerUrl||'')+'</div></div>'
+        +'<div class="flex gap-2">'
+        +'<button type="button" onclick="event.stopPropagation(); openFlyerFromNotification(\''+eventId+'\')" class="px-4 py-2.5 rounded-full bg-amber-400 text-black text-xs font-black border-2 border-amber-500 shadow">🎨 チラシを見る</button>'
+        +'<button type="button" onclick="event.stopPropagation(); if(navigator.clipboard){navigator.clipboard.writeText(\''+flyerUrl+'\'); showToast(\'📋 URLコピー\')} else {prompt(\'URL\',\''+flyerUrl+'\')}" class="px-3 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold">📋 URLコピー</button>'
+        +'</div></div></div>';
+    }
+    html+='</div>';
   }
   el.innerHTML=html;
 }
+
 function fetchNotificationsFromGAS(){
   try{
     if(typeof yamateJsonp==='function' && typeof GAS_URL!=='undefined' && GAS_URL){
@@ -1509,26 +1651,43 @@ function fetchNotificationsFromGAS(){
   }catch(e){}
 }
 function sendAdminNotification(){
-  var titleEl=document.getElementById('adminNoticeTitle'); var bodyEl=document.getElementById('adminNoticeBody'); var typeEl=document.getElementById('adminNoticeType');
-  var title=titleEl ? titleEl.value : ''; var body=bodyEl ? bodyEl.value : ''; var type=typeEl ? typeEl.value : '通常';
+  var titleEl=document.getElementById('adminNoticeTitle'); var bodyEl=document.getElementById('adminNoticeBody'); var typeEl=document.getElementById('adminNoticeType'); var eventSel=document.getElementById('adminNoticeEventSelect');
+  var title=titleEl ? titleEl.value : ''; var body=bodyEl ? bodyEl.value : ''; var type=typeEl ? typeEl.value : '通常'; var eventId=eventSel ? eventSel.value : '';
   if(!title.trim()||!body.trim()){ alert('タイトルと本文を入力'); return; }
-  var item={id:'notice-'+Date.now(),title:title.trim(),body:body.trim(),type:type,date:new Date().toLocaleString('ja-JP'),author:'山手町自治会'};
+  var flyerUrl = eventId ? getFlyerUrlForEvent(eventId) : '';
+  // 本文にチラシURLを自動追記
+  var bodyWithFlyer = body.trim();
+  if(flyerUrl){
+    bodyWithFlyer += "\n\n🎨 チラシはこちら（ワンクリックで閲覧）\n" + flyerUrl;
+  }
+  var item={id:'notice-'+Date.now(),title:title.trim(),body:bodyWithFlyer,originalBody:body.trim(),type:type,date:new Date().toLocaleString('ja-JP'),author:'山手町自治会',eventId:eventId,flyerUrl:flyerUrl};
   try{
     var a=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]'); a.unshift(item); localStorage.setItem('yamate_admin_notifications',JSON.stringify(a));
     var b=JSON.parse(localStorage.getItem('yamate_notifications')||'[]'); b.unshift(item); localStorage.setItem('yamate_notifications',JSON.stringify(b));
   }catch(e){}
-  try{ if(typeof postToGAS==='function') postToGAS({action:'sendNotification',title:item.title,body:item.body,type:item.type,author:item.author}); }catch(e){}
-  try{ if(typeof postToGASAndWait==='function') postToGASAndWait({action:'sendNotification',title:item.title,body:item.body,type:item.type,author:item.author}); }catch(e){}
-  if(titleEl) titleEl.value=''; if(bodyEl) bodyEl.value='';
+  try{ if(typeof postToGAS==='function') postToGAS({action:'sendNotification',title:item.title,body:item.body,originalBody:item.originalBody,type:item.type,author:item.author,eventId:item.eventId,flyerUrl:item.flyerUrl}); }catch(e){}
+  try{ if(typeof postToGASAndWait==='function') postToGASAndWait({action:'sendNotification',title:item.title,body:item.body,originalBody:item.originalBody,type:item.type,author:item.author,eventId:item.eventId,flyerUrl:item.flyerUrl}); }catch(e){}
+  if(titleEl) titleEl.value=''; if(bodyEl) bodyEl.value=''; if(eventSel) eventSel.value='';
+  var preview=document.getElementById('adminFlyerLinkPreview'); if(preview) preview.classList.add('hidden');
   try{ renderAdminSent(); }catch(e){}
   renderNotifications(); updateNotificationBadge();
+  showToast('📣 800世帯に送信しました'+(flyerUrl?'（チラシ付き）':''));
 }
 
+
 function renderAdminSent(){
-  var el=document.getElementById('adminSentList'); if(!el)return; var a=[];try{a=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]');}catch(e){}
-  if(!a.length){el.innerHTML='<div class="text-sm text-slate-400">まだ送信履歴はありません。</div>';return;}
-  el.innerHTML=a.slice(0,5).map(function(x){return '<div class="bg-white rounded-xl p-4 mb-2 text-slate-900"><div class="flex justify-between gap-2"><span class="text-[11px] px-2 py-1 rounded-full bg-amber-50 border">'+esc(x.type)+'</span><span class="text-[11px] text-slate-500">'+esc(x.date)+'</span></div><div class="font-black mt-2">'+esc(x.title)+'</div><div class="text-xs text-slate-600 mt-1">'+esc(x.body)+'</div></div>';}).join('');
+  var el=document.getElementById('adminSentList'); if(!el) return;
+  var all=yamateGetAllNotifications().slice(0,5);
+  if(!all.length){ el.innerHTML='<div class="text-xs text-slate-500">まだ送信履歴がありません</div>'; return; }
+  var h='';
+  for(var i=0;i<all.length;i++){
+    var n=all[i];
+    var flyerBadge = (n.eventId||n.flyerUrl) ? '<span class="ml-2 px-2 py-0.5 rounded-full bg-amber-400 text-black text-[10px] font-black">🎨チラシ付</span>' : '';
+    h+='<div class="bg-white border rounded-xl p-3 mb-2"><div class="text-[12px] font-black">'+esc(n.title)+flyerBadge+'</div><div class="text-[11px] text-slate-500 mt-1">'+esc((n.body||'').slice(0,60))+'...</div>'+(n.flyerUrl?'<div class="text-[10px] text-amber-700 mt-1 break-all">'+esc(n.flyerUrl)+'</div>':'')+'</div>';
+  }
+  el.innerHTML=h;
 }
+
 function initAdminPage(){
   var b=document.getElementById('btnAdminSend'); if(b&&!b.dataset.bound){b.dataset.bound='1';b.addEventListener('click',sendAdminNotification);} renderAdminSent();
 }
@@ -1550,7 +1709,7 @@ function showPage(id, eventTab){
     try{ renderEventCategoryGrid(); }catch(e){ console.log('renderEventCategoryGrid error',e); }
     try{ showEventTab(eventTab || 'upcoming'); }catch(e){ console.log('showEventTab error',e); }
   }
-  if(id === 'admin'){ try{initAdminPage();}catch(e){} }
+  if(id === 'admin'){ try{initAdminPage();}catch(e){} try{populateAdminEventSelect();}catch(e){} }
   if(id === 'notifications'){ try{renderNotifications(); fetchNotificationsFromGAS();}catch(e){} }
   if(id === 'home'){ try{updateNotificationBadge(); fetchNotificationsFromGAS();}catch(e){} }
   if(id === 'flyerCreator'){
@@ -3244,6 +3403,8 @@ function ensureJoinCountsPersist(){
 
 
 document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(function(){ try{populateAdminEventSelect();}catch(e){} try{checkFlyerUrlParam();}catch(e){} }, 800);
+
   ensureJoinCountsPersist(); try{ setProposalMode('idea'); }catch(e){}
   initIdeas();
   hirobaPosts = INITIAL_HIROBA.slice();
