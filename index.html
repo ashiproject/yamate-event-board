@@ -1440,6 +1440,7 @@ window.yamateDebugLogin=function(){
   alert('yamate_user='+u+'\nphone='+p+'\nlogged='+l);
   return {user:u,phone:p,logged:l};
 };
+window.yamateDebugEvents=function(){ console.log('EVENT_DATA', typeof EVENT_DATA!=='undefined'?EVENT_DATA:[]); console.log('EVENT_IDEAS', typeof EVENT_IDEAS!=='undefined'?EVENT_IDEAS:[]); if(typeof EVENT_DATA!=='undefined' && EVENT_DATA.length>0) console.log('sample event', EVENT_DATA[0]); };
 window.yamateForceLogin=function(phone){
   phone=(phone||'09012345678').replace(/[^0-9]/g,'');
   localStorage.setItem('yamate_logged_in','1');
@@ -2651,7 +2652,8 @@ function eventCardHtmlUnified(ev, isIdea){
 
   // 3段階の内容
   if(stage===1){
-    var detail = ev.detail || ev.summary || '';
+    var detail = ev.detail || ev.details || ev.content || ev.description || ev.summary200 || ev.summary || '';
+    if(!detail) { console.log('EV no detail', ev); detail='(詳細は登録されていません)'; }
     var skills = ev.skillsNeeded||[];
     html += '<div class="mt-3 bg-slate-50 border-2 border-slate-200 rounded-2xl p-3">';
     html += '<div class="font-bold text-[11px] text-slate-600 mb-2">📝 要約とスキル</div>';
@@ -2670,7 +2672,9 @@ function eventCardHtmlUnified(ev, isIdea){
   }else if(stage===2){
     html += '<div class="mt-3 bg-white border-[3px] border-teal-600 rounded-2xl p-4 shadow-sm">';
     html += '<div class="font-black text-xs text-teal-800 mb-2">📖 150-200文字の詳細</div>';
-    html += '<div class="text-[13px] leading-relaxed text-slate-800">'+esc(ev.detail||ev.summary||'')+'</div>';
+    var fullDetail = ev.detail || ev.details || ev.content || ev.description || ev.summary200 || ev.summary || '';
+    if(!fullDetail) fullDetail='(詳細は登録されていません。Eventsシートのdetail列を確認してください)';
+    html += '<div class="text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap">'+esc(fullDetail)+'</div>';
     html += '<div class="mt-3 p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 leading-relaxed">タイトル：'+esc(ev.title)+'<br>場所：'+esc(ev.place||'')+' / 日時：'+esc(ev.date||'')+' / カテゴリ：'+esc(ev.category||'')+'</div>';
     html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-slate-100 border-2 border-slate-300 text-xs font-bold">▲ 最初に戻る（タイトルのみ）</button></div>';
   }
@@ -2730,7 +2734,8 @@ function eventCardHtmlUnified(ev, isIdea){
   html += '</div></div>';
 
   if(stage===1){
-    var detail = ev.detail || ev.summary || '';
+    var detail = ev.detail || ev.details || ev.content || ev.description || ev.summary200 || ev.summary || '';
+    if(!detail) { console.log('EV no detail', ev); detail='(詳細は登録されていません)'; }
     var skills = ev.skillsNeeded||[];
     html += '<div class="mt-3 bg-slate-50 border-2 border-slate-200 rounded-2xl p-3">';
     html += '<div class="font-bold text-[11px] text-slate-600 mb-2">📝 要約とスキル</div>';
@@ -2749,7 +2754,9 @@ function eventCardHtmlUnified(ev, isIdea){
   }else if(stage===2){
     html += '<div class="mt-3 bg-white border-[3px] border-teal-600 rounded-2xl p-4 shadow-sm">';
     html += '<div class="font-black text-xs text-teal-800 mb-2">📖 150-200文字の詳細</div>';
-    html += '<div class="text-[13px] leading-relaxed text-slate-800">'+esc(ev.detail||ev.summary||'')+'</div>';
+    var fullDetail = ev.detail || ev.details || ev.content || ev.description || ev.summary200 || ev.summary || '';
+    if(!fullDetail) fullDetail='(詳細は登録されていません。Eventsシートのdetail列を確認してください)';
+    html += '<div class="text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap">'+esc(fullDetail)+'</div>';
     html += '<div class="mt-3 p-2 bg-slate-50 rounded-xl text-[10px] text-slate-500 leading-relaxed">タイトル：'+esc(ev.title)+'<br>場所：'+esc(ev.place||'')+' / 日時：'+esc(ev.date||'')+' / カテゴリ：'+esc(ev.category||'')+'</div>';
     html += '<button type="button" onclick="event.stopPropagation(); toggleEventDetailStage(\''+ev.id+'\')" class="mt-3 w-full py-2.5 rounded-full bg-slate-100 border-2 border-slate-300 text-xs font-bold">▲ 最初に戻る（タイトルのみ）</button></div>';
   }
