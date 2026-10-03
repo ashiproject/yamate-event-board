@@ -353,27 +353,28 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 
 
 <!-- LOGIN MODAL -->
+<!-- LOGIN MODAL - V65 FIXED -->
 <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-900/55 px-4" aria-hidden="true">
   <div class="w-full max-w-[525px] bg-white rounded-[30px] shadow-2xl overflow-hidden">
     <div class="px-8 pt-8 pb-4 flex items-center justify-between">
       <div class="flex items-center gap-4"><div class="w-11 h-11 rounded-full bg-teal-700 text-white flex items-center justify-center font-black text-xl">山</div><div><div class="font-black text-2xl">ログイン</div><div class="text-sm text-slate-500 font-bold">電話番号だけでOKです</div></div></div>
       <button type="button" onclick="closeLoginModal()" class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 text-xl">×</button>
     </div>
-    <form id="loginForm" class="px-8 pb-8">
-      <div class="login-new-note">📱 <b>電話番号だけでOK</b> 名前・住所は任意。未入力でも参加表明できます。認証コードはデモ 1234</div>
+    <div class="px-8 pb-8">
+      <div class="login-new-note">📱 <b>電話番号だけでOK</b> 名前・住所は任意。認証コードはデモ 1234</div>
       <label class="login-label">携帯電話番号 <span class="login-required">必須</span> <span class="text-slate-500">10–11桁</span></label>
-      <input id="loginPhone" type="tel" inputmode="numeric" required autocomplete="tel" placeholder="例 09012345678" class="w-full p-4 border rounded-2xl text-lg mb-4">
+      <input id="loginPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="例 09012345678" class="w-full p-4 border rounded-2xl text-lg mb-4">
       <div class="grid grid-cols-2 gap-3">
-        <div><label class="login-label">お名前 <span class="text-slate-400">(任意)</span></label><input id="loginName" type="text" placeholder="任意・未入力OK" class="w-full p-4 border rounded-2xl"></div>
+        <div><label class="login-label">お名前 <span class="text-slate-400">(任意)</span></label><input id="loginName" type="text" placeholder="任意" class="w-full p-4 border rounded-2xl"></div>
         <div><label class="login-label">住所 <span class="text-slate-400">(任意)</span></label><input id="loginAddress" type="text" placeholder="任意" class="w-full p-4 border rounded-2xl"></div>
       </div>
-      <button type="submit" class="mt-4 w-full py-4 rounded-full bg-slate-900 text-white font-black text-lg">SMS認証コードを送信</button>
+      <button type="button" id="loginSubmitBtn" onclick="yamateDoLogin()" class="mt-4 w-full py-4 rounded-full bg-slate-900 text-white font-black text-lg">SMS認証コードを送信</button>
       <button type="button" onclick="closeLoginModal()" class="mt-3 w-full py-3.5 rounded-full bg-white border text-slate-600 font-black">ゲストのまま閉じる</button>
       <div id="loginStatus" class="text-xs text-center mt-3 text-slate-500"></div>
-      <p class="text-[11px] text-slate-500 leading-relaxed mt-3">保存先: localStorage yamate_user。電話のみ必須で他は任意。管理者は0900000000</p>
-    </form>
+    </div>
   </div>
 </div>
+
 
 <main class="pt-6">
 
@@ -1387,47 +1388,66 @@ function updateLoginButtons(){
   ['loginNavBtn','loginNavBtnMobile'].forEach(function(id){var b=document.getElementById(id); if(b) b.textContent=logged ? '👤 ログイン中' : '🔐 ログイン';});
 }
 
+
+function yamateDoLogin(){
+  var phoneEl=document.getElementById('loginPhone');
+  var phone=phoneEl ? phoneEl.value.replace(/[^0-9]/g,'') : '';
+  var status=document.getElementById('loginStatus');
+  if(phone.length<10 || phone.length>11){
+    if(status) status.textContent='電話番号は10〜11桁で入力してください';
+    alert('電話番号は10〜11桁で入力してください');
+    return;
+  }
+  var nameEl=document.getElementById('loginName');
+  var addrEl=document.getElementById('loginAddress');
+  var uname=nameEl ? nameEl.value : '';
+  var uaddr=addrEl ? addrEl.value : '';
+  try{
+    localStorage.setItem('yamate_logged_in','1');
+    localStorage.setItem('yamate_login_phone',phone);
+    var userStr=JSON.stringify({phone:phone,name:uname,address:uaddr});
+    localStorage.setItem('yamate_user',userStr);
+    console.log('LOGIN SAVED', userStr);
+    if(status) status.textContent='保存しました: '+phone;
+  }catch(err){
+    console.error('LOGIN SAVE FAILED', err);
+    if(status) status.textContent='保存失敗: '+err.message;
+    alert('保存失敗: '+err.message);
+    return;
+  }
+  try{
+    if(typeof postToGAS==='function') postToGAS({action:'registerUser', phone:phone, name:uname, address:uaddr, ua:navigator.userAgent});
+  }catch(e){}
+  try{ updateLoginButtons(); }catch(e){}
+  try{ closeLoginModal(); }catch(e){}
+  alert('ログイン完了: '+phone);
+}
 function initLogin(){
   updateLoginButtons();
-  var form=document.getElementById('loginForm');
-  if(!form) return;
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
-    var phoneInput=document.getElementById('loginPhone');
-    var phone=phoneInput ? phoneInput.value.replace(/\D/g,'') : '';
-    var status=document.getElementById('loginStatus');
-    if(phone.length<10 || phone.length>11){
-      if(status) status.textContent='電話番号は10〜11桁で入力してください';
-      return;
-    }
-    var nameInput=document.getElementById('loginName');
-    var addrInput=document.getElementById('loginAddress');
-    var uname=nameInput ? nameInput.value : '';
-    var uaddr=addrInput ? addrInput.value : '';
-    try{
-      localStorage.setItem('yamate_logged_in','1');
-      localStorage.setItem('yamate_login_phone',phone);
-      localStorage.setItem('yamate_user', JSON.stringify({phone:phone,name:uname,address:uaddr}));
-      console.log('saved yamate_user', localStorage.getItem('yamate_user'));
-    }catch(err){
-      console.error('save failed', err);
-      if(status) status.textContent='保存に失敗しました: '+err.message;
-      return;
-    }
-    try{
-      if(typeof postToGAS==='function') postToGAS({action:'registerUser', phone:phone, name:uname, address:uaddr, ua:navigator.userAgent});
-    }catch(e){ console.log('GAS error', e); }
-    if(status) status.textContent='保存しました 電話: '+phone+' 認証コード1234';
-    updateLoginButtons();
-    try{ closeLoginModal(); }catch(e){}
-    setTimeout(function(){ alert('ログイン保存完了: '+phone+'\nマイページが使えるようになりました'); }, 100);
-    try{ renderNotifications(); updateNotificationBadge(); }catch(e){}
-  });
+  var phoneEl=document.getElementById('loginPhone');
+  if(phoneEl){
+    phoneEl.addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); yamateDoLogin(); } });
+  }
+  console.log('initLogin V65 loaded, current:', localStorage.getItem('yamate_user'));
 }
-
-
-
-
+window.yamateDebugLogin=function(){
+  var u=localStorage.getItem('yamate_user');
+  var p=localStorage.getItem('yamate_login_phone');
+  var l=localStorage.getItem('yamate_logged_in');
+  console.log('yamate_user=',u);
+  console.log('yamate_login_phone=',p);
+  console.log('yamate_logged_in=',l);
+  alert('yamate_user='+u+'\nphone='+p+'\nlogged='+l);
+  return {user:u,phone:p,logged:l};
+};
+window.yamateForceLogin=function(phone){
+  phone=(phone||'09012345678').replace(/[^0-9]/g,'');
+  localStorage.setItem('yamate_logged_in','1');
+  localStorage.setItem('yamate_login_phone',phone);
+  localStorage.setItem('yamate_user', JSON.stringify({phone:phone,name:'test',address:''}));
+  console.log('forced', localStorage.getItem('yamate_user'));
+  location.reload();
+};
 
 var INITIAL_NOTIFICATIONS = [
   {id:'notice-20260601',title:'【重要】夏祭り2026 復活開催のお知らせ',body:'3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。',type:'重要',date:'2026/6/1 9:00',author:'山手町自治会'},
@@ -1464,7 +1484,6 @@ function updateNotificationBadge(){
   var homeBanner=document.getElementById('homeNoticeBanner');
   if(homeBanner){ if(unread>0){ homeBanner.classList.remove('hidden'); var cnt=document.getElementById('homeNoticeCount'); if(cnt) cnt.textContent='通知が'+unread+'件あります'; } else { homeBanner.classList.add('hidden'); } }
 }
-window.yamateDebugLogin=function(){ console.log('yamate_user', localStorage.getItem('yamate_user')); console.log('yamate_login_phone', localStorage.getItem('yamate_login_phone')); console.log('yamate_logged_in', localStorage.getItem('yamate_logged_in')); };
 function renderNotifications(){
   var el=document.getElementById('notificationsList'); if(!el) return;
   var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
