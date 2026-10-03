@@ -1419,6 +1419,8 @@ function initLogin(){
     }catch(e){ console.log('GAS error', e); }
     if(status) status.textContent='保存しました 電話: '+phone+' 認証コード1234';
     updateLoginButtons();
+    try{ closeLoginModal(); }catch(e){}
+    setTimeout(function(){ alert('ログイン保存完了: '+phone+'\nマイページが使えるようになりました'); }, 100);
     try{ renderNotifications(); updateNotificationBadge(); }catch(e){}
   });
 }
@@ -1462,6 +1464,7 @@ function updateNotificationBadge(){
   var homeBanner=document.getElementById('homeNoticeBanner');
   if(homeBanner){ if(unread>0){ homeBanner.classList.remove('hidden'); var cnt=document.getElementById('homeNoticeCount'); if(cnt) cnt.textContent='通知が'+unread+'件あります'; } else { homeBanner.classList.add('hidden'); } }
 }
+window.yamateDebugLogin=function(){ console.log('yamate_user', localStorage.getItem('yamate_user')); console.log('yamate_login_phone', localStorage.getItem('yamate_login_phone')); console.log('yamate_logged_in', localStorage.getItem('yamate_logged_in')); };
 function renderNotifications(){
   var el=document.getElementById('notificationsList'); if(!el) return;
   var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
