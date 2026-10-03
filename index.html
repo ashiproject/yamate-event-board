@@ -386,7 +386,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 
 <section id="home" class="page active">
 <div class="home-v5 rounded-[20px] p-0 overflow-hidden">
-  <div class="notice-board flex items-center justify-between gap-2 p-3 m-3 rounded-xl bg-amber-50 border border-amber-200 max-w-sm mx-auto"><div class="flex items-center gap-2"><span>🔔</span><span class="font-black text-sm">通知があります。</span></div><button type="button" onclick="showPage('notifications')" class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-black">通知をみる</button></div>
+  <div id="homeNoticeBanner" class="notice-board flex items-center justify-between gap-2 p-3 m-3 rounded-xl bg-amber-50 border-2 border-amber-400 max-w-sm mx-auto hidden"><div class="flex items-center gap-2"><span>🔔</span><span class="font-black text-sm">通知があります。</span></div><button type="button" onclick="showPage('notifications')" class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-black">通知をみる</button></div>
   
   <div class="p-2 flex justify-center">
     <div class="w-full max-w-sm mx-auto">
@@ -671,13 +671,24 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div>
 </section>
 
+
 <!-- PAGE: NOTIFICATIONS -->
 <section id="notifications" class="page">
 <div class="text-sm text-slate-500 mb-3"><button type="button" onclick="showPage('home')">← ホーム</button></div>
-<div class="notice-center"><div class="flex items-center justify-between gap-3 flex-wrap"><div><h1 class="text-3xl font-black">🔔 通知センター</h1><p class="text-sm text-slate-500 mt-2">管理者からの一斉通知（800世帯）— 紙チラシ代替。バッジはホーム画面に表示。</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white font-black text-sm">2件未読</span><button class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">すべて既読</button></div></div>
-<div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill" style="background:#fff;color:#ef4444;border:1px solid #fecaca">重要</span><span>2026/6/1 9:00</span><span class="notice-pill normal">山手町自治会</span></div><h3>【重要】夏祭り2026 復活開催のお知らせ</h3><p>3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答お願いします。紙チラシに代わる一斉通知です。</p><div class="notice-event-link"><div><div class="font-black">🌴 夏祭り2026 復活開催</div><div class="text-xs text-slate-500 mt-1">2026-07-19 山手公園</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
-<div class="notice-item"><div class="notice-check">✓</div><div class="notice-meta"><span class="notice-pill">未読</span><span class="notice-pill normal">通常</span><span>2026/5/30 18:00</span><span class="notice-pill normal">環境部</span></div><h3>一斉清掃のお知らせ（6/7）</h3><p>6/7(土)9時〜一斉清掃を実施します。急坂側溝重点。軍手・長靴推奨。参加される方はアプリから参加表明をお願いします。</p><div class="notice-event-link"><div><div class="font-black">🧹 一斉清掃＆側溝そうじ</div><div class="text-xs text-slate-500 mt-1">2026-06-07 集会所集合 → 町内全域</div></div><button onclick="showPage('event')">イベントを開く</button></div></div>
-</div></section>
+<div id="notificationsList"></div>
+<div class="mt-6 bg-amber-50 border-2 border-amber-200 rounded-[20px] p-4">
+  <div class="font-black text-sm">💡 800世帯への一斉通知の仕組み（今回修正）</div>
+  <div class="text-xs text-slate-600 mt-2 leading-relaxed">
+    1. 管理者が「管理者ダッシュボード」で通知を作成 →<br>
+    2. GASの <code>notifications</code> シートに保存（action=sendNotification）<br>
+    3. 全利用者の端末が <code>getNotifications</code> で定期取得（ホーム表示時・通知センター表示時に自動取得）<br>
+    4. 未読バッジがホームと右上に表示 → タップで通知センターへ<br>
+    5. 既読にするとバッジが消える<br>
+    将来的にLINE連携やメール配信に拡張可能（GASでLINE Messaging APIへ転送）
+  </div>
+</div>
+</section>
+
 
 
 <div id="approveEditModal" class="modal">
@@ -1402,17 +1413,99 @@ function initLogin(){
 }
 
 
+
+
+var INITIAL_NOTIFICATIONS = [
+  {id:'notice-20260601',title:'【重要】夏祭り2026 復活開催のお知らせ',body:'3年ぶりの夏祭りが7/19(土)山手公園で復活します。盆踊り・屋台・子ども縁日を予定。参加可否をアプリから回答お願いします。紙チラシに代わる一斉通知です。',type:'重要',date:'2026/6/1 9:00',author:'山手町自治会',eventId:''},
+  {id:'notice-20260530',title:'一斉清掃のお知らせ（6/7）',body:'6/7(土)9時〜一斉清掃を実施します。急坂側溝重点。軍手・長靴推奨。参加される方はアプリから参加表明をお願いします。',type:'通常',date:'2026/5/30 18:00',author:'環境部',eventId:''}
+];
+function yamateGetAllNotifications(){
+  var list=[];
+  try{
+    list=list.concat(INITIAL_NOTIFICATIONS);
+    var local=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]');
+    var ids={}; list.forEach(function(n){ids[n.id]=1;});
+    local.forEach(function(n){ if(!ids[n.id]){ list.unshift(n); ids[n.id]=1; } });
+    var gas=JSON.parse(localStorage.getItem('yamate_notifications')||'[]');
+    gas.forEach(function(n){ if(!ids[n.id]){ list.unshift(n); ids[n.id]=1; } });
+  }catch(e){}
+  list.sort(function(a,b){ return (b.id||'').localeCompare(a.id||''); });
+  return list;
+}
+function yamateGetReadIds(){ try{ return JSON.parse(localStorage.getItem('yamate_read_notifications')||'[]'); }catch(e){ return []; } }
+function yamateMarkAllRead(){
+  var all=yamateGetAllNotifications(); var ids=all.map(function(n){return n.id;});
+  try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(ids)); }catch(e){}
+  renderNotifications(); updateNotificationBadge(); showToast('すべて既読にしました');
+}
+function yamateMarkRead(id){
+  var read=yamateGetReadIds(); if(read.indexOf(id)===-1){ read.push(id); try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(read)); }catch(e){} }
+  updateNotificationBadge();
+}
+function updateNotificationBadge(){
+  var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
+  var unread=all.filter(function(n){return read.indexOf(n.id)===-1;}).length;
+  var badgeEls=document.querySelectorAll('#notificationBadge, #notificationBadgeMobile, #homeNotificationBadge, #notificationTopBadge');
+  badgeEls.forEach(function(el){
+    if(unread>0){ el.textContent=unread>99?'99+':unread; el.classList.remove('hidden'); el.style.display=''; }
+    else{ el.classList.add('hidden'); }
+  });
+  var homeNotice=document.getElementById('homeNoticeBanner');
+  if(homeNotice){
+    if(unread>0){ homeNotice.classList.remove('hidden'); var cnt=document.getElementById('homeNoticeCount'); if(cnt) cnt.textContent='🔔 通知が'+unread+'件あります。'; }
+    else{ homeNotice.classList.add('hidden'); }
+  }
+  var topBadge=document.getElementById('notificationTopBadge');
+  if(topBadge){ if(unread>0){ topBadge.textContent=unread; topBadge.classList.remove('hidden'); } else{ topBadge.classList.add('hidden'); } }
+  var homeBanner=document.getElementById('homeNoticeBanner');
+  if(homeBanner && unread>0) homeBanner.classList.remove('hidden');
+}
+function renderNotifications(){
+  var el=document.getElementById('notificationsList'); if(!el) return;
+  var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
+  if(!all.length){ el.innerHTML='<div class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center text-sm text-slate-500">通知はまだありません。</div>'; return; }
+  var html='<div class="flex items-center justify-between gap-3 flex-wrap mb-4"><div><h1 class="text-2xl font-black">🔔 通知センター</h1><p class="text-sm text-slate-500 mt-1">管理者からの一斉通知（800世帯）— 紙チラシ代替。バッジはホーム画面に表示。</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white font-black text-sm">'+all.filter(function(n){return read.indexOf(n.id)===-1;}).length+'件未読</span><button onclick="yamateMarkAllRead()" class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">すべて既読</button></div></div>';
+  html+=all.map(function(n){
+    var isUnread=read.indexOf(n.id)===-1;
+    return '<div class="notice-item bg-white border-[3px] '+(isUnread?'border-amber-400':'border-slate-200')+' rounded-[20px] p-4 mb-3 shadow-sm cursor-pointer" onclick="yamateMarkRead(\''+esc(n.id)+'\'); this.classList.remove(\'border-amber-400\'); this.classList.add(\'border-slate-200\');">'
+      +'<div class="flex items-center gap-2 flex-wrap">'
+      +'<span class="px-2.5 py-1 rounded-full text-[10px] font-black border '+(isUnread?'bg-amber-400 text-black border-amber-500':'bg-slate-100 text-slate-600')+'">'+(isUnread?'未読':'既読')+'</span>'
+      +'<span class="px-2.5 py-1 rounded-full text-[10px] font-bold border '+(n.type==='重要'?'bg-red-50 text-red-600 border-red-200':'bg-slate-50 text-slate-600')+'">'+esc(n.type||'通常')+'</span>'
+      +'<span class="text-[11px] text-slate-500">'+esc(n.date||'')+'</span>'
+      +'<span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-100 border">'+esc(n.author||'山手町自治会')+'</span>'
+      +'</div><h3 class="font-black text-[15px] mt-2 leading-tight">'+esc(n.title)+'</h3><p class="text-[13px] text-slate-700 mt-2 leading-relaxed">'+esc(n.body)+'</p></div>';
+  }).join('');
+  el.innerHTML=html;
+}
+function fetchNotificationsFromGAS(){
+  try{
+    if(typeof yamateJsonp==='function' && typeof GAS_URL!=='undefined'){
+      yamateJsonp(GAS_URL+'?action=getNotifications').then(function(res){
+        if(res && res.notifications){
+          try{ localStorage.setItem('yamate_notifications', JSON.stringify(res.notifications)); }catch(e){}
+          renderNotifications(); updateNotificationBadge();
+        }
+      }).catch(function(){});
+    }
+  }catch(e){}
+}
 function sendAdminNotification(){
   var title=(document.getElementById('adminNoticeTitle')||{}).value||'';
   var body=(document.getElementById('adminNoticeBody')||{}).value||'';
   var type=(document.getElementById('adminNoticeType')||{}).value||'通常';
   if(!title.trim()||!body.trim()){alert('タイトルと本文を入力してください');return;}
-  var item={id:'notice-'+Date.now(),title:title.trim(),body:body.trim(),type:type,date:new Date().toLocaleString('ja-JP')};
-  try{var a=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]');a.unshift(item);localStorage.setItem('yamate_admin_notifications',JSON.stringify(a));}catch(e){}
-  postToGAS({action:'sendNotification',title:item.title,body:item.body,type:item.type});
-  renderAdminSent(); showToast('📣 通知を登録しました（GAS接続時は一斉通知へ送信）');
+  var item={id:'notice-'+Date.now(),title:title.trim(),body:body.trim(),type:type,date:new Date().toLocaleString('ja-JP'),author:'山手町自治会',eventId:''};
+  try{
+    var a=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]'); a.unshift(item); localStorage.setItem('yamate_admin_notifications',JSON.stringify(a));
+    var b=JSON.parse(localStorage.getItem('yamate_notifications')||'[]'); b.unshift(item); localStorage.setItem('yamate_notifications',JSON.stringify(b));
+  }catch(e){}
+  if(typeof postToGAS==='function'){ postToGAS({action:'sendNotification',title:item.title,body:item.body,type:item.type,author:item.author}); }
+  if(typeof postToGASAndWait==='function'){ postToGASAndWait({action:'sendNotification',title:item.title,body:item.body,type:item.type,author:item.author}); }
+  renderAdminSent(); renderNotifications(); updateNotificationBadge();
+  showToast('📣 800世帯へ一斉通知を送信しました（GAS連携時は全登録者に配信）');
   document.getElementById('adminNoticeTitle').value=''; document.getElementById('adminNoticeBody').value='';
 }
+
 function renderAdminSent(){
   var el=document.getElementById('adminSentList'); if(!el)return; var a=[];try{a=JSON.parse(localStorage.getItem('yamate_admin_notifications')||'[]');}catch(e){}
   if(!a.length){el.innerHTML='<div class="text-sm text-slate-400">まだ送信履歴はありません。</div>';return;}
@@ -1440,6 +1533,8 @@ function showPage(id, eventTab){
     try{ showEventTab(eventTab || 'upcoming'); }catch(e){ console.log('showEventTab error',e); }
   }
   if(id === 'admin'){ try{initAdminPage();}catch(e){} }
+  if(id === 'notifications'){ try{renderNotifications(); fetchNotificationsFromGAS();}catch(e){} }
+  if(id === 'home'){ try{updateNotificationBadge(); fetchNotificationsFromGAS();}catch(e){} }
   if(id === 'flyerCreator'){
     try{ updateFlyerLivePreview(); }catch(e){ console.log(e); }
   }
