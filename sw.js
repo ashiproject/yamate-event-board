@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yamate-v40-20250929';
+const CACHE_NAME = 'yamate-v66-20261028';
 const ASSETS = [
   './',
   './index.html',
