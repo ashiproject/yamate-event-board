@@ -313,6 +313,22 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 .hand-border-yellow { border: 5px solid #F59E0B; border-radius: 36px 32px 38px 30px / 32px 38px 30px 36px; background: #FFFFFF; box-shadow: 0 12px 32px -8px rgba(245, 158, 11, 0.12), 0 4px 16px rgba(0,0,0,0.03); }
 .hand-oval { border: 3px solid #F59E0B; border-radius: 50% 50% 48% 52% / 55% 48% 52% 45%; padding: 2px 14px; display: inline-block; }
 </style>
+
+<style>
+/* ===== v66 review fixes: readability / tap targets / navigation ===== */
+html{font-size:17px;}
+.page{padding-bottom:150px !important;}
+.page.active{padding-bottom:150px !important;}
+#mnav{flex-wrap:wrap !important;overflow-x:visible !important;white-space:normal !important;}
+#mnav button{white-space:normal !important;}
+.lg\:hidden.fixed.bottom-0 button{min-height:56px;min-width:60px;padding:6px 6px !important;}
+.lg\:hidden.fixed.bottom-0 button span:last-child{font-size:11px !important;}
+.event-slope-filter,.event-status-filter{min-height:42px;padding:10px 16px !important;font-size:13px !important;}
+#event-filter-panel{background:#edf5f3;border:2px solid #b9d8d2;border-radius:20px;padding:14px;}
+#event-upcoming-list,#event-ideas-list{background:#ffffff;border:2px solid #e2e8f0;border-radius:20px;padding:12px;}
+.notice-date-label{font-size:12px !important;font-weight:800 !important;color:#475569 !important;}
+button{touch-action:manipulation;}
+</style>
 </head>
 <body>
 
@@ -335,7 +351,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <button type="button" onclick="window.open('https://sites.google.com/view/yamatechoasiya-city','_blank')" style="background:#fff;color:#2f7a6b;border:2px solid #2f7a6b;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏠 町内会サイト</button>
 <button type="button" onclick="window.open('https://mimo-lgtm.github.io/ashiya-issues/','_blank')" style="background:#e8a33d;color:#1b1f1d;border:2px solid #e8a33d;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏛 芦屋市の課題</button> <button type="button" onclick="showPage('flyerCreator')" class="px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-sm whitespace-nowrap">🎨 チラシ作成</button>
 </nav>
-<button type="button" id="hamburgerBtn" onclick="document.getElementById('mnav').classList.toggle('hidden')" class="lg:hidden w-9 h-9 border rounded-xl bg-white">☰</button>
+<button type="button" id="hamburgerBtn" onclick="document.getElementById('mnav').classList.toggle('hidden')" class="lg:hidden px-3 h-11 border rounded-xl bg-white font-black text-sm">☰ メニュー</button>
 </div>
 <div id="mnav" class="hidden lg:hidden px-3 pb-3 flex flex-row gap-2 overflow-x-auto whitespace-nowrap">
 <button type="button" onclick="showPage('home')" class="px-4 py-2 bg-teal-700 text-white rounded-full text-left whitespace-nowrap text-sm">🏠 ホーム</button>
@@ -362,6 +378,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
     </div>
     <div class="px-8 pb-8">
       <div class="login-new-note">📱 <b>電話番号だけでOK</b> 名前・住所は任意。認証コードはデモ 1234</div>
+      <p class="text-[11px] text-slate-500 leading-relaxed mb-3">電話番号は参加確認のためだけに使います。名前・住所は任意で、入力しなくても使えます。</p>
       <label class="login-label">携帯電話番号 <span class="login-required">必須</span> <span class="text-slate-500">10–11桁</span></label>
       <input id="loginPhone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="例 09012345678" class="w-full p-4 border rounded-2xl text-lg mb-4">
       <div class="grid grid-cols-2 gap-3">
@@ -443,11 +460,25 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div>
   </div>
 
+  <div class="px-3 pt-3 max-w-sm mx-auto">
+    <p class="text-[13px] leading-relaxed text-slate-700 bg-teal-50 border border-teal-200 rounded-2xl px-4 py-3">このアプリは、山手町の行事を<b>見つけて参加</b>したり、<b>「やりたい」</b>を提案できる掲示板です。企画する人だけでなく、<b>参加するだけの方も大歓迎</b>です。</p>
+  </div>
   <div class="p-3 max-w-sm mx-auto">
     <div class="grid grid-cols-3 gap-2">
       <button type="button" onclick="openEventSection('upcoming')" class="py-3 rounded-full bg-teal-700 text-white text-xs font-black">📅 今後のイベント</button>
       <button type="button" onclick="openEventSection('ideas')" class="py-3 rounded-full bg-white border text-xs font-black">💡 アイデア</button>
       <button type="button" onclick="openEventSection('hatsuan')" class="py-3 rounded-full bg-white border text-xs font-black">➕ 提案</button>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-1.5 text-center text-[10px] leading-tight text-slate-500">
+      <div>開催が決まっている<br>行事を見る</div>
+      <div>みんなの「やりたい」<br>募集中</div>
+      <div>あなたの「やりたい」を<br>投稿する</div>
+    </div>
+  </div>
+  <div class="px-3 pb-4 max-w-sm mx-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl px-4 py-3">
+      <button type="button" onclick="installPWA()" class="w-full py-3 rounded-full bg-slate-900 text-white text-sm font-black">📲 アプリとして使う（ホーム画面に追加）</button>
+      <p class="text-[11px] text-slate-500 leading-relaxed mt-2">iPhone：Safariの共有ボタン →「ホーム画面に追加」／ Android：Chromeのメニュー →「アプリをインストール」。インストールに権限は要りません。音声入力を使うときだけマイクの許可を求められます。カメラ・連絡先・位置情報は使いません。</p>
     </div>
   </div>
 </div>
@@ -539,6 +570,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 <button type="button" id="tabBtnHatsuan" onclick="openEventSection('hatsuan')" class="flex-1 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold text-slate-700">➕ 提案</button>
 </div>
 
+<p class="text-[12px] text-slate-600 leading-relaxed mt-3 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2"><b>📅 今後</b>＝開催が決まっている行事 ／ <b>💡 アイデア</b>＝みんなの「やりたい」（応援・参加表明ができます） ／ <b>➕ 提案</b>＝あなたの「やりたい」を新しく投稿する場所です。</p>
 <div class="mt-4">
 <button type="button" id="btnToggleFlow3Event" class="text-[11px] text-slate-500 underline mt-2">▼ 使い方の流れを見る</button>
 <div id="flow3WrapEvent" class="hidden mt-3 max-w-2xl">
@@ -559,7 +591,8 @@ div.flex:has(> #upcomingCount) { display:none !important; }
 </div>
 
 
-<div id="event-filter-panel" class="bg-transparent mb-5">
+<div id="event-filter-panel" class="mb-5">
+  <div class="font-black text-sm mb-1">🔎 絞り込み条件 <span class="text-[11px] font-bold text-slate-500">（分野とスキルは複数選べます）</span></div>
   <div class="flex items-center justify-between mb-3">
     <div class="flex gap-2">
       <button type="button" onclick="clearEventFilters()" class="px-4 py-2 rounded-full bg-white border-2 border-slate-300 text-xs font-black hidden" id="clearFilterBtn">絞り込み解除</button>
@@ -581,6 +614,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
       <div class="flex flex-wrap gap-2">
         <button type="button" onclick="setEventSlopeFilter('すべて')" class="event-slope-filter px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-black" data-slope="すべて">すべて</button>
         <button type="button" onclick="setEventSlopeFilter('平坦')" class="event-slope-filter px-4 py-2 rounded-full bg-white border-2 border-emerald-200 text-xs font-black" data-slope="平坦">平坦</button>
+        <button type="button" onclick="setEventSlopeFilter('やや坂')" class="event-slope-filter px-4 py-2 rounded-full bg-white border-2 border-emerald-200 text-xs font-black" data-slope="やや坂">やや坂</button>
         <button type="button" onclick="setEventSlopeFilter('急坂')" class="event-slope-filter px-4 py-2 rounded-full bg-white border-2 border-emerald-200 text-xs font-black" data-slope="急坂">急坂</button>
       </div>
     </div>
@@ -728,7 +762,7 @@ div.flex:has(> #upcomingCount) { display:none !important; }
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <div>
         <h1 class="text-2xl font-black">📷 イベントの様子</h1>
-        <p class="text-sm text-slate-500 mt-1">終わったイベントを画像と言葉で振り返り。管理者が簡単に入力、画像は自動生成。</p>
+        <p class="text-sm text-slate-500 mt-1">終わったイベントを写真と言葉で振り返ります。どなたでも投稿できます。</p>
       </div>
       <div class="flex items-center gap-2">
         <span class="px-4 py-2 rounded-full bg-slate-900 text-white font-black text-sm">4件のレポート</span>
@@ -738,13 +772,13 @@ div.flex:has(> #upcomingCount) { display:none !important; }
   </div>
 
   <div id="reportForm" class="mt-5 bg-white border-[3px] border-amber-400 rounded-[24px] p-5 shadow-sm">
-    <h2 class="font-black text-lg flex items-center gap-2">🛠 レポート作成 - 管理者が簡単に書く</h2>
+    <h2 class="font-black text-lg flex items-center gap-2">🛠 レポート作成（どなたでも投稿できます）</h2>
     <div class="grid lg:grid-cols-[1.2fr_0.8fr] gap-5 mt-5">
       <!-- 左：入力フォーム -->
       <div class="space-y-3">
         <div>
           <label class="text-[11px] font-black text-slate-600">元のイベント（選択すると自動入力）</label>
-          <select class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
+          <select id="reportEvSelect" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
             <option>自由入力 / イベントを選択</option>
             <option>夏祭り2026 復活開催</option>
             <option>一斉清掃＆側溝そうじ</option>
@@ -753,16 +787,16 @@ div.flex:has(> #upcomingCount) { display:none !important; }
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-600">タイトル</label>
-          <input class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold" placeholder="例）夏祭り2026の様子 — 30名参加で大盛況！">
+          <input id="reportTitle" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold" placeholder="例）夏祭り2026の様子 — 30名参加で大盛況！">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="text-[11px] font-black text-slate-600">日付</label>
-            <input type="date" value="2026-09-28" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm">
+            <input id="reportDate" type="date" value="2026-09-28" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm">
           </div>
           <div>
             <label class="text-[11px] font-black text-slate-600">カテゴリ</label>
-            <select class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
+            <select id="reportCat" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm font-bold">
               <option>🏠 一般</option>
               <option>🌸 季節の行事</option>
               <option>👨‍👩‍👧 子ども・親子</option>
@@ -772,24 +806,24 @@ div.flex:has(> #upcomingCount) { display:none !important; }
         </div>
         <div>
           <label class="text-[11px] font-black text-slate-600">一言メモ（1-2行）</label>
-          <textarea rows="3" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm" placeholder="例）30名参加、屋台完売、次回も継続！子どもたちの笑顔が印象的でした。"></textarea>
+          <textarea id="reportMemo" rows="3" class="w-full mt-1.5 p-3 rounded-xl border-2 border-slate-200 text-sm" placeholder="例）30名参加、屋台完売、次回も継続！子どもたちの笑顔が印象的でした。"></textarea>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-2">
-          <button class="py-3 rounded-full bg-slate-900 text-white font-black text-sm border-2 border-slate-900">🖼 画像を自動生成</button>
-          <button class="py-3 rounded-full bg-teal-700 text-white font-black text-sm border-2 border-teal-700">💾 保存してGASへ送信</button>
+          <button type="button" id="btnReportGenImg" class="py-3 rounded-full bg-slate-900 text-white font-black text-sm border-2 border-slate-900">🖼 画像を自動生成</button>
+          <button type="button" id="btnReportSave" class="py-3 rounded-full bg-teal-700 text-white font-black text-sm border-2 border-teal-700">💾 この内容で投稿する</button>
         </div>
       </div>
       <!-- 右：プレビュー -->
       <div class="bg-slate-50 border-2 border-slate-200 rounded-[20px] p-4">
         <div class="font-black text-[11px] text-slate-500 mb-3 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-500"></span>プレビュー</div>
-        <div class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
+        <div id="reportPreviewVisual" class="bg-white border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
           <div class="text-3xl">🖼️</div>
           <div class="text-[11px] text-slate-400 mt-2">画像がここに表示されます<br>「画像を自動生成」でAI画像を作成</div>
         </div>
         <div class="mt-4 bg-white border-2 border-slate-200 rounded-2xl p-4">
-          <div class="font-black text-[15px]">タイトル未入力</div>
-          <div class="text-[11px] text-slate-500 mt-1">2026-09-28 / 一般</div>
-          <p class="text-[13px] mt-3 text-slate-600 leading-relaxed">一言メモを入力するとここに表示されます。</p>
+          <div class="font-black text-[15px]" id="reportPreviewTitle">タイトル未入力</div>
+          <div class="text-[11px] text-slate-500 mt-1" id="reportPreviewMeta">2026-09-28 / 一般</div>
+          <p class="text-[13px] mt-3 text-slate-600 leading-relaxed" id="reportPreviewMemo">一言メモを入力するとここに表示されます。</p>
           <div class="mt-3 flex gap-1.5">
             <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold border">📷 写真あり</span>
             <span class="px-2 py-1 rounded-full bg-teal-100 text-teal-800 text-[10px] font-bold border">✅ 公開中</span>
@@ -1297,8 +1331,10 @@ let NEXT_ID = 1;
 let openBig = "BIG-1";
 let openMid = null;
 let openEventCat = null;
-let openEventInterest = "すべて";
-let openEventSkill = "すべて";
+let openEventInterest = "すべて"; /* legacy (unused) */
+let openEventSkill = "すべて"; /* legacy (unused) */
+let openEventInterests = []; /* v66: multi-select */
+let openEventSkills = []; /* v66: multi-select */
 let openEventSlope = "すべて";
 let openEventStatus = "すべて";
 let eventFiltersCollapsed = false;
@@ -1594,49 +1630,91 @@ function yamateGetAllNotifications(){
   return list;
 }
 function yamateGetReadIds(){ try{ return JSON.parse(localStorage.getItem('yamate_read_notifications')||'[]'); }catch(e){ return []; } }
+function yamateNotifHash(s){ var h=0; s=String(s||''); for(var i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i))|0; } return String(h); }
+/* v66: read state is keyed by id + content fingerprint.
+   If an admin edits a notification after it was read, the fingerprint changes and it becomes unread again. */
+function yamateNotifKey(n){ return String(n.id||'')+'#'+yamateNotifHash(String(n.title||'')+'|'+String(n.body||'')); }
+function yamateIsRead(n, read){ if(!read) read=yamateGetReadIds(); return read.indexOf(yamateNotifKey(n))!==-1; }
 function yamateMarkAllRead(){
-  var all=yamateGetAllNotifications(); var ids=all.map(function(n){return n.id;});
-  try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(ids)); }catch(e){}
+  var all=yamateGetAllNotifications(); var keys=all.map(function(n){return yamateNotifKey(n);});
+  try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(keys)); }catch(e){}
   renderNotifications(); updateNotificationBadge();
 }
 function yamateMarkRead(id){
-  var read=yamateGetReadIds(); if(read.indexOf(id)===-1){ read.push(id); try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(read)); }catch(e){} }
+  var all=yamateGetAllNotifications(); var target=null;
+  for(var i=0;i<all.length;i++){ if(String(all[i].id)===String(id)){ target=all[i]; break; } }
+  var read=yamateGetReadIds(); var key=target?yamateNotifKey(target):String(id);
+  if(read.indexOf(key)===-1){ read.push(key); try{ localStorage.setItem('yamate_read_notifications',JSON.stringify(read)); }catch(e){} }
   updateNotificationBadge();
 }
 function updateNotificationBadge(){
   var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
-  var unread=0; for(var i=0;i<all.length;i++){ if(read.indexOf(all[i].id)===-1) unread++; }
+  var unread=0; for(var i=0;i<all.length;i++){ if(!yamateIsRead(all[i],read)) unread++; }
   var els=document.querySelectorAll('#notificationTopBadge');
   for(var j=0;j<els.length;j++){ var el=els[j]; if(unread>0){ el.textContent=unread; el.classList.remove('hidden'); } else { el.classList.add('hidden'); } }
   var homeBanner=document.getElementById('homeNoticeBanner');
   if(homeBanner){ if(unread>0){ homeBanner.classList.remove('hidden'); var cnt=document.getElementById('homeNoticeCount'); if(cnt) cnt.textContent='通知が'+unread+'件あります'; } else { homeBanner.classList.add('hidden'); } }
 }
+var yamateNotifSort = 'new';
+function yamateSetNotifSort(v){ yamateNotifSort=v||'new'; renderNotifications(); }
+function yamateNotifMonthKey(n){
+  var d=String(n.date||n.createdAt||'');
+  var m=d.match(/(\d{4})[\/-](\d{1,2})/);
+  if(m) return m[1]+'年'+Number(m[2])+'月';
+  return '日付なし';
+}
+function yamateNotifCardHtml(n, read){
+  var isUnread=!yamateIsRead(n, read);
+  var eventId=n.eventId||n.event_id||'';
+  var flyerUrl=n.flyerUrl||n.flyer_url||'';
+  if(!flyerUrl && eventId) flyerUrl=getFlyerUrlForEvent(eventId);
+  var ev = eventId ? getEventById(eventId) : null;
+  var html='<div class="bg-white border-2 '+(isUnread?'border-amber-400 shadow-md':'border-slate-200')+' rounded-[20px] p-5 mb-4 cursor-pointer" onclick="yamateMarkRead(\''+n.id+'\')">'
+    +'<div class="flex justify-between items-start gap-2"><div class="flex gap-2 items-center flex-wrap"><span class="px-2.5 py-1 rounded-full text-[11px] font-black '+(isUnread?'bg-amber-400 text-black':'bg-slate-100 text-slate-600')+'">'+(isUnread?'未読':'既読')+'</span><span class="px-2.5 py-1 rounded-full text-[11px] font-bold border '+(n.type==='重要'?'bg-red-50 border-red-200 text-red-700': n.type==='イベント告知'?'bg-amber-50 border-amber-300 text-amber-800':'bg-slate-50 border-slate-200')+'">'+esc(n.type||'通常')+'</span><span class="notice-date-label">投稿日：'+esc(n.date||'')+'</span></div>'
+    +'<span class="text-[11px] text-slate-400">'+esc(n.author||'')+'</span></div>'
+    +'<h3 class="font-black text-[17px] mt-3 leading-tight">'+esc(n.title)+'</h3>'
+    +'<p class="text-[14px] mt-2 leading-relaxed text-slate-700 whitespace-pre-wrap">'+esc(n.body||'')+'</p>';
+  if(ev){
+    html+='<div class="mt-4 p-4 bg-teal-50 border-2 border-teal-600 rounded-xl">'
+      +'<div class="font-black text-[15px] text-teal-900">📅 開催：'+esc(formatEventDate(ev))+'</div>'
+      +'<div class="font-bold text-[14px] text-teal-900 mt-1">📍 場所：'+esc(ev.place||'未定')+'</div>'
+      +'<div class="flex gap-2 mt-3 flex-wrap">'
+      +'<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'want\')" class="px-4 py-2.5 rounded-full bg-amber-400 text-black text-[13px] font-black border-2 border-amber-500">🙋 やりたい</button>'
+      +'<button type="button" onclick="event.stopPropagation(); joinEvent(event,\''+ev.id+'\',\'help\')" class="px-4 py-2.5 rounded-full bg-blue-500 text-white text-[13px] font-black border-2 border-blue-600">🤝 手伝える</button>'
+      +'<button type="button" onclick="event.stopPropagation(); openEventSection(\'upcoming\')" class="px-4 py-2.5 rounded-full bg-white border-2 border-teal-700 text-teal-800 text-[13px] font-black">詳細を見る</button>'
+      +'</div></div>';
+  }
+  if(eventId || flyerUrl){
+    html+='<div class="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl">'
+      +'<div class="flex items-center justify-between gap-2 flex-wrap">'
+      +'<div><div class="text-[11px] font-black text-amber-800">🎨 この通知のチラシ</div></div>'
+      +'<div class="flex gap-2">'
+      +'<button type="button" onclick="event.stopPropagation(); openFlyerFromNotification(\''+eventId+'\')" class="px-4 py-2.5 rounded-full bg-amber-400 text-black text-xs font-black border-2 border-amber-500 shadow">🎨 チラシを見る</button>'
+      +'</div></div></div>';
+  }
+  html+='</div>';
+  return html;
+}
 function renderNotifications(){
   var el=document.getElementById('notificationsList'); if(!el) return;
   var all=yamateGetAllNotifications(); var read=yamateGetReadIds();
   if(!all.length){ el.innerHTML='<div class="bg-white border-2 border-dashed p-8 text-center text-sm">通知はまだありません。</div>'; return; }
-  var unreadCount=0; for(var i=0;i<all.length;i++){ if(read.indexOf(all[i].id)===-1) unreadCount++; }
-  var html='<div class="flex justify-between mb-4 flex-wrap gap-2"><div><h1 class="text-2xl font-black">通知センター</h1><p class="text-sm text-slate-500">管理者からの一斉通知（800世帯） チラシ付き通知はワンクリックで閲覧</p></div><div class="flex gap-2"><span class="px-3 py-2 rounded-full bg-red-500 text-white text-sm">'+unreadCount+'件未読</span> <button onclick="yamateMarkAllRead()" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm">すべて既読</button></div></div>';
-  for(var k=0;k<all.length;k++){
-    var n=all[k]; var isUnread=read.indexOf(n.id)===-1;
-    var eventId=n.eventId||n.event_id||'';
-    var flyerUrl=n.flyerUrl||n.flyer_url||'';
-    if(!flyerUrl && eventId) flyerUrl=getFlyerUrlForEvent(eventId);
-    html+='<div class="bg-white border-2 '+(isUnread?'border-amber-400 shadow-md':'border-slate-200')+' rounded-[20px] p-5 mb-4 cursor-pointer" onclick="yamateMarkRead(\''+n.id+'\')">'
-      +'<div class="flex justify-between items-start gap-2"><div class="flex gap-2 items-center flex-wrap"><span class="px-2.5 py-1 rounded-full text-[10px] font-black '+(isUnread?'bg-amber-400 text-black':'bg-slate-100 text-slate-600')+'">'+(isUnread?'未読':'既読')+'</span><span class="px-2.5 py-1 rounded-full text-[10px] font-bold border '+(n.type==='重要'?'bg-red-50 border-red-200 text-red-700': n.type==='イベント告知'?'bg-amber-50 border-amber-300 text-amber-800':'bg-slate-50 border-slate-200')+'">'+esc(n.type||'通常')+'</span><span class="text-[11px] text-slate-500">'+esc(n.date||'')+'</span></div>'
-      +'<span class="text-[11px] text-slate-400">'+esc(n.author||'')+'</span></div>'
-      +'<h3 class="font-black text-[16px] mt-3 leading-tight">'+esc(n.title)+'</h3>'
-      +'<p class="text-[13px] mt-2 leading-relaxed text-slate-700 whitespace-pre-wrap">'+esc(n.body||'').replace(/https?:\/\/[^\s]+/g, function(url){ return url; })+'</p>';
-    if(eventId || flyerUrl){
-      html+='<div class="mt-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl">'
-        +'<div class="flex items-center justify-between gap-2 flex-wrap">'
-        +'<div><div class="text-[11px] font-black text-amber-800">🎨 この通知のチラシ</div><div class="text-[10px] text-slate-500 mt-0.5 break-all">'+esc(flyerUrl||'')+'</div></div>'
-        +'<div class="flex gap-2">'
-        +'<button type="button" onclick="event.stopPropagation(); openFlyerFromNotification(\''+eventId+'\')" class="px-4 py-2.5 rounded-full bg-amber-400 text-black text-xs font-black border-2 border-amber-500 shadow">🎨 チラシを見る</button>'
-        +'<button type="button" onclick="event.stopPropagation(); if(navigator.clipboard){navigator.clipboard.writeText(\''+flyerUrl+'\'); showToast(\'📋 URLコピー\')} else {prompt(\'URL\',\''+flyerUrl+'\')}" class="px-3 py-2.5 rounded-full bg-white border-2 border-slate-200 text-xs font-bold">📋 URLコピー</button>'
-        +'</div></div></div>';
+  var unreadCount=0; for(var i=0;i<all.length;i++){ if(!yamateIsRead(all[i],read)) unreadCount++; }
+  var sorted=all.slice();
+  var byDate=function(n){ var d=String(n.date||n.createdAt||''); var t=Date.parse(d.replace(/\//g,'-')); return isNaN(t)?0:t; };
+  if(yamateNotifSort==='old'){ sorted.sort(function(a,b){ return byDate(a)-byDate(b); }); }
+  else { sorted.sort(function(a,b){ return byDate(b)-byDate(a); }); }
+  var html='<div class="flex justify-between mb-4 flex-wrap gap-2"><div><h1 class="text-2xl font-black">通知センター</h1><p class="text-sm text-slate-500">自治会からのお知らせです。イベントのお知らせには開催日時と場所が表示されます。日付は「投稿日」です。</p></div><div class="flex gap-2 items-start"><span class="px-3 py-2 rounded-full bg-red-500 text-white text-sm">'+unreadCount+'件未読</span> <button onclick="yamateMarkAllRead()" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm">すべて既読</button></div></div>'
+    +'<div class="flex items-center gap-2 mb-4"><label class="text-[13px] font-black text-slate-600">並び替え</label><select onchange="yamateSetNotifSort(this.value)" class="p-2.5 border-2 border-slate-300 rounded-xl text-sm font-bold bg-white"><option value="new"'+(yamateNotifSort==='new'?' selected':'')+'>新しい順</option><option value="old"'+(yamateNotifSort==='old'?' selected':'')+'>古い順</option><option value="month"'+(yamateNotifSort==='month'?' selected':'')+'>月別に見る</option></select></div>';
+  if(yamateNotifSort==='month'){
+    var lastKey='';
+    for(var k=0;k<sorted.length;k++){
+      var key=yamateNotifMonthKey(sorted[k]);
+      if(key!==lastKey){ html+='<h2 class="font-black text-lg mt-5 mb-2">🗓 '+esc(key)+'</h2>'; lastKey=key; }
+      html+=yamateNotifCardHtml(sorted[k], read);
     }
-    html+='</div>';
+  } else {
+    for(var k2=0;k2<sorted.length;k2++){ html+=yamateNotifCardHtml(sorted[k2], read); }
   }
   el.innerHTML=html;
 }
@@ -1645,7 +1723,7 @@ function fetchNotificationsFromGAS(){
   try{
     if(typeof yamateJsonp==='function' && typeof GAS_URL!=='undefined' && GAS_URL){
       yamateJsonp(GAS_URL+'?action=getNotifications').then(function(res){
-        if(res && res.notifications){ try{ localStorage.setItem('yamate_notifications', JSON.stringify(res.notifications)); }catch(e){} renderNotifications(); updateNotificationBadge(); }
+        var arr = Array.isArray(res) ? res : (res && res.notifications ? res.notifications : null); if(arr){ try{ localStorage.setItem('yamate_notifications', JSON.stringify(arr)); }catch(e){} renderNotifications(); updateNotificationBadge(); }
       });
     }
   }catch(e){}
@@ -2658,11 +2736,8 @@ function toggleEventFilters(){
   if(btn) btn.textContent = eventFiltersCollapsed ? '🔎 絞り込みを開く' : '🔎 絞り込みを閉じる';
 }
 function eventInterestKey(label){ return String(label||'').replace(/^\S+\s*/,'').replace('で楽しむ','').replace('をシェア','').trim(); }
-function eventMatchesInterest(e){
-  if(openEventInterest==='すべて') return true;
-  /* v12: フィルターは本文の単語ではなく「登録されたカテゴリ」を優先。
-     これにより「清掃の記事だから季節」「飲み物が本文にあるから食べる」などの誤分類を防ぐ。
-     カテゴリが空の場合だけタイトル・本文を補助判定する。 */
+function eventMatchesOneInterest(label, e){
+  var openEventInterest = label;
   var stored=String(e.category||'').trim();
   var c=normalizeEventCategory(stored);
   if(stored){
@@ -2683,16 +2758,32 @@ function eventMatchesInterest(e){
   if(openEventInterest.indexOf('一般')>=0) return /一般|地域|コミュニティ|合同|防災|防犯|自治|町内|清掃|美化/.test(raw);
   return true;
 }
+function eventMatchesInterest(e){
+  if(!openEventInterests.length) return true;
+  for(var i=0;i<openEventInterests.length;i++){ if(eventMatchesOneInterest(openEventInterests[i], e)) return true; }
+  return false;
+}
 function eventMatchesSkill(e){
-  if(openEventSkill==='すべて') return true;
-  var skill=eventInterestKey(openEventSkill);
-  var raw=String(e.skillsNeeded||'')+' '+String(e.detail||'')+' '+String(e.title||'');
-  return raw.indexOf(skill)>=0;
+  if(!openEventSkills.length) return true;
+  for(var i=0;i<openEventSkills.length;i++){
+    var skill=eventInterestKey(openEventSkills[i]);
+    var raw=String(e.skillsNeeded||'')+' '+String(e.detail||'')+' '+String(e.title||'');
+    if(raw.indexOf(skill)>=0) return true;
+  }
+  return false;
 }
 function eventMatchesSlope(e){
   if(openEventSlope==='すべて') return true;
+  var s=String(e.slope||'').trim();
+  if(s){
+    if(openEventSlope==='急坂') return /急坂/.test(s);
+    if(openEventSlope==='やや坂') return /やや坂/.test(s);
+    if(openEventSlope==='平坦') return /平坦/.test(s);
+    return true;
+  }
   var raw=String(e.title||'')+' '+String(e.detail||'')+' '+String(e.place||'');
   if(openEventSlope==='急坂') return /急坂|坂道|斜面|坂/.test(raw);
+  if(openEventSlope==='やや坂') return false;
   return !/急坂|坂道|斜面|坂/.test(raw);
 }
 function eventMatchesStatus(e){
@@ -2704,14 +2795,14 @@ function getFilteredEventSource(source){ return (source||[]).filter(eventMatches
 function setEventSlopeFilter(v){ openEventSlope=v||'すべて'; updateEventFilterButtonStates(); renderEventCategoryGrid(); }
 function setEventStatusFilter(v){ openEventStatus=v||'すべて'; updateEventFilterButtonStates(); renderEventCategoryGrid(); }
 function updateEventFilterButtonStates(){
-  document.querySelectorAll('.event-slope-filter').forEach(function(b){var a=b.dataset.slope===openEventSlope;b.classList.toggle('bg-slate-900',a);b.classList.toggle('text-white',a);});
-  document.querySelectorAll('.event-status-filter').forEach(function(b){var a=b.dataset.status===openEventStatus;b.classList.toggle('bg-slate-900',a);b.classList.toggle('text-white',a);});
+  document.querySelectorAll('.event-slope-filter').forEach(function(b){var a=b.dataset.slope===openEventSlope;b.classList.toggle('bg-slate-900',a);b.classList.toggle('text-white',a);b.classList.toggle('bg-white',!a);});
+  document.querySelectorAll('.event-status-filter').forEach(function(b){var a=b.dataset.status===openEventStatus;b.classList.toggle('bg-slate-900',a);b.classList.toggle('text-white',a);b.classList.toggle('bg-white',!a);});
 }
 function renderEventFilterButtons(){
   var ib=document.getElementById('event-interest-filters'), sb=document.getElementById('event-skill-filters');
   if(!ib||!sb) return;
-  ib.innerHTML=EVENT_INTEREST_FILTERS.map(function(x){var active=openEventInterest===x;return '<button type="button" onclick="setEventInterestFilter(\''+esc(x)+'\')" class="px-4 py-2 rounded-full border-2 text-sm font-black '+(active?'bg-slate-900 text-white border-slate-900':'bg-white border-slate-200 hover:bg-slate-50')+'">'+esc(x)+'</button>';}).join('');
-  sb.innerHTML=EVENT_SKILL_FILTERS.map(function(x){var active=openEventSkill===x;return '<button type="button" onclick="setEventSkillFilter(\''+esc(x)+'\')" class="px-4 py-2 rounded-full border-2 text-sm font-black '+(active?'bg-slate-900 text-white border-slate-900':'bg-white border-amber-300 text-amber-900 hover:bg-amber-50')+'">'+esc(x)+'</button>';}).join('');
+  ib.innerHTML=EVENT_INTEREST_FILTERS.map(function(x){var active=(x==='すべて')?openEventInterests.length===0:openEventInterests.indexOf(x)>=0;return '<button type="button" onclick="setEventInterestFilter(\''+esc(x)+'\')" class="px-4 py-2 rounded-full border-2 text-sm font-black '+(active?'bg-slate-900 text-white border-slate-900':'bg-white border-slate-200 hover:bg-slate-50')+'">'+esc(x)+'</button>';}).join('');
+  sb.innerHTML=EVENT_SKILL_FILTERS.map(function(x){var active=(x==='すべて')?openEventSkills.length===0:openEventSkills.indexOf(x)>=0;return '<button type="button" onclick="setEventSkillFilter(\''+esc(x)+'\')" class="px-4 py-2 rounded-full border-2 text-sm font-black '+(active?'bg-slate-900 text-white border-slate-900':'bg-white border-amber-300 text-amber-900 hover:bg-amber-50')+'">'+esc(x)+'</button>';}).join('');
 }
 function formatEventDate(ev){
   var d=String(ev.date||'').replace('T',' ').split(' ')[0];
@@ -2925,14 +3016,14 @@ function eventCardHtmlUnified(ev, isIdea){
 function renderEvents(){
   var el=document.getElementById('event-upcoming-list'); if(!el) return;
   var filtered=EVENT_DATA.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
-  var html='<div class="flex flex-col">';
+  var html='<div class="font-black text-base mb-3">📋 今後のイベント一覧（'+filtered.length+'件）</div><div class="flex flex-col">';
   filtered.forEach(function(ev){ html+=eventCardHtmlUnified(ev,false); });
   html+='</div>'; el.innerHTML=html;
 }
 function renderEventIdeas(){
   var el=document.getElementById('event-ideas-list'); if(!el) return;
   var filtered=EVENT_IDEAS.filter(eventMatchesAllFilters); if(openEventCat) filtered=filtered.filter(function(e){return eventMatchesOpenCat(e);});
-  var html='<div class="flex flex-col">';
+  var html='<div class="font-black text-base mb-1">💡 アイデア一覧（'+filtered.length+'件）</div><p class="text-[12px] text-slate-500 mb-3">まだ開催が決まっていない「やりたい」です。カードを開くと「やりたい」「手伝える」で応援できます。</p><div class="flex flex-col">';
   filtered.forEach(function(ev){ html+=eventCardHtmlUnified(ev,true); });
   html+='</div>'; el.innerHTML=html;
 }
@@ -2949,9 +3040,9 @@ function renderEventCategoryGrid(){
     preview.innerHTML = '<div class="text-xs text-slate-500 p-2">'+filtered.length+'件が見つかりました。下のリストをご覧ください。</div>';
   }
 }
-function setEventInterestFilter(v){ openEventInterest=v||'すべて'; renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
-function setEventSkillFilter(v){ openEventSkill=v||'すべて'; renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
-function clearEventFilters(){ openEventInterest='すべて'; openEventSkill='すべて'; openEventSlope='すべて'; openEventStatus='すべて'; openEventCat=null; updateEventFilterButtonStates(); renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
+function setEventInterestFilter(v){ if(!v||v==='すべて'){ openEventInterests=[]; } else { var i=openEventInterests.indexOf(v); if(i>=0) openEventInterests.splice(i,1); else openEventInterests.push(v); } renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
+function setEventSkillFilter(v){ if(!v||v==='すべて'){ openEventSkills=[]; } else { var i=openEventSkills.indexOf(v); if(i>=0) openEventSkills.splice(i,1); else openEventSkills.push(v); } renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
+function clearEventFilters(){ openEventInterests=[]; openEventSkills=[]; openEventSlope='すべて'; openEventStatus='すべて'; openEventCat=null; updateEventFilterButtonStates(); renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
 function filterEventCategory(cat){ openEventCat=cat||null; renderEventCategoryGrid(); renderEvents(); renderEventIdeas(); }
 function eventMatchesOpenCat(e){ if(!openEventCat) return true; return normalizeEventCategory(e.category)===openEventCat; }
 
@@ -3786,10 +3877,7 @@ function installPWA(){
       deferredPrompt = null;
     });
   } else {
-    alert('インストール方法:
-
-iPhone: Safariの共有ボタン → ホーム画面に追加
-Android: Chromeのメニュー → アプリをインストール');
+    alert('インストール方法:\n\niPhone: Safariの共有ボタン → ホーム画面に追加\nAndroid: Chromeのメニュー → アプリをインストール');
   }
 }
 </script>
@@ -3898,7 +3986,7 @@ function yamateOpenIdeasNow(ev){
       var title=(titleEl&&titleEl.value||'').trim(), detail=(detailEl&&detailEl.value||'').trim();
       if(!title){ alert('タイトルを入力してください'); if(titleEl) titleEl.focus(); return; }
       if(detail.length<5){ alert('詳細内容を5文字以上入力してください'); if(detailEl) detailEl.focus(); return; }
-      if(slip) slip.innerHTML='<div class="bg-white border-2 border-amber-400 rounded-2xl p-5 mt-3 shadow-sm"><div class="font-black text-amber-900">🤖 AI分析中…</div><div class="text-xs text-slate-600 mt-2">GASのAI分析を実行しています。数秒お待ちください。</div></div>';
+      if(slip) slip.innerHTML='<div class="bg-white border-2 border-amber-400 rounded-2xl p-5 mt-3 shadow-sm"><div class="font-black text-amber-900">🤖 AI分析中…</div><div class="text-xs text-slate-600 mt-2">AIが企画書の文章に整えています。10〜30秒ほどかかることがあります。そのままお待ちください。</div></div>';
       btn.disabled=true; btn.classList.add('opacity-60','cursor-wait');
       var url=GAS_URL+'?action=analyze&q='+encodeURIComponent(title)+'&detail='+encodeURIComponent(detail);
       yamateJsonp(url)
@@ -3923,23 +4011,23 @@ function yamateOpenIdeasNow(ev){
               +'<div><b>坂：</b>'+escV12(analysis.slope)+'</div>'
               +'<div><b>場所：</b>'+escV12(analysis.place)+'</div>'
               +'<div><b>必要なスキル：</b>'+escV12(analysis.skillsNeeded.join('・'))+'</div>'
-              +'<div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><b>要約：</b><div class="mt-1 leading-6">'+escV12(analysis.summary)+'</div></div>'
-              +'<div class="bg-slate-50 border rounded-xl p-3"><b>企画詳細：</b><div class="mt-1 leading-6 whitespace-pre-wrap">'+escV12(analysis.details)+'</div></div>'
+              +'<div class="bg-amber-50 border border-amber-200 rounded-xl p-3"><b>要約：</b><div id="v12SummaryEdit" contenteditable="true" class="mt-1 leading-6 bg-white/70 rounded-lg px-2 py-1">'+escV12(analysis.summary)+'</div></div>'
+              +'<div class="bg-slate-50 border rounded-xl p-3"><b>企画詳細：</b><div id="v12DetailsEdit" contenteditable="true" class="mt-1 leading-6 whitespace-pre-wrap bg-white/70 rounded-lg px-2 py-1">'+escV12(analysis.details)+'</div></div><div class="text-[11px] text-slate-500">✏️ 要約と企画詳細は、枠の中をタップするとそのまま手直しできます。</div>'
               +'</div>'
-              +'<button type="button" id="btnRegisterAnalyzedEvent" class="mt-4 w-full bg-teal-700 text-white py-3 rounded-xl font-black">📊 スプレッドシートに登録する</button>'
-              +'<div id="v12RegisterStatus" class="text-xs text-center text-slate-500 mt-2">AI分析結果を確認してから登録できます。</div>'
+              +'<button type="button" id="btnRegisterAnalyzedEvent" class="mt-4 w-full bg-teal-700 text-white py-3.5 rounded-xl font-black text-[15px]">✅ この内容で提案を投稿する</button>'
+              +'<div id="v12RegisterStatus" class="text-xs text-center text-slate-500 mt-2">内容を確認したら、このボタンで投稿できます。投稿すると「💡 アイデア」一覧に載り、みんなが応援できるようになります。</div>'
               +'</div>';
             document.getElementById('btnRegisterAnalyzedEvent').addEventListener('click',function(){
               var a=window.__v12EventAnalysis||analysis;
               var reg=this, st=document.getElementById('v12RegisterStatus');
               reg.disabled=true; reg.classList.add('opacity-60');
-              if(st) st.textContent='📤 スプレッドシートへ送信中…';
+              var edS=document.getElementById('v12SummaryEdit'); if(edS) a.summary=edS.textContent.trim(); var edD=document.getElementById('v12DetailsEdit'); if(edD) a.details=edD.textContent.trim(); if(st) st.textContent='📤 投稿しています…';
               var payload={action:'postEventIdea',id:'idea-'+Date.now(),title:a.title,content:detail,detail:a.details||detail,summary:a.summary,summary200:a.summary,category:a.category,slope:a.slope,skills:a.skillsNeeded,skillsNeeded:a.skillsNeeded,status:'アイデア募集中',place:a.place,name:'',phone:''};
               /* GASのdoPostはpostEventIdeaを受け取りEventsへ保存する。応答を読めない環境でも送信を実行する。 */
               yamatePost(payload)
                 .then(function(){
-                  if(st) st.innerHTML='<span class="text-teal-700 font-black">✅ GASへ送信しました。Eventsシートへの登録を確認してください。</span>';
-                  reg.textContent='✅ 登録送信済み';
+                  if(st) st.innerHTML='<span class="text-teal-700 font-black">✅ 投稿できました！「💡 アイデア」一覧に載っています。ありがとうございます。</span>';
+                  reg.textContent='✅ 投稿済み';
                   try{ EVENT_IDEAS.unshift({id:payload.id,title:a.title,detail:a.summary,summary:a.summary,category:a.category,status:'アイデア募集中'}); renderEventIdeas(); }catch(e){}
                 })
                 .catch(function(err){
@@ -3957,6 +4045,54 @@ function yamateOpenIdeasNow(ev){
     });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install); else install();
+})();
+</script>
+
+<script>
+/* v66: レポート作成フォームを実際に動作させる（従来はボタンに処理が未接続だった） */
+(function(){
+  function $(id){ return document.getElementById(id); }
+  function catEmoji(cat){ if(/季節/.test(cat)) return '🌸'; if(/子ども|親子/.test(cat)) return '👨\u200d👩\u200d👧'; if(/食べる|集まる/.test(cat)) return '☕'; if(/ペット/.test(cat)) return '🐾'; if(/趣味|学び/.test(cat)) return '📚'; return '🏠'; }
+  function catName(){ var s=$('reportCat'); if(!s) return '一般'; return s.value.replace(/^\S+\s*/,'').trim()||'一般'; }
+  function syncPreview(){
+    var t=$('reportTitle'), d=$('reportDate'), m=$('reportMemo');
+    var pt=$('reportPreviewTitle'), pm=$('reportPreviewMeta'), pmm=$('reportPreviewMemo');
+    if(pt) pt.textContent = (t&&t.value.trim()) ? t.value.trim() : 'タイトル未入力';
+    if(pm) pm.textContent = ((d&&d.value)||'') + ' / ' + catName();
+    if(pmm) pmm.textContent = (m&&m.value.trim()) ? m.value.trim() : '一言メモを入力するとここに表示されます。';
+  }
+  ['reportTitle','reportDate','reportMemo','reportCat','reportEvSelect'].forEach(function(id){
+    var el=$(id); if(el){ el.addEventListener('input', syncPreview); el.addEventListener('change', function(){ syncPreview(); var sel=$('reportEvSelect'), t=$('reportTitle'); if(id==='reportEvSelect' && sel && t && sel.selectedIndex>0 && !t.value.trim()) t.value=sel.value; syncPreview(); }); }
+  });
+  var gen=$('btnReportGenImg');
+  if(gen) gen.addEventListener('click', function(){
+    var v=$('reportPreviewVisual'); if(!v) return;
+    var title=($('reportTitle')&&$('reportTitle').value.trim())||'イベントの様子';
+    v.className='rounded-2xl p-6 text-center text-white';
+    v.style.background='linear-gradient(135deg,#0f766e,#f59e0b)';
+    v.innerHTML='<div style="font-size:52px">'+catEmoji(catName())+'</div><div class="font-black mt-2" style="font-size:16px">'+title.replace(/</g,'&lt;')+'</div><div class="text-[11px] mt-1 opacity-90">自動生成イメージ（写真の代わり）</div>';
+    if(typeof showToast==='function') showToast('🖼 画像イメージを作りました');
+  });
+  var save=$('btnReportSave');
+  if(save) save.addEventListener('click', function(){
+    var title=($('reportTitle')&&$('reportTitle').value.trim())||'';
+    var date=($('reportDate')&&$('reportDate').value)||new Date().toISOString().slice(0,10);
+    var memo=($('reportMemo')&&$('reportMemo').value.trim())||'';
+    if(!title){ alert('タイトルを入力してください'); return; }
+    try{ postToGAS({action:'postReport', title:title, date:date, content:memo, category:catName(), eventId:''}); }catch(e){}
+    var list=$('hirobaList');
+    if(list){
+      var card=document.createElement('div');
+      card.className='bg-white border-2 border-teal-600 rounded-[20px] p-4 shadow-sm';
+      card.innerHTML='<div style="font-size:34px">'+catEmoji(catName())+'</div><div class="font-black text-[15px] mt-1"></div><div class="text-[11px] text-slate-500 mt-1"></div><p class="text-[13px] mt-2 text-slate-600 leading-relaxed"></p>';
+      card.children[1].textContent=title;
+      card.children[2].textContent=date+' / '+catName();
+      card.children[3].textContent=memo;
+      list.prepend(card);
+    }
+    document.querySelectorAll('span').forEach(function(sp){ var m=sp.textContent.match(/^(\d+)件のレポート$/); if(m) sp.textContent=(Number(m[1])+1)+'件のレポート'; });
+    if(typeof showToast==='function') showToast('✅ レポートを投稿しました'); else alert('投稿しました');
+  });
 })();
 </script>
 </body>
