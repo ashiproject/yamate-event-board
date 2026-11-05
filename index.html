@@ -350,6 +350,7 @@ button{touch-action:manipulation;}
 <button type="button" onclick="openLoginModal()" id="loginNavBtn" class="px-4 py-2 rounded-full text-sm font-bold bg-slate-900 text-white whitespace-nowrap">🔐 ログイン</button>
 <button type="button" onclick="window.open('https://sites.google.com/view/yamatechoasiya-city','_blank')" style="background:#fff;color:#2f7a6b;border:2px solid #2f7a6b;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏠 町内会サイト</button>
 <button type="button" onclick="window.open('https://mimo-lgtm.github.io/ashiya-issues/','_blank')" style="background:#e8a33d;color:#1b1f1d;border:2px solid #e8a33d;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏛 芦屋市の課題</button> <button type="button" onclick="showPage('flyerCreator')" class="px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-sm whitespace-nowrap">🎨 チラシ作成</button>
+<button type="button" onclick="showPage('siteFeedback')" class="px-4 py-2 rounded-full text-sm font-bold bg-amber-500 text-white whitespace-nowrap">⭐ 評価・改善</button>
 </nav>
 <button type="button" id="hamburgerBtn" onclick="document.getElementById('mnav').classList.toggle('hidden')" class="lg:hidden px-3 h-11 border rounded-xl bg-white font-black text-sm">☰ メニュー</button>
 </div>
@@ -363,6 +364,7 @@ button{touch-action:manipulation;}
 <button type="button" onclick="window.open('https://sites.google.com/view/yamatechoasiya-city','_blank')" style="background:#fff;color:#2f7a6b;border:2px solid #2f7a6b;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏠 町内会サイト</button>
 <button type="button" onclick="window.open('https://mimo-lgtm.github.io/ashiya-issues/','_blank')" style="background:#e8a33d;color:#1b1f1d;border:2px solid #e8a33d;padding:8px 12px;border-radius:8px;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;">🏛 芦屋市の課題</button>
 <button type="button" onclick="showPage('flyerCreator')" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-rose-500 text-white rounded-full text-left font-bold whitespace-nowrap text-sm">🎨 チラシ作成</button>
+<button type="button" onclick="showPage('siteFeedback')" class="px-4 py-2 bg-amber-500 text-white rounded-full text-left font-bold whitespace-nowrap text-sm">⭐ 評価・改善</button>
 </div>
 <div class="h-[2px] bg-gradient-to-r from-teal-800 to-amber-400"></div>
 </header>
@@ -481,6 +483,12 @@ button{touch-action:manipulation;}
       <p class="text-[11px] text-slate-500 leading-relaxed mt-2 text-center">ホーム画面に置くと、次から1タップで開けます。<br>追加のしかたは、ボタンを押すと出ます。</p>
     </div>
   </div>
+  <div class="px-3 pb-4 max-w-sm mx-auto">
+    <div class="bg-white border border-slate-200 rounded-2xl px-4 py-3">
+      <button type="button" onclick="showPage('siteFeedback')" class="w-full py-3 px-2 rounded-full bg-amber-500 text-white text-sm font-black whitespace-nowrap">⭐ サイトの評価・改善点を書く</button>
+      <p class="text-[11px] text-slate-500 leading-relaxed mt-2 text-center">使いにくい所や良かった点を、運営に直接伝えられます。<br>音声でも書けます。匿名でOKです。</p>
+    </div>
+  </div>
 </div>
 </section>
 
@@ -526,6 +534,111 @@ button{touch-action:manipulation;}
 <div id="slip" class="mt-5 text-sm text-slate-400">ここに5つの視点分析（各100字）と200文字要約が表示されます。</div>
 </div>
 </section>
+
+<!-- PAGE: SITE FEEDBACK (v69) -->
+<section id="siteFeedback" class="page">
+<div class="text-sm text-slate-500 mb-3"><button type="button" onclick="showPage('home')">← ホーム</button></div>
+<h1 class="text-3xl font-black">⭐ サイトの評価・改善点</h1>
+<div class="bg-teal-50 border border-teal-200 rounded-2xl px-4 py-3 mt-3 text-sm leading-relaxed text-slate-700">
+  ここは<b>このサイト（掲示板アプリ）自体</b>へのご意見ページです。<br>
+  「使いにくい」「ここが良かった」「こう変えてほしい」を、運営に直接伝えられます。<b>匿名で送れます。</b>
+</div>
+<div class="text-xs text-slate-500 mt-2 leading-relaxed">
+  ※ イベントの提案は <button type="button" class="underline font-bold text-teal-700" onclick="openEventSection('hatsuan')">提案のページ</button> へ、町へのご意見は <button type="button" class="underline font-bold text-teal-700" onclick="showPage('assist')">意見投稿のページ</button> へお願いします。
+</div>
+
+<div class="bg-white border rounded-2xl p-5 mt-4">
+  <!-- STEP 1 -->
+  <div class="flex items-center gap-2 mb-2">
+    <span class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-black">1</span>
+    <span class="font-black text-base">このサイトの評価は？</span>
+  </div>
+  <div class="flex gap-1" id="fbStars" role="radiogroup" aria-label="星で評価">
+    <button type="button" class="fb-star text-5xl leading-none px-1 text-slate-300" data-star="1" onclick="setFeedbackRating(1)" aria-label="星1つ">★</button>
+    <button type="button" class="fb-star text-5xl leading-none px-1 text-slate-300" data-star="2" onclick="setFeedbackRating(2)" aria-label="星2つ">★</button>
+    <button type="button" class="fb-star text-5xl leading-none px-1 text-slate-300" data-star="3" onclick="setFeedbackRating(3)" aria-label="星3つ">★</button>
+    <button type="button" class="fb-star text-5xl leading-none px-1 text-slate-300" data-star="4" onclick="setFeedbackRating(4)" aria-label="星4つ">★</button>
+    <button type="button" class="fb-star text-5xl leading-none px-1 text-slate-300" data-star="5" onclick="setFeedbackRating(5)" aria-label="星5つ">★</button>
+  </div>
+  <div id="fbRatingLabel" class="text-sm font-bold text-slate-500 mt-1">星をタップして選んでください</div>
+
+  <!-- STEP 2 -->
+  <div class="flex items-center gap-2 mt-7 mb-2">
+    <span class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-black">2</span>
+    <span class="font-black text-base">どの画面についてですか？</span>
+    <span class="text-xs text-slate-400 font-bold">複数えらべます</span>
+  </div>
+  <div class="flex flex-wrap gap-2" id="fbPageChips">
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">🏠 ホーム</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">🎉 イベント</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">🔔 通知</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">📷 様子</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">💡 提案・アイデア</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">📝 意見投稿</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">🎨 チラシ作成</button>
+    <button type="button" class="fb-page-chip px-4 py-2.5 rounded-full bg-white border-2 border-slate-300 text-sm font-bold" onclick="toggleFeedbackPage(this)">全体・その他</button>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="flex items-center gap-2 mt-7 mb-2">
+    <span class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-black">3</span>
+    <span class="font-black text-base">どんな内容ですか？</span>
+  </div>
+  <div class="grid grid-cols-2 gap-2" id="fbKindChips">
+    <button type="button" class="fb-kind-chip px-3 py-3 rounded-2xl bg-white border-2 border-slate-300 text-sm font-bold" onclick="setFeedbackKind(this)">👍 良かった点</button>
+    <button type="button" class="fb-kind-chip px-3 py-3 rounded-2xl bg-white border-2 border-slate-300 text-sm font-bold" onclick="setFeedbackKind(this)">😖 困った・分かりにくい点</button>
+    <button type="button" class="fb-kind-chip px-3 py-3 rounded-2xl bg-white border-2 border-slate-300 text-sm font-bold" onclick="setFeedbackKind(this)">💡 改善のアイデア</button>
+    <button type="button" class="fb-kind-chip px-3 py-3 rounded-2xl bg-white border-2 border-slate-300 text-sm font-bold" onclick="setFeedbackKind(this)">🐛 不具合の報告</button>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="flex items-center gap-2 mt-7 mb-2">
+    <span class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-black">4</span>
+    <span class="font-black text-base">くわしく書いてください</span>
+  </div>
+  <button type="button" id="fbVoiceBtn" onclick="toggleFeedbackVoice()" class="w-full py-4 rounded-2xl bg-teal-700 text-white text-base font-black shadow">🎤 音声で入力する</button>
+  <div id="fbVoiceStatus" class="hidden mt-2 text-sm font-bold bg-green-50 border border-green-300 text-green-800 rounded-xl px-3 py-2"></div>
+  <p class="text-[11px] text-slate-500 leading-relaxed mt-2">話すと、そのまま下の欄に文字になります。うまく使えないときは、文字入力のキーボードにある 🎤 ボタンでも話して入力できます。</p>
+  <textarea id="fbText" rows="5" oninput="updateFeedbackPreview()" placeholder="例：イベントの場所が小さくて読めませんでした。文字を大きくしてほしいです。" class="w-full p-4 border-2 rounded-2xl text-base mt-2"></textarea>
+
+  <!-- STEP 5 -->
+  <div class="flex items-center gap-2 mt-7 mb-2">
+    <span class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-black">5</span>
+    <span class="font-black text-base">お名前</span>
+    <span class="text-xs text-slate-400 font-bold">任意・空欄なら匿名です</span>
+  </div>
+  <input id="fbName" type="text" placeholder="お名前（任意）" class="w-full p-3.5 border rounded-xl text-base">
+
+  <!-- Preview -->
+  <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 mt-7">
+    <div class="text-xs font-black text-slate-500 mb-1">送信内容の確認</div>
+    <div id="fbPreview" class="text-sm leading-relaxed text-slate-700">まだ何も選ばれていません。星だけ、文章だけでも送れます。</div>
+  </div>
+
+  <button type="button" id="fbSubmitBtn" onclick="submitSiteFeedback()" class="mt-4 w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-base shadow">📩 この内容で送信する</button>
+  <p class="text-[11px] text-slate-500 text-center mt-2">送信先：運営（スプレッドシートの「Ideas」シートに、種類＝サイト評価 として保存されます）</p>
+</div>
+
+<!-- Done -->
+<div id="fbDone" class="hidden bg-teal-50 border-2 border-teal-600 rounded-2xl p-6 mt-4 text-center">
+  <div class="text-4xl mb-2">✅</div>
+  <div class="font-black text-lg">ありがとうございました！</div>
+  <p class="text-sm text-slate-600 leading-relaxed mt-2">評価・改善点が運営に届きました。<br>いただいた内容は、サイトを良くするために使います。</p>
+  <div class="grid grid-cols-2 gap-2 mt-4">
+    <button type="button" onclick="resetFeedbackForm()" class="py-3 rounded-full bg-white border-2 border-teal-700 text-teal-700 font-black text-sm">もう1件書く</button>
+    <button type="button" onclick="showPage('home')" class="py-3 rounded-full bg-slate-900 text-white font-black text-sm">ホームへ戻る</button>
+  </div>
+</div>
+
+<!-- My history on this device -->
+<div class="bg-white border rounded-2xl p-5 mt-4">
+  <div class="font-black text-base mb-1">あなたが送った評価</div>
+  <p class="text-[11px] text-slate-500 leading-relaxed">このスマホ・PCの中にだけ残る記録です（他の人には見えません）。</p>
+  <div id="fbHistoryList" class="mt-3 space-y-2"></div>
+  <button type="button" id="fbHistoryClear" onclick="clearFeedbackHistory()" class="hidden mt-3 text-xs font-bold text-slate-400 underline">この記録を全部消す</button>
+</div>
+</section>
+
 
 <!-- PAGE 3: OPINION TREE -->
 <section id="tree" class="page" style="display:none !important;">
@@ -1790,6 +1903,7 @@ function showPage(id, eventTab){
   if(id === 'admin'){ try{initAdminPage();}catch(e){} try{populateAdminEventSelect();}catch(e){} }
   if(id === 'notifications'){ try{renderNotifications(); fetchNotificationsFromGAS();}catch(e){} }
   if(id === 'home'){ try{updateNotificationBadge(); fetchNotificationsFromGAS();}catch(e){} }
+  if(id === 'siteFeedback'){ try{ renderFeedbackHistory(); updateFeedbackPreview(); }catch(e){} }
   if(id === 'flyerCreator'){
     try{ updateFlyerLivePreview(); }catch(e){ console.log(e); }
   }
@@ -1850,6 +1964,7 @@ function loadFromSheet(){
 
       // シートの投稿を追加（初期の新統合・サンプルは消さない）
       data.forEach(function(row){
+        if(row && row.type === 'site-feedback') return; // サイト評価は意見集約箱に載せない
         var bigLabel = row.bigLabel || row.big || "コミュニティ";
         var midLabel = row.midLabel || row.mid || "その他";
         var summary200 = String(row.summary || row.content || row.raw || "");
@@ -3841,6 +3956,7 @@ window.filterEventCategory = filterEventCategory;
 <button type="button" onclick="showPage('event')" class="flex flex-col items-center justify-center p-1 text-slate-700"><span class="text-lg">🎉</span><span class="text-[10px] font-bold">イベント</span></button>
 <button type="button" onclick="showPage('notifications')" class="flex flex-col items-center justify-center p-1 text-slate-700"><span class="text-lg">🔔</span><span class="text-[10px] font-bold">通知</span></button>
 <button type="button" onclick="showPage('eventReport')" class="flex flex-col items-center justify-center p-1 text-teal-700"><span class="text-lg">📷</span><span class="text-[10px] font-bold">様子</span></button>
+<button type="button" onclick="showPage('siteFeedback')" class="flex flex-col items-center justify-center p-1 text-amber-600"><span class="text-lg">⭐</span><span class="text-[10px] font-bold">評価・改善</span></button>
 </div>
 
 
@@ -4138,5 +4254,228 @@ window.installPWA = function(){
   openInstallHelp();
 };
 </script>
+<script>
+/* v69: site feedback page (rating / improvement points) with voice input.
+   Storage: existing GAS postIdea action with type='site-feedback' (no GAS change needed).
+   loadFromSheet() skips site-feedback rows so they never appear in the opinion box. */
+var fbRating = 0;
+var fbKind = '';
+var fbRecognition = null;
+var fbListening = false;
+var FB_HISTORY_KEY = 'yamateSiteFeedbackV1';
+var FB_RATING_WORDS = {1:'とても悪い', 2:'悪い', 3:'ふつう', 4:'良い', 5:'とても良い'};
+
+function fbChipOn(btn){
+  btn.classList.remove('bg-white','border-slate-300');
+  btn.classList.add('bg-teal-700','text-white','border-teal-700');
+}
+function fbChipOff(btn){
+  btn.classList.add('bg-white','border-slate-300');
+  btn.classList.remove('bg-teal-700','text-white','border-teal-700');
+}
+function setFeedbackRating(n){
+  fbRating = n;
+  var stars = document.querySelectorAll('.fb-star');
+  stars.forEach(function(s){
+    var v = parseInt(s.getAttribute('data-star'), 10);
+    s.classList.toggle('text-amber-400', v <= n);
+    s.classList.toggle('text-slate-300', v > n);
+  });
+  var lbl = document.getElementById('fbRatingLabel');
+  if(lbl) lbl.textContent = '★'.repeat(n) + '☆'.repeat(5-n) + '　' + n + '：' + (FB_RATING_WORDS[n]||'');
+  updateFeedbackPreview();
+}
+function getFeedbackPages(){
+  var out = [];
+  document.querySelectorAll('.fb-page-chip').forEach(function(c){
+    if(c.classList.contains('bg-teal-700')) out.push(c.textContent.replace(/\s+/g,' ').trim());
+  });
+  return out;
+}
+function toggleFeedbackPage(btn){
+  if(btn.classList.contains('bg-teal-700')) fbChipOff(btn); else fbChipOn(btn);
+  updateFeedbackPreview();
+}
+function setFeedbackKind(btn){
+  document.querySelectorAll('.fb-kind-chip').forEach(function(c){ fbChipOff(c); });
+  fbChipOn(btn);
+  fbKind = btn.textContent.replace(/\s+/g,' ').trim();
+  updateFeedbackPreview();
+}
+function feedbackSummaryText(){
+  var pages = getFeedbackPages();
+  var text = (document.getElementById('fbText')||{}).value || '';
+  var parts = [];
+  if(fbRating) parts.push('評価★' + fbRating + '（' + (FB_RATING_WORDS[fbRating]||'') + '）');
+  if(pages.length) parts.push('画面：' + pages.join('・'));
+  if(fbKind) parts.push('内容：' + fbKind);
+  return { head: parts.join('／'), text: text.trim() };
+}
+function updateFeedbackPreview(){
+  var el = document.getElementById('fbPreview');
+  if(!el) return;
+  var s = feedbackSummaryText();
+  if(!s.head && !s.text){ el.textContent = 'まだ何も選ばれていません。星だけ、文章だけでも送れます。'; return; }
+  el.innerHTML = '';
+  if(s.head){ var d = document.createElement('div'); d.className = 'font-bold'; d.textContent = s.head; el.appendChild(d); }
+  if(s.text){ var p = document.createElement('div'); p.className = 'mt-1 whitespace-pre-wrap'; p.textContent = s.text; el.appendChild(p); }
+}
+
+/* ---- voice input (Web Speech API) ---- */
+function fbVoiceShow(msg){
+  var st = document.getElementById('fbVoiceStatus');
+  if(!st) return;
+  st.textContent = msg;
+  st.classList.remove('hidden');
+}
+function toggleFeedbackVoice(){
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var btn = document.getElementById('fbVoiceBtn');
+  if(!SR){
+    fbVoiceShow('このブラウザでは音声入力が使えませんでした。下の欄をタップして、キーボードの 🎤 ボタンで話して入力してみてください。');
+    return;
+  }
+  if(fbListening && fbRecognition){ try{ fbRecognition.stop(); }catch(e){} return; }
+  var ta = document.getElementById('fbText');
+  try{
+    fbRecognition = new SR();
+    fbRecognition.lang = 'ja-JP';
+    fbRecognition.interimResults = true;
+    fbRecognition.continuous = true;
+    var baseValue = ta.value;
+    var finalText = '';
+    fbRecognition.onresult = function(e){
+      var interim = '';
+      for(var i = e.resultIndex; i < e.results.length; i++){
+        if(e.results[i].isFinal) finalText += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      ta.value = baseValue + (baseValue && finalText ? '\n' : '') + finalText + interim;
+      updateFeedbackPreview();
+    };
+    fbRecognition.onerror = function(e){
+      if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+        fbVoiceShow('マイクの使用が許可されませんでした。ブラウザの設定でマイクを許可してから、もう一度お試しください。');
+      } else if(e.error === 'no-speech'){
+        fbVoiceShow('声が聞き取れませんでした。もう一度、ゆっくり話してみてください。');
+      } else if(e.error !== 'aborted'){
+        fbVoiceShow('音声入力でエラーがありました（' + e.error + '）。キーボードの 🎤 でも入力できます。');
+      }
+    };
+    fbRecognition.onend = function(){
+      fbListening = false;
+      if(btn){ btn.textContent = '🎤 音声で入力する'; btn.classList.remove('bg-red-500'); btn.classList.add('bg-teal-700'); }
+      var st = document.getElementById('fbVoiceStatus');
+      if(st && !/許可されません|使えません/.test(st.textContent)) st.classList.add('hidden');
+      updateFeedbackPreview();
+    };
+    fbRecognition.start();
+    fbListening = true;
+    if(btn){ btn.textContent = '⏹ 聞き取り中… 押すと止まります'; btn.classList.remove('bg-teal-700'); btn.classList.add('bg-red-500'); }
+    fbVoiceShow('🎙 聞き取り中です。話してください。');
+  }catch(err){
+    fbVoiceShow('音声入力を開始できませんでした。キーボードの 🎤 でも入力できます。');
+  }
+}
+
+/* ---- history on this device ---- */
+function loadFeedbackHistory(){
+  try{ var v = JSON.parse(localStorage.getItem(FB_HISTORY_KEY) || '[]'); return Array.isArray(v) ? v : []; }
+  catch(e){ return []; }
+}
+function saveFeedbackHistory(list){
+  try{ localStorage.setItem(FB_HISTORY_KEY, JSON.stringify(list.slice(0, 50))); }catch(e){}
+}
+function renderFeedbackHistory(){
+  var box = document.getElementById('fbHistoryList');
+  if(!box) return;
+  var list = loadFeedbackHistory();
+  var clearBtn = document.getElementById('fbHistoryClear');
+  if(clearBtn) clearBtn.classList.toggle('hidden', list.length === 0);
+  box.innerHTML = '';
+  if(!list.length){
+    var empty = document.createElement('div');
+    empty.className = 'text-sm text-slate-400';
+    empty.textContent = 'まだ送信した評価はありません。';
+    box.appendChild(empty);
+    return;
+  }
+  list.forEach(function(item){
+    var card = document.createElement('div');
+    card.className = 'border border-slate-200 rounded-xl px-3 py-2.5 bg-slate-50';
+    var head = document.createElement('div');
+    head.className = 'text-xs font-bold text-slate-500';
+    head.textContent = (item.date || '') + (item.rating ? '　' + '★'.repeat(item.rating) + '☆'.repeat(5-item.rating) : '');
+    var meta = document.createElement('div');
+    meta.className = 'text-sm font-bold text-slate-700 mt-0.5';
+    meta.textContent = [item.pages && item.pages.length ? item.pages.join('・') : '', item.kind || ''].filter(Boolean).join('　／　') || '（分類なし）';
+    card.appendChild(head); card.appendChild(meta);
+    if(item.text){
+      var body = document.createElement('div');
+      body.className = 'text-sm text-slate-600 mt-1 whitespace-pre-wrap';
+      body.textContent = item.text;
+      card.appendChild(body);
+    }
+    box.appendChild(card);
+  });
+}
+function clearFeedbackHistory(){
+  if(!confirm('この端末に残っている送信記録を全部消しますか？（運営に送った内容は消えません）')) return;
+  saveFeedbackHistory([]);
+  renderFeedbackHistory();
+}
+
+/* ---- submit ---- */
+function submitSiteFeedback(){
+  var s = feedbackSummaryText();
+  if(!fbRating && !s.text){
+    alert('星をタップするか、文章を書いてから送信してください。');
+    return;
+  }
+  var name = ((document.getElementById('fbName')||{}).value || '').trim();
+  var pages = getFeedbackPages();
+  var summary = (s.head + (s.text ? '／' + s.text : '')).slice(0, 200);
+  var btn = document.getElementById('fbSubmitBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '送信中…'; }
+  try{
+    postToGAS({
+      action: 'postIdea',
+      id: 'feedback-' + Date.now(),
+      author: name || '匿名',
+      title: 'サイト評価' + (fbRating ? ' ★' + fbRating : ''),
+      content: s.text || s.head,
+      big: 'サイト評価', bigLabel: 'サイト評価',
+      mid: pages.join('・') || '全体・その他', midLabel: pages.join('・') || '全体・その他',
+      summary: summary, summary200: summary,
+      p1: fbRating ? '★' + fbRating + '（' + (FB_RATING_WORDS[fbRating]||'') + '）' : '',
+      p2: pages.join('・'),
+      p3: fbKind,
+      p4: '', p5: '',
+      type: 'site-feedback',
+      integratedTo: ''
+    });
+  }catch(e){ console.log('feedback post error', e); }
+  var list = loadFeedbackHistory();
+  list.unshift({ date: new Date().toLocaleString('ja-JP'), rating: fbRating, pages: pages, kind: fbKind, text: s.text });
+  saveFeedbackHistory(list);
+  renderFeedbackHistory();
+  var done = document.getElementById('fbDone');
+  if(done){ done.classList.remove('hidden'); done.scrollIntoView({behavior:'smooth', block:'center'}); }
+  if(btn){ btn.disabled = false; btn.textContent = '📩 この内容で送信する'; }
+}
+function resetFeedbackForm(){
+  fbRating = 0; fbKind = '';
+  document.querySelectorAll('.fb-star').forEach(function(s){ s.classList.add('text-slate-300'); s.classList.remove('text-amber-400'); });
+  document.querySelectorAll('.fb-page-chip, .fb-kind-chip').forEach(function(c){ fbChipOff(c); });
+  var lbl = document.getElementById('fbRatingLabel'); if(lbl) lbl.textContent = '星をタップして選んでください';
+  var ta = document.getElementById('fbText'); if(ta) ta.value = '';
+  var nm = document.getElementById('fbName'); if(nm) nm.value = '';
+  var done = document.getElementById('fbDone'); if(done) done.classList.add('hidden');
+  updateFeedbackPreview();
+  window.scrollTo(0, 0);
+}
+try{ document.addEventListener('DOMContentLoaded', function(){ renderFeedbackHistory(); updateFeedbackPreview(); }); }catch(e){}
+</script>
 </body>
+
 </html>
